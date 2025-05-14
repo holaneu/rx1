@@ -9,3 +9,4 @@ async function sendEcho() {
     const data = await response.json();
     alert("Server echoed: " + data.echo);
 }
+

@@ -28,6 +28,11 @@ def echo_tool():
     data = request.json
     return jsonify({"echo": data.get("message", "")})
 
+@app.route('/api/tools/test', methods=['POST'])
+def test():
+    data = request.json
+    return jsonify({"data": data.get("message", "")})
+
 # Add other tool, assistant, workflow routes here later
 
 if __name__ == '__main__':

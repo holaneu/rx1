@@ -8,7 +8,16 @@
 </head>
 <body>
     <h1>Hello from Flask + JS!</h1>
+
+    <h2>Test 1</h2>
     <button onclick="sendEcho()">Send Echo</button>
+
+    <h2>Test 2</h2>
+    <textarea id="textareaTest" rows="4" cols="50"></textarea>
+    <button id="buttonSendTest">Send test</button>
+    <div id="responseTest"></div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tools.js') }}"></script>
 </body>
 </html>
