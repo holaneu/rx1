@@ -12,11 +12,9 @@
         <h1>RX1</h1>
     </header> 
     
-    <main>
-        <h2>Test 1</h2>
-        <button onclick="sendEcho()">Send Echo</button>
+    <main>        
 
-        <h2>Test 2</h2>
+        <h2>Test 1</h2>
         <div class="form-row">
             <textarea id="textareaTest" rows="4" cols="50"></textarea>
         </div>
@@ -25,10 +23,69 @@
         </div>
         <div class="form-row">
             <div id="responseTest"></div>
-        </div>    
+        </div>   
+        
+        <hr>
+
+        <h2>Status msg & interactions</h2>
+        <strong id="status-title">—</strong>
+        <p id="status-body">Waiting…</p>
+
+        <h2>Prompt</h2>
+        <p id="prompt"></p>
+        <button id="confirmBtn" style="display:none;">Continue</button>
+
+        
+        <button id="startBtn">Start Workflow</button>
     </main>
     
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/tools.js') }}"></script>
+    <script>
+        let taskId, es;
+
+        document.getElementById('startBtn').onclick = async () => {
+        // 1) Start the workflow (runs until first yield)
+        const res = await fetch('/start', { method:'POST' });
+        const data = await res.json();
+        taskId = data.task_id;
+        handleMsg(data);
+
+        // 2) Open SSE stream for status updates
+        es = new EventSource(`/status/stream?task_id=${taskId}`);
+        es.onmessage = e => {
+            const msg = JSON.parse(e.data);
+            document.getElementById('status-title').innerText = msg.message.title;
+            document.getElementById('status-body').innerText  = msg.message.body;
+        };
+        es.onerror = () => console.error('SSE error');
+        };
+
+        async function continueWorkflow(input) {
+        const res = await fetch('/continue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task_id: taskId, user_input: input })
+        });
+        const msg = await res.json();
+        handleMsg(msg);
+        }
+
+        function handleMsg(msg) {
+        if (msg.action === 'need_user_input') {
+            document.getElementById('prompt').innerText = msg.message;
+            document.getElementById('confirmBtn').style.display = 'inline-block';
+        }
+        else if (msg.action === 'done') {
+            document.getElementById('prompt').innerText = '🎉 ' + msg.result;
+            document.getElementById('confirmBtn').style.display = 'none';
+            if (es) es.close();
+        }
+        }
+
+        document.getElementById('confirmBtn').onclick = () => {
+        continueWorkflow('yes');
+        document.getElementById('confirmBtn').style.display = 'none';
+        };
+    </script>
 </body>
 </html>
