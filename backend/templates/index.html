@@ -53,21 +53,21 @@
     <script>
         let taskId, es;
 
-        document.getElementById('startBtn').onclick = async () => {
-        // 1) Start the workflow (runs until first yield)
-        const res = await fetch('/start', { method:'POST' });
-        const data = await res.json();
-        taskId = data.task_id;
-        handleMsg(data);
+        async function startWorkflow() {
+            // 1) Start the workflow (runs until first yield)
+            const res = await fetch('/start', { method:'POST' });
+            const data = await res.json();
+            taskId = data.task_id;
+            handleMsg(data);
 
-        // 2) Open SSE stream for status updates
-        es = new EventSource(`/status/stream?task_id=${taskId}`);
-        es.onmessage = e => {
-            const msg = JSON.parse(e.data);
-            document.getElementById('status-title').innerText = msg.message.title;
-            document.getElementById('status-body').innerText  = msg.message.body;
-        };
-        es.onerror = () => console.error('SSE error');
+            // 2) Open SSE stream for status updates
+            es = new EventSource(`/status/stream?task_id=${taskId}`);
+            es.onmessage = e => {
+                const msg = JSON.parse(e.data);
+                document.getElementById('status-title').innerText = msg.message.title;
+                document.getElementById('status-body').innerText  = msg.message.body;
+            };
+            es.onerror = () => console.error('SSE error');
         };
 
         async function continueWorkflow(input) {
@@ -96,6 +96,12 @@
             continueWorkflow('yes');
             document.getElementById('confirmBtn').style.display = 'none';
         };
+
+        document.getElementById('startBtn').onclick = () => {
+            startWorkflow();
+        };
+
+
     </script>
 </body>
 </html>
