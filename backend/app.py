@@ -6,7 +6,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
-from workflows import workflow
+from workflows import *
 from shared import status, status_queues
 
 app = Flask(__name__,
@@ -32,7 +32,7 @@ def index():
 def start():
     task_id = str(uuid.uuid4())
     status_queues[task_id] = queue.Queue()
-    gen = workflow(task_id)
+    gen = test1(task_id)
     task_gens[task_id] = gen
 
     # Kick off the generator until first yield

@@ -1,13 +1,13 @@
 import time
 from shared import status  # import the SSE‐helper
+from tools import fetch_api  # import the API call``
+from utils import workflow  # import the workflow decorator
 
-def fetch_api():
-    # Dummy stand-in for a real HTTP/API call
-    time.sleep(1)
-    return list(range(5))
-
-def workflow(task_id):
-    # Emit a status update immediately
+@workflow(name="Test Workflow", category="Test")
+def test1(task_id):
+    """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
+    """
+    # Initialize the workflow
     status(task_id, {"title": "Started", "body": "Initializing workflow…"})
     
     # Do some work
@@ -42,3 +42,19 @@ def workflow(task_id):
     })
 
     return "All done!"
+
+
+# ----------------------
+# Registry of workflows - Extract all workflows dynamically
+import inspect
+WORKFLOWS_REGISTRY = {
+    func.id: {
+      'name': func.name, 
+      'description': func.description, 
+      'function': func, 
+      'model': func.model, 
+      'category': func.category
+    }
+    for name, func in inspect.getmembers(__import__(__name__), inspect.isfunction)
+    if hasattr(func, 'id') and hasattr(func, 'is_workflow')  # Check for workflow marker
+}
