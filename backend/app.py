@@ -9,9 +9,7 @@ import os
 from workflows import *
 from shared import status, status_queues
 
-app = Flask(__name__,
-            static_folder='static',
-            template_folder='templates')
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
 # Enable CORS for API routes only
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -34,7 +32,6 @@ def start():
     status_queues[task_id] = queue.Queue()
     gen = test1(task_id)
     task_gens[task_id] = gen
-
     # Kick off the generator until first yield
     msg = next(gen)
     return jsonify({"task_id": task_id, **msg})
@@ -44,10 +41,8 @@ def cont():
     body = request.json
     task_id = body.get("task_id")
     gen = task_gens.get(task_id)
-
     if not gen:
         return jsonify({"error": "unknown task_id"}), 404
-
     try:
         msg = gen.send(body.get("user_input"))
         return jsonify(msg)
@@ -63,7 +58,6 @@ def status_stream():
     q = status_queues.get(task_id)
     if not q:
         return "", 404
-
     def event_stream():
         while True:
             msg = q.get()          # block until next status or None
