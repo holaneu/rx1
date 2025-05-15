@@ -51,7 +51,7 @@ def continue_task():
         status_queues[task_id].put(None)
         task_gens.pop(task_id, None)
         #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
-        return jsonify({"action": "workflow_done", "message": getattr(e, "value", None), "task_id": task_id})
+        return jsonify({"action": "task_done", "message": getattr(e, "value", None), "task_id": task_id})
 
 @app.route("/status/stream")
 def status_stream():

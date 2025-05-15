@@ -51,7 +51,7 @@ function handleMsg(msg) {
         document.getElementById('prompt').innerText = msg.message;
         document.getElementById('confirmBtn').style.display = 'inline-block';
     }
-    else if (msg.action === 'workflow_done') {
+    else if (msg.action === 'task_done') {
         //document.getElementById('prompt').innerText = '🎉 ' + msg.result;
         domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
         document.getElementById('confirmBtn').style.display = 'none';
@@ -61,6 +61,7 @@ function handleMsg(msg) {
 
 // Event listeners
 domButtonSendTest.addEventListener('click', sendTest);
+
 document.getElementById('confirmBtn').onclick = () => {
     continueWorkflow('yes');
     document.getElementById('confirmBtn').style.display = 'none';
