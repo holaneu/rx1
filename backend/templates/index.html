@@ -71,30 +71,30 @@
         };
 
         async function continueWorkflow(input) {
-        const res = await fetch('/continue', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ task_id: taskId, user_input: input })
-        });
-        const msg = await res.json();
-        handleMsg(msg);
+            const res = await fetch('/continue', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_id: taskId, user_input: input })
+            });
+            const msg = await res.json();
+            handleMsg(msg);
         }
 
         function handleMsg(msg) {
-        if (msg.action === 'need_user_input') {
-            document.getElementById('prompt').innerText = msg.message;
-            document.getElementById('confirmBtn').style.display = 'inline-block';
-        }
-        else if (msg.action === 'done') {
-            document.getElementById('prompt').innerText = '🎉 ' + msg.result;
-            document.getElementById('confirmBtn').style.display = 'none';
-            if (es) es.close();
-        }
+            if (msg.action === 'need_user_input') {
+                document.getElementById('prompt').innerText = msg.message;
+                document.getElementById('confirmBtn').style.display = 'inline-block';
+            }
+            else if (msg.action === 'done') {
+                document.getElementById('prompt').innerText = '🎉 ' + msg.result;
+                document.getElementById('confirmBtn').style.display = 'none';
+                if (es) es.close();
+            }
         }
 
         document.getElementById('confirmBtn').onclick = () => {
-        continueWorkflow('yes');
-        document.getElementById('confirmBtn').style.display = 'none';
+            continueWorkflow('yes');
+            document.getElementById('confirmBtn').style.display = 'none';
         };
     </script>
 </body>
