@@ -41,7 +41,10 @@ def test1(task_id):
         "body": "Workflow completed successfully."
     })
 
-    return "All done!"
+    return {
+        "status": "success",
+        "data":  f"Processed {len(data)} items."
+    }
 
 
 # ----------------------

@@ -50,7 +50,8 @@ def cont():
         # Signal SSE stream to close
         status_queues[task_id].put(None)
         task_gens.pop(task_id, None)
-        return jsonify({"action": "done", "result": getattr(e, "value", None)})
+        #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
+        return jsonify({"action": "workflow_done", "message": getattr(e, "value", None), "task_id": task_id})
 
 @app.route("/status/stream")
 def status_stream():
@@ -63,7 +64,7 @@ def status_stream():
             msg = q.get()          # block until next status or None
             if msg is None:
                 break              # generator finished
-            payload = {"action": "status", "message": msg}
+            payload = {"action": "status", "message": msg, "task_id": task_id}
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
 

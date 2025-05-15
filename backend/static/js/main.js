@@ -4,6 +4,7 @@ let taskId, es;
 const domButtonSendTest = document.getElementById('buttonSendTest');
 const domTextareaTest = document.getElementById('textareaTest');
 const domResponseTest = document.getElementById('responseTest');
+const domResponseBox = document.getElementById('responseBox');
 
 // functions
 async function sendTest() {
@@ -28,8 +29,9 @@ async function sendTest() {
     es.onmessage = e => {
         const msg = JSON.parse(e.data);
         console.log('SSE message:', msg);
-        document.getElementById('status-title').innerText = msg.message.title;
-        document.getElementById('status-body').innerText  = msg.message.body;
+        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
+        //document.getElementById('status-title').innerText = msg.message.title;
+        //document.getElementById('status-body').innerText  = msg.message.body;
     };
     es.onerror = () => console.error('SSE error');
 };
@@ -49,8 +51,9 @@ function handleMsg(msg) {
         document.getElementById('prompt').innerText = msg.message;
         document.getElementById('confirmBtn').style.display = 'inline-block';
     }
-    else if (msg.action === 'done') {
-        document.getElementById('prompt').innerText = '🎉 ' + msg.result;
+    else if (msg.action === 'workflow_done') {
+        //document.getElementById('prompt').innerText = '🎉 ' + msg.result;
+        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
         document.getElementById('confirmBtn').style.display = 'none';
         if (es) es.close();
     }

@@ -40,3 +40,8 @@ textarea, input[type="text"] {
   background-color: var(--bg-secondary);
   color: var(--text-primary);
 }
+
+.message {
+  border-bottom: 1px solid var(--text-secondary);
+  padding: 10px;
+}
