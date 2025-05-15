@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 from workflows import *
-from shared import status, status_queues
+from shared import send_status_message, status_queues
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -26,8 +26,8 @@ task_gens: dict[str, any] = {}
 def index():
     return render_template('index.html')
 
-@app.route("/start", methods=["POST"])
-def start():
+@app.route("/start_task", methods=["POST"])
+def start_task():
     task_id = str(uuid.uuid4())
     status_queues[task_id] = queue.Queue()
     gen = test1(task_id)
@@ -36,8 +36,8 @@ def start():
     msg = next(gen)
     return jsonify({"task_id": task_id, **msg})
 
-@app.route("/continue", methods=["POST"])
-def cont():
+@app.route("/continue_task", methods=["POST"])
+def continue_task():
     body = request.json
     task_id = body.get("task_id")
     gen = task_gens.get(task_id)

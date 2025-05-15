@@ -19,7 +19,7 @@ async function sendTest() {
 
  async function startWorkflow() {
     // 1) Start the workflow (runs until first yield)
-    const res = await fetch('/start', { method:'POST' });
+    const res = await fetch('/start_task', { method:'POST' });
     const data = await res.json();
     taskId = data.task_id;
     handleMsg(data);
@@ -37,7 +37,7 @@ async function sendTest() {
 };
 
 async function continueWorkflow(input) {
-    const res = await fetch('/continue', {
+    const res = await fetch('/continue_task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task_id: taskId, user_input: input })

@@ -1,5 +1,5 @@
 import time
-from shared import status  # import the SSE‐helper
+from shared import send_status_message  # import the SSE‐helper
 from tools import fetch_api  # import the API call``
 from utils import workflow  # import the workflow decorator
 
@@ -8,11 +8,11 @@ def test1(task_id):
     """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
     """
     # Initialize the workflow
-    status(task_id, {"title": "Started", "body": "Initializing workflow…"})
+    send_status_message(task_id, {"title": "Started", "body": "Initializing workflow…"})
     
     # Do some work
     data = fetch_api()
-    status(task_id, {
+    send_status_message(task_id, {
         "title": "API Fetched",
         "body": f"Received {len(data)} items"
     })
@@ -24,19 +24,19 @@ def test1(task_id):
     }
 
     # Resume once user_input is sent
-    status(task_id, {
+    send_status_message(task_id, {
         "title": "Processing",
         "body": f"User said “{user_input}” — now processing…"
     })
     time.sleep(1)  # simulate more work
 
-    status(task_id, {
+    send_status_message(task_id, {
         "title": "Almost done",
         "body": "Finalizing results…"
     })
     time.sleep(1)
 
-    status(task_id, {
+    send_status_message(task_id, {
         "title": "Done",
         "body": "Workflow completed successfully."
     })
