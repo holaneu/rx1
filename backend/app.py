@@ -51,7 +51,7 @@ def continue_task():
         status_queues[task_id].put(None)
         task_gens.pop(task_id, None)
         #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
-        return jsonify({"action": "task_done", "message": getattr(e, "value", None), "task_id": task_id})
+        return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id})
 
 @app.route("/status/stream")
 def status_stream():
@@ -64,7 +64,7 @@ def status_stream():
             msg = q.get()          # block until next status or None
             if msg is None:
                 break              # generator finished
-            payload = {"action": "status", "message": msg, "task_id": task_id}
+            payload = {"action": "status_message", "category": "workflow", "message": msg, "task_id": task_id}
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
 

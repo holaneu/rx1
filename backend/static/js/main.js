@@ -33,7 +33,7 @@ async function sendTest() {
         //document.getElementById('status-title').innerText = msg.message.title;
         //document.getElementById('status-body').innerText  = msg.message.body;
     };
-    es.onerror = () => console.error('SSE error');
+    es.onerror = (error) => console.error('SSE error', error);
 };
 
 async function continueWorkflow(input) {
