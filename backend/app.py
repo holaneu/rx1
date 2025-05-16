@@ -176,7 +176,8 @@ workflow_manager.init_app(app, socketio)
 app.logger.info("Attempting to import 'workflows' module...")
 try:
     import workflows  # Assumes workflows.py is in the same directory orPYTHONPATH
-    app.logger.info(f"'workflows' module imported. Current registered functions: {list(workflow_manager.registered_funcs.keys())}")
+    app.logger.info(f"'workflows' module imported. Current registered functions: {list(workflow_manager.
+    registered_funcs.keys())}")
 except ImportError as e:
     app.logger.error(f"Failed to import 'workflows' module: {e}. Make sure workflows.py exists and is accessible.")
 except Exception as e: # Catch any other error during import (e.g. syntax error in workflows.py)

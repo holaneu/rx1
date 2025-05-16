@@ -15,12 +15,14 @@
             <textarea id="main-input-textarea" placeholder="Enter your input for the workflow..."></textarea>
         </div>
 
+        
         <div class="controls">
             <select id="workflow-dropdown">
                 <option value="">Loading workflows...</option>
             </select>
             <button id="start-workflow-button" disabled>Start Workflow</button>
         </div>
+        
 
         <h2>Workflow Log & Interactions</h2>
         <div class="response-box" id="response-box">
@@ -30,6 +32,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 
     <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+
 
     
 </body>
