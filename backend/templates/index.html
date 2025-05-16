@@ -1,52 +1,36 @@
-<!-- backend/templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RX1</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modular Workflow System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <div class="container">
-    <header>
-        <h1>RX1</h1>
-    </header> 
-    
-    <main>        
+    <div class="container">
+        <h1>Modular Workflow System</h1>
 
-        <h2>Test 1</h2>
-        <div class="form-row">
-            <textarea id="textareaTest" rows="4" cols="50"></textarea>
+        <div class="input-area">
+            <h2>Workflow Input</h2>
+            <textarea id="main-input-textarea" placeholder="Enter your input for the workflow..."></textarea>
         </div>
-        <div class="form-row">
-            <button id="buttonSendTest">Send test</button>
+
+        <div class="controls">
+            <select id="workflow-dropdown">
+                <option value="">Loading workflows...</option>
+            </select>
+            <button id="start-workflow-button" disabled>Start Workflow</button>
         </div>
-        <div class="form-row">
-            <div id="responseTest"></div>
-        </div>   
-        
-        <hr>
-        
-        <h2>Status msg & interactions</h2>
-        <div class="form-row">
-            <button id="startBtn">Start Workflow</button>
-        </div>
-        <div id="responseBox"></div>
-        
-        <p id="prompt"></p>
-        <button id="confirmBtn" style="display:none;">Continue</button>       
-        
-    </main>
 
-    <footer>
-        <hr>
-        <p>RX1</p>
-    </footer>
+        <h2>Workflow Log & Interactions</h2>
+        <div class="response-box" id="response-box">
+            </div>
+    </div>
 
-  </div>
-     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+
     
 </body>
 </html>
