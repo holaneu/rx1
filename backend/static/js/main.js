@@ -29,9 +29,7 @@ async function sendTest() {
     es.onmessage = e => {
         const msg = JSON.parse(e.data);
         console.log('SSE message:', msg);
-        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
-        //document.getElementById('status-title').innerText = msg.message.title;
-        //document.getElementById('status-body').innerText  = msg.message.body;
+        handleMsg(msg);
     };
     es.onerror = (error) => console.error('SSE error', error);
 };
@@ -47,7 +45,12 @@ async function continueWorkflow(input) {
 }
 
 function handleMsg(msg) {
-    if (msg.action === 'need_user_input') {
+    if (msg.action === 'status_message') {
+        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
+        //document.getElementById('status-title').innerText = msg.message.title;
+        //document.getElementById('status-body').innerText  = msg.message.body;
+    }
+    else if (msg.action === 'need_user_input') {
         document.getElementById('prompt').innerText = msg.message;
         document.getElementById('confirmBtn').style.display = 'inline-block';
     }
