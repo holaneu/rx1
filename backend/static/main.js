@@ -73,6 +73,8 @@ async function fetchAndPopulateWorkflows() {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const workflows_fetched = await response.json();
         
+        console.log('Fetched workflows:', workflows_fetched);
+        
         workflowDropdown.innerHTML = '<option value="">-- Select a Workflow --</option>'; // Clear loading/previous
         if (workflows_fetched.length > 0) {
             workflows_fetched.forEach(wf => {

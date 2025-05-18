@@ -193,6 +193,7 @@ active_workflows = {} # This should be fine as is.
 def index():
     #return render_template('index.html')
     available_wfs = workflow_manager.get_available_workflows_for_api()
+    app.logger.info(f"available_wfs within index(): {available_wfs}")
     return render_template('index.html', workflows=available_wfs)
 
 @app.route('/api/workflows', methods=['GET'])
