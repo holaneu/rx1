@@ -1,19 +1,65 @@
-# workflows.py
-# Assuming app.py is in the same directory or Python path.
-# If app.py is the main script, you might need to structure imports carefully
-# to avoid circular dependencies if workflow_manager is defined in app.py.
-# A common pattern is to define WorkflowManager in a separate core.py,
-# then import it in both app.py and workflows.py.
-# For simplicity here, we assume workflow_manager is accessible.
-
-from app import workflow_manager # This should now get the fully initialized manager
+import functools
+from flask import session
+import uuid
+import logging
 import time
 
-@workflow_manager.register_workflow(display_name="Simple Text Echo", description="Echoes the input with some steps.")
+# Configure basic logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Registry to store workflow definitions
+workflows_registry = {}
+
+def register_workflow(display_name=None, description=None):
+    def decorator(func):
+        workflow_name = func.__name__
+        actual_display_name = display_name or workflow_name.replace('_', ' ').title()
+        actual_description = description or func.__doc__ or "No description available."
+
+        @functools.wraps(func)
+        def wrapper(workflow_manager, main_input=None, *args, **kwargs):
+            logger.info(f"Wrapper called for workflow: {workflow_name}")
+            
+            session_id = session.get('session_id')
+            if not session_id:
+                session_id = str(uuid.uuid4())
+                session['session_id'] = session_id
+
+            workflow_instance_id = str(uuid.uuid4())
+            workflow_manager.active_workflows[workflow_instance_id] = {
+                'workflow_name': workflow_name,
+                'session_id': session_id,
+                'original_function': func,
+                'main_input': main_input,
+                'args': args,
+                'kwargs': kwargs,
+                'paused': False,
+                'context': {}
+            }
+            
+            workflow_manager.socketio_instance.start_background_task(
+                workflow_manager._execute_workflow, workflow_instance_id)
+            return workflow_instance_id
+
+        workflows_registry[workflow_name] = {
+            'id': workflow_name,
+            'name': actual_display_name,
+            'description': actual_description,
+            'callable_wrapper': wrapper
+        }
+        
+        logger.info(f"Workflow '{workflow_name}' registered as '{actual_display_name}'.")
+        return wrapper
+    return decorator
+
+# Example workflow definitions
+@register_workflow(
+    display_name="Simple Text Echo",
+    description="Echoes the input with some steps."
+)
 def simple_echo_workflow(main_input=None, progress=None, interact=None, **kwargs):
-    """
-    A basic workflow that demonstrates progress updates using the main input.
-    """
+    """A basic workflow that demonstrates progress updates using the main input."""
     progress("Workflow Started", "Initializing simple echo...")
     time.sleep(0.5)
 
@@ -26,18 +72,18 @@ def simple_echo_workflow(main_input=None, progress=None, interact=None, **kwargs
     
     return {"status": "success", "message": "Simple Echo Workflow Completed", "echo": processed_text}
 
-@workflow_manager.register_workflow(display_name="Interactive Confirmation", description="Asks for confirmation after processing input.")
+@register_workflow(
+    display_name="Interactive Confirmation",
+    description="Asks for confirmation after processing input."
+)
 def interactive_confirm_workflow(main_input=None, progress=None, interact=None, **kwargs):
-    """
-    A workflow that takes main input, processes it, then asks for user confirmation.
-    """
+    """A workflow that takes main input, processes it, then asks for user confirmation."""
     progress("Interactive Workflow Started", f"Received input: '{main_input}'")
     time.sleep(1)
 
     initial_data = main_input or "default data"
     progress("Initial Processing", f"Working with: {initial_data}")
     
-    # User interaction
     user_decision = interact({
         "title": "Confirm Action",
         "description": f"You provided: '{initial_data}'. Do you want to proceed with further processing?",
@@ -64,9 +110,11 @@ def interactive_confirm_workflow(main_input=None, progress=None, interact=None, 
         time.sleep(1.5)
         final_result = f"Processing complete for '{initial_data}' with user confirmation."
         progress("Finalizing", final_result)
-        return {"status": "success", "message": final_result, "user_comments": user_decision.get('comments')}
+        return {
+            "status": "success",
+            "message": final_result,
+            "user_comments": user_decision.get('comments')
+        }
     else:
         progress("Action Cancelled", "User chose not to proceed or no decision was made.")
         return {"status": "cancelled", "message": "Workflow cancelled by user."}
-
-# Add more workflow functions here, decorated with @workflow_manager.register_workflow()
