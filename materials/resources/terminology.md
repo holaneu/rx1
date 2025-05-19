@@ -1,0 +1,2 @@
+- SSE: server send event
+- gen: generator
