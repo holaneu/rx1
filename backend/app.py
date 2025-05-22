@@ -53,7 +53,7 @@ def continue_task():
         #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
         return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id})
 
-@app.route("/status/stream")
+@app.route("/msg/stream")
 def status_stream():
     task_id = request.args.get("task_id")
     q = status_queues.get(task_id)

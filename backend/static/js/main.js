@@ -25,7 +25,7 @@ async function sendTest() {
     handleMsg(data);
 
     // 2) Open SSE stream for status updates
-    es = new EventSource(`/status/stream?task_id=${taskId}`);
+    es = new EventSource(`/msg/stream?task_id=${taskId}`);
     es.onmessage = e => {
         const msg = JSON.parse(e.data);
         console.log('SSE message:', msg);
@@ -47,15 +47,11 @@ async function continueWorkflow(input) {
 function handleMsg(msg) {
     if (msg.action === 'status_message') {
         domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
-        //document.getElementById('status-title').innerText = msg.message.title;
-        //document.getElementById('status-body').innerText  = msg.message.body;
     }
-    else if (msg.action === 'need_user_input') {
-        document.getElementById('prompt').innerText = msg.message;
-        document.getElementById('confirmBtn').style.display = 'inline-block';
+    else if (msg.action === 'interaction_request') {
+        domResponseBox.innerHTML += `<div class="message"><div>${msg.message}</div><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></div>`;
     }
     else if (msg.action === 'task_done') {
-        //document.getElementById('prompt').innerText = '🎉 ' + msg.result;
         domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
         document.getElementById('confirmBtn').style.display = 'none';
         if (es) es.close();
@@ -64,11 +60,6 @@ function handleMsg(msg) {
 
 // Event listeners
 domButtonSendTest.addEventListener('click', sendTest);
-
-document.getElementById('confirmBtn').onclick = () => {
-    continueWorkflow('yes');
-    document.getElementById('confirmBtn').style.display = 'none';
-};
 
 document.getElementById('startBtn').onclick = () => {
     startWorkflow();
