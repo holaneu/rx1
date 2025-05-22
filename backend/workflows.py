@@ -1,5 +1,6 @@
 import time
 from shared import send_status_message  # import the SSE‐helper
+from workflow_types import WorkflowStatus, WorkflowAction, WorkflowMessage, WorkflowResult
 
 
 # Workflow decorator
@@ -56,14 +57,15 @@ def test1(task_id):
         "body": "Workflow completed successfully."
     })
 
-    return {
-        "status": "success",
-        "action": "workflow_finished",
-        "message": {
-            "title": "Workflow completed successfully.", 
-            "body": f"Processed {len(data)} items."},
-        "data":  data
-    }
+    return WorkflowResult(
+        status=WorkflowStatus.SUCCESS,
+        action=WorkflowAction.WORKFLOW_FINISHED,
+        message=WorkflowMessage(
+            title="Workflow completed successfully",
+            body=f"Processed {len(data)} items"
+        ),
+        data=data
+    ).to_dict()
 
 @workflow(name="Test Workflow 2", category="Test")
 def test2(task_id, input):
@@ -91,14 +93,15 @@ def test2(task_id, input):
         "body": "Workflow completed successfully."
     })
 
-    return {
-        "status": "success",
-        "action": "workflow_finished",
-        "message": {
-            "title": "Workflow completed successfully.", 
-            "body": f"Processed {len(data)} items."},
-        "data":  data
-    }
+    return WorkflowResult(
+        status=WorkflowStatus.SUCCESS,
+        action=WorkflowAction.WORKFLOW_FINISHED,
+        message=WorkflowMessage(
+            title="Workflow completed successfully",
+            body=f"Processed {len(data)} items"
+        ),
+        data=data
+    ).to_dict()
 
 
 # ----------------------
