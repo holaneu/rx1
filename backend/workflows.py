@@ -12,6 +12,7 @@ def workflow(**kwargs):
         func.model = kwargs.get('model', None)  # Assign None if model is not provided
         func.category = kwargs.get('category', None)  # Assign None if category is not provided
         func.is_workflow = True
+        func.__module__ = __name__
         return func
     return decorator
 
@@ -57,11 +58,15 @@ def test1(task_id):
 
     return {
         "status": "success",
-        "data":  f"Processed {len(data)} items."
+        "action": "workflow_finished",
+        "message": {
+            "title": "Workflow completed successfully.", 
+            "body": f"Processed {len(data)} items."},
+        "data":  data
     }
 
 @workflow(name="Test Workflow 2", category="Test")
-def test2(task_id):
+def test2(task_id, input):
     """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
     """
     send_status_message(task_id, {"title": "Started", "body": "Initializing workflow…"})    
@@ -88,7 +93,11 @@ def test2(task_id):
 
     return {
         "status": "success",
-        "data":  f"Processed {len(data)} items."
+        "action": "workflow_finished",
+        "message": {
+            "title": "Workflow completed successfully.", 
+            "body": f"Processed {len(data)} items."},
+        "data":  data
     }
 
 
@@ -97,11 +106,15 @@ def test2(task_id):
 import inspect
 WORKFLOWS_REGISTRY = {
     func.id: {
-      'name': func.name, 
-      'description': func.description, 
-      'function': func, 
-      'model': func.model, 
-      'category': func.category
+        'name': func.name,
+        'description': func.description,
+        'function': func,
+        'model': func.model,
+        'category': func.category,
+        'type': "workflow",
+        'input_required': any(param.name == 'input' and param.default == param.empty 
+                            for param in inspect.signature(func).parameters.values()),
+        'module': func.__module__
     }
     for name, func in inspect.getmembers(__import__(__name__), inspect.isfunction)
     if hasattr(func, 'id') and hasattr(func, 'is_workflow')  # Check for workflow marker

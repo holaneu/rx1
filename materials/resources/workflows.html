@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Workflows{% endblock %}
+
+{% block content %}
+
+  <h1>Workflows</h1>  
+    
+  <textarea id="input" placeholder="Enter your text input here ..."></textarea>
+  
+  <section class="control-section">
+    <select id="workflow">
+      <option value="" disabled selected>Select workflow ...</option>
+      {% for id, workflow in workflows.items() %}
+      <option value="{{ id }}">{{ workflow.name }}</option>
+      {% endfor %}
+    </select>
+    <button onclick="processWorkflow()">Run workflow</button>
+  </section>
+
+  <section class="control-section">
+    <select id="assistant">
+      <option value="" disabled selected>Select assistant ...</option>
+      {% for id, assistant in assistants.items() %}
+      <option value="{{ id }}">{{ assistant.name }}</option>
+      {% endfor %}
+    </select>    
+    <button onclick="processAssistant()">Run assistant</button>
+  </section>
+  
+  <div id="result">
+    <div class="status"></div>
+    <div class="response"></div>
+  </div>
+
+<script>    
+  const uiConfigs = {
+    labels: {
+      empty_input_error: "<span class='error'>Please enter some text to process</span>",
+      workflow_success: "<span class='success'>✓ Workflow completed successfully</span>",
+      select_workflow_error: "<span class='error'>Please select a workflow</span>",
+      select_assistant_error: "<span class='error'>Please select an assistant</span>",
+      assistant_success: "<span class='success'>✓ Assistant completed successfully</span>"
+    },
+  };  
+  
+  function formatResponse(response) {
+    if (typeof response === 'object') {
+      return `<pre class="response-data">${JSON.stringify(response, null, 2)}</pre>`;
+    }
+    return `<div class="response-data">${response}</div>`;
+  }
+
+  async function processWorkflow() {      
+    const inputText = document.getElementById('input');
+    const workflowSelection = document.getElementById('workflow');
+    const resultDiv = document.getElementById('result');
+    const statusDiv = resultDiv.querySelector('.status');
+    const responseDiv = resultDiv.querySelector('.response');
+    
+    statusDiv.innerHTML = '';
+    responseDiv.innerHTML = '';
+    
+    // Validate workflow selection first
+    if (!workflowSelection.value) {
+      statusDiv.innerHTML = uiConfigs.labels.select_workflow_error;
+      return;
+    }
+
+    // Only validate input if there's text in the input field or if it's empty
+    if (inputText.value.trim().length > 0 || workflowSelection.value.includes('input')) {
+      if (!inputText.value.trim()) {
+        statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
+        return;
+      }
+    }
+
+    try {
+      let bodyData = {           
+        workflow: workflowSelection.value,
+        type: 'workflow'
+      };
+
+      if (inputText.value.trim() && inputText.value.trim().length > 0) {
+        bodyData.input = inputText.value;
+      }
+
+      const response = await fetch('/process', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        statusDiv.innerHTML = uiConfigs.labels.workflow_success;
+        responseDiv.innerHTML = formatResponse(data.response);
+        workflowSelection.value = "";
+      } else {
+        statusDiv.innerHTML = `<span class='error'>Error: ${data.error}</span>`;
+      }
+    } catch (e) {
+      statusDiv.innerHTML = `<span class='error'>Error: ${e.message}</span>`;
+    }
+  }
+
+  async function processAssistant() {      
+    const inputText = document.getElementById('input');
+    const assistantSelection = document.getElementById('assistant');
+    const resultDiv = document.getElementById('result');
+    const statusDiv = resultDiv.querySelector('.status');
+    const responseDiv = resultDiv.querySelector('.response');
+    
+    statusDiv.innerHTML = '';
+    responseDiv.innerHTML = '';
+    
+    // Validate assistant selection first
+    if (!assistantSelection.value) {
+      statusDiv.innerHTML = uiConfigs.labels.select_assistant_error;
+      return;
+    }
+
+    // Only validate input if there's text in the input field or if it's empty
+    if (inputText.value.trim().length > 0 || assistantSelection.value.includes('input')) {
+      if (!inputText.value.trim()) {
+        statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
+        return;
+      }
+    }
+    
+    try {
+      let bodyData = { 
+        assistant: assistantSelection.value,
+        type: 'assistant'
+      };
+
+      if (inputText.value.trim() && inputText.value.trim().length > 0) {
+        bodyData.input = inputText.value;
+      }
+
+      const response = await fetch('/process', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        statusDiv.innerHTML = uiConfigs.labels.assistant_success;
+        responseDiv.innerHTML = formatResponse(data.response);
+        assistantSelection.value = "";
+      } else {
+        statusDiv.innerHTML = `<span class='error'>Error: ${data.error}</span>`;
+      }
+    } catch (e) {
+      statusDiv.innerHTML = `<span class='error'>Error: ${e.message}</span>`;
+    }
+  }
+</script>
+
+{% endblock %}
+
+
+  
+  
+</body>
+</html>
