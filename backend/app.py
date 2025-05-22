@@ -5,6 +5,7 @@ import queue
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
+import time
 
 from workflows import *
 from shared import send_status_message, status_queues
@@ -34,7 +35,7 @@ def start_task():
     task_gens[task_id] = gen
     # Kick off the generator until first yield
     msg = next(gen)
-    return jsonify({"task_id": task_id, **msg})
+    return jsonify({"task_id": task_id, "timestamp": time.time(), **msg})
 
 @app.route("/continue_task", methods=["POST"])
 def continue_task():
@@ -51,7 +52,7 @@ def continue_task():
         status_queues[task_id].put(None)
         task_gens.pop(task_id, None)
         #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
-        return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id})
+        return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id, "timestamp": time.time()})
 
 @app.route("/msg/stream")
 def status_stream():
@@ -64,7 +65,7 @@ def status_stream():
             msg = q.get()          # block until next status or None
             if msg is None:
                 break              # generator finished
-            payload = {"action": "status_message", "category": "workflow", "message": msg, "task_id": task_id}
+            payload = {"action": "status_message", "category": "workflow", "message": msg, "task_id": task_id, "timestamp": time.time()}
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
 

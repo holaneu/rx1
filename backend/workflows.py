@@ -16,7 +16,7 @@ def workflow(**kwargs):
     return decorator
 
 
-@workflow(name="Test Workflow", category="Test")
+@workflow(name="Test Workflow 1", category="Test")
 def test1(task_id):
     """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
     """
@@ -50,6 +50,37 @@ def test1(task_id):
     })
     time.sleep(1)
 
+    send_status_message(task_id, {
+        "title": "Done",
+        "body": "Workflow completed successfully."
+    })
+
+    return {
+        "status": "success",
+        "data":  f"Processed {len(data)} items."
+    }
+
+@workflow(name="Test Workflow 2", category="Test")
+def test2(task_id):
+    """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
+    """
+    send_status_message(task_id, {"title": "Started", "body": "Initializing workflow…"})    
+    time.sleep(1)
+    data = list(range(5))
+    send_status_message(task_id, {
+        "title": "API Fetched",
+        "body": f"Received {len(data)} items"
+    })
+    time.sleep(0.1)
+    user_input = yield {
+        "action": "interaction_request",
+        "message": "Continue processing these items?"
+    }
+    send_status_message(task_id, {
+        "title": "Processing",
+        "body": f"User said “{user_input}” — now processing…"
+    })
+    time.sleep(1)  # simulate more work
     send_status_message(task_id, {
         "title": "Done",
         "body": "Workflow completed successfully."

@@ -22,7 +22,6 @@ async function sendTest() {
     const res = await fetch('/start_task', { method:'POST' });
     const data = await res.json();
     taskId = data.task_id;
-    handleMsg(data);
 
     // 2) Open SSE stream for status updates
     es = new EventSource(`/msg/stream?task_id=${taskId}`);
@@ -32,6 +31,8 @@ async function sendTest() {
         handleMsg(msg);
     };
     es.onerror = (error) => console.error('SSE error', error);
+    
+    handleMsg(data);
 };
 
 async function continueWorkflow(input) {
@@ -53,7 +54,6 @@ function handleMsg(msg) {
     }
     else if (msg.action === 'task_done') {
         domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
-        document.getElementById('confirmBtn').style.display = 'none';
         if (es) es.close();
     }
 }
