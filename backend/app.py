@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 import time
 
-from workflows import *
+from workflows import WORKFLOWS_REGISTRY
 from shared import send_status_message, status_queues
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -25,17 +25,43 @@ task_gens: dict[str, any] = {}
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', workflows=WORKFLOWS_REGISTRY)
 
 @app.route("/start_task", methods=["POST"])
 def start_task():
-    task_id = str(uuid.uuid4())
-    status_queues[task_id] = queue.Queue()
-    gen = test1(task_id)
-    task_gens[task_id] = gen
-    # Kick off the generator until first yield
-    msg = next(gen)
-    return jsonify({"task_id": task_id, "timestamp": time.time(), **msg})
+    try:
+        import inspect
+        task_id = str(uuid.uuid4())
+        data = request.json
+        if not data or 'workflow_id' not in data:
+            return jsonify({"error": "workflow_id is required"}), 400
+        workflow_id = data.get('workflow_id')
+        #test
+        workflow = WORKFLOWS_REGISTRY.get(workflow_id)
+        if not workflow:
+            return jsonify({'error': 'Invalid workflow'}), 400
+        workflow_func_params = inspect.signature(workflow['function']).parameters
+        # Build kwargs based on required parameters
+        kwargs = {}
+        if 'input' in workflow_func_params:
+            input_text = data.get('input')
+            if input_text is None:
+                return jsonify({'error': 'Missing required input'}), 400
+            kwargs['input'] = input_text
+        if 'model' in workflow_func_params:
+            kwargs['model'] = workflow['model']
+        if 'task_id' in workflow_func_params:
+            kwargs['task_id'] = task_id
+
+        status_queues[task_id] = queue.Queue()
+        gen = workflow['function'](**kwargs)
+        task_gens[task_id] = gen
+        # Kick off the generator until first yield
+        msg = next(gen)
+        return jsonify({"task_id": task_id, "timestamp": time.time(), **msg})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 
 @app.route("/continue_task", methods=["POST"])
 def continue_task():

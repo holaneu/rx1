@@ -68,10 +68,10 @@ def test1(task_id):
     ).to_dict()
 
 @workflow(name="Test Workflow 2", category="Test")
-def test2(task_id, input):
-    """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
+def test2(task_id):
+    """testing workflow test2.
     """
-    send_status_message(task_id, {"title": "Started", "body": "Initializing workflow…"})    
+    send_status_message(task_id, {"title": "Ahoj, zaciname", "body": "Initializing workflow…"})    
     time.sleep(1)
     data = list(range(5))
     send_status_message(task_id, {

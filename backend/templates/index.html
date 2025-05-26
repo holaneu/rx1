@@ -27,9 +27,16 @@
         
         <hr>
         
-        <h2>Status msg & interactions</h2>
-        
+        <h2>Status msg & interactions</h2>  
+
         <div class="form-row">
+            <select id="workflowSelect">
+                <option value="" disabled selected>Select workflow ...</option>
+                {% for id, workflow in workflows.items() %}
+                <option value="{{ id }}">{{ workflow.name }}</option>
+                {% endfor %}
+            </select>
+
             <button id="startBtn">Start Workflow</button>
         </div>
 

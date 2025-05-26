@@ -5,6 +5,7 @@ const domButtonSendTest = document.getElementById('buttonSendTest');
 const domTextareaTest = document.getElementById('textareaTest');
 const domResponseTest = document.getElementById('responseTest');
 const domResponseBox = document.getElementById('responseBox');
+const domWorkflowSelect = document.getElementById('workflowSelect');
 
 // functions
 async function sendTest() {
@@ -17,9 +18,13 @@ async function sendTest() {
     domResponseTest.innerHTML += `<p>${data.data}</p>`;
 }
 
- async function startWorkflow() {
+async function startWorkflow() {
     // 1) Start the workflow (runs until first yield)
-    const res = await fetch('/start_task', { method:'POST' });
+    const res = await fetch('/start_task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workflow_id: domWorkflowSelect.value })
+    });
     const data = await res.json();
     taskId = data.task_id;
 
@@ -32,6 +37,8 @@ async function sendTest() {
     };
     es.onerror = (error) => console.error('SSE error', error);
     
+    domResponseBox.innerHTML = "";
+
     handleMsg(data);
 };
 
@@ -55,6 +62,8 @@ function handleMsg(msg) {
     else if (msg.action === 'task_done') {
         domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
         if (es) es.close();
+    } else {
+        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
     }
 }
 
