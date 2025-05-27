@@ -1,6 +1,6 @@
 import time
 from shared import send_status_message  # import the SSE‐helper
-from response_types import ResponseStatus, ResponseAction, ResponseMessage, ResponseResult
+from response_types import success_response, error_response, ResponseAction, ResponseMessage
 
 
 # ----------------------
@@ -50,51 +50,60 @@ def test1(task_id):
         "title": "Done",
         "body": "Workflow completed successfully."
     })
-    return ResponseResult(
-        status=ResponseStatus.SUCCESS,
+
+    return success_response(
+        data=data,  
         action=ResponseAction.WORKFLOW_FINISHED,
         message=ResponseMessage(
             title="Workflow completed successfully",
             body=f"Processed {len(data)} items"
-        ),
-        data=data
-    ).to_dict()
+        ))
 
 
 @workflow(name="Test Workflow 2", category="Test")
 def test2(task_id):
-    """testing workflow test2.
-    """
-    send_status_message(task_id, {"title": "Ahoj, zaciname", "body": "Initializing workflow…"})    
-    time.sleep(1)
-    data = list(range(5))
-    send_status_message(task_id, ResponseMessage(
-            title="API Fetched",
-            body=f"Received {len(data)} items"
-        ).to_dict())
-    time.sleep(0.1)
-    user_input = yield {
-        "action": "interaction_request",
-        "message": "Continue processing these items?"
-    }
-    send_status_message(task_id, {
-        "title": "Processing",
-        "body": f"User said “{user_input}” — now processing…"
-    })
-    time.sleep(1)  # simulate more work
-    send_status_message(task_id, {
-        "title": "Done",
-        "body": "Workflow completed successfully."
-    })
-    return ResponseResult(
-        status=ResponseStatus.SUCCESS,
-        action=ResponseAction.WORKFLOW_FINISHED,
-        message=ResponseMessage(
-            title="Workflow completed successfully",
-            body=f"Processed {len(data)} items"
-        ),
-        data=data
-    ).to_dict()
+    try:
+        """testing workflow test2.
+        """
+        send_status_message(task_id, {"title": "Ahoj, zaciname", "body": "Initializing workflow…"})    
+        time.sleep(1)
+        data = list(range(5))
+        send_status_message(task_id, ResponseMessage(
+                title="API Fetched",
+                body=f"Received {len(data)} items"
+            ).to_dict())
+        time.sleep(0.1)
+        user_input = yield {
+            "action": "interaction_request",
+            "message": "Continue processing these items?"
+        }
+        send_status_message(task_id, {
+            "title": "Processing",
+            "body": f"User said “{user_input}” — now processing…"
+        })
+        time.sleep(1)  # simulate more work
+        send_status_message(task_id, {
+            "title": "Done",
+            "body": "Workflow completed successfully."
+        })
+        
+        return(success_response(
+            data=data,
+            action=ResponseAction.WORKFLOW_FINISHED,
+            message=ResponseMessage(
+                title="Workflow completed successfully",
+                body=f"Processed {len(data)} items"
+            )        
+        ))  
+    except Exception as e:
+        return error_response(
+            error=str(e),
+            action=ResponseAction.WORKFLOW_FAILED,
+            message=ResponseMessage(
+                title="Workflow failed",
+                body=str(e)
+            )
+        )
 
 
 # ----------------------

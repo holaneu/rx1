@@ -9,6 +9,11 @@ import time
 
 from workflows import WORKFLOWS_REGISTRY
 from shared import send_status_message, status_queues
+from response_types import success_response, error_response, ResponseAction, ResponseMessage
+
+
+# ----------------------
+# Flask app setup
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -60,7 +65,8 @@ def start_task():
         msg = next(gen)
         return jsonify({"task_id": task_id, "timestamp": time.time(), **msg})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        #return jsonify({'error': str(e)}), 500
+        return jsonify(error
     
 
 @app.route("/continue_task", methods=["POST"])

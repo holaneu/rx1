@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, Optional
-
+from datetime import datetime
 
 class ResponseStatus(str, Enum):
     SUCCESS = "success"
@@ -30,19 +30,59 @@ class ResponseMessage:
 @dataclass
 class ResponseResult:
     status: ResponseStatus
-    action: ResponseAction
-    message: ResponseMessage
     data: Optional[Any] = None
-    metadata: Optional[Dict] = None
+    timestamp: float = datetime.now().timestamp()
+    error: Optional[str] = None
+    action: Optional[ResponseAction] = None
+    message: Optional[ResponseMessage] = None
 
     def to_dict(self) -> dict:
-        return {
+        result = {
             "status": self.status.value,
-            "action": self.action.value,
-            "message": {
-                "title": self.message.title,
-                "body": self.message.body
-            },
             "data": self.data,
-            "metadata": self.metadata
+            "timestamp": self.timestamp,
+            "error": self.error
         }
+        
+        if self.action:
+            result["action"] = self.action.value
+            
+        if self.message:
+            result["message"] = self.message.to_dict()
+            
+        return result
+
+def success_response(
+    data: Any = None, 
+    message: Optional[ResponseMessage] = None,
+    action: Optional[ResponseAction] = None,
+    **additional_fields: Any
+) -> Dict:
+    response = ResponseResult(
+        status=ResponseStatus.SUCCESS,
+        data=data,
+        message=message,
+        action=action
+    ).to_dict()
+    
+    response.update(additional_fields)
+    return response
+    
+def error_response(
+    error: str,
+    message: Optional[ResponseMessage] = None,
+    action: Optional[ResponseAction] = ResponseAction.WORKFLOW_FAILED,
+    **additional_fields: Any
+) -> Dict:
+    response = ResponseResult(
+        status=ResponseStatus.ERROR,
+        error=error,
+        message=message or ResponseMessage(
+            title="Error Occurred",
+            body=error
+        ),
+        action=action
+    ).to_dict()
+    
+    response.update(additional_fields)
+    return response
