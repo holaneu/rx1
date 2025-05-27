@@ -48,24 +48,35 @@ async function continueWorkflow(input) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task_id: taskId, user_input: input })
     });
-    const msg = await res.json();
-    handleMsg(msg);
+    const response_payload = await res.json();
+    handleMsg(response_payload);
 }
 
-function handleMsg(msg) {
-    if (msg.action === 'status_message') {
+function handleMsg(response_payload) {
+    if (response_payload.action === 'status_message') {
         //domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
-        domResponseBox.innerHTML += `<details><summary>${JSON.stringify(msg.message.title, null, 2)}</summary><pre>${JSON.stringify(msg, null, 2)}</pre></details>`;
+        domResponseBox.innerHTML += `<details><summary>${JSON.stringify(response_payload.message.title, null, 2)}</summary><pre>${JSON.stringify(response_payload, null, 2)}</pre></details>`;
+        console.log(response_payload);
     }
-    else if (msg.action === 'interaction_request') {
+    else if (response_payload.action === 'interaction_request') {
         //domResponseBox.innerHTML += `<div class="message"><div>${msg.message}</div><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></div>`;
-        domResponseBox.innerHTML += `<details open><summary>${JSON.stringify(msg.message.title, null, 2)}</summary><pre>${JSON.stringify(msg.message.body, null, 2)}</pre><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></details>`;
+        domResponseBox.innerHTML += `<details open><summary>${JSON.stringify(response_payload.message.title, null, 2)}</summary><pre>${JSON.stringify(response_payload.message.body, null, 2)}</pre><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></details>`;
+        console.log(response_payload);
     }
-    else if (msg.action === 'task_done') {
-        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
+    else if (response_payload.action === 'task_done') {
+        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(response_payload, null, 2)}</pre></div>`;
+        console.log(response_payload);
+        // IMPORTANT: Close the SSE connection when the task is done
         if (es) es.close();
     } else {
-        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
+        //domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(response_payload, null, 2)}</pre></div>`;
+        let msgTitle = response_payload.message.title || response_payload.action || 'No action specified';
+        let msgBody = response_payload.message.body || response_payload.data || response_payload;
+        let msgTitleStr = JSON.stringify(msgTitle, null, 2);
+        let msgBodyStr = JSON.stringify(msgBody, null, 2);        
+        domResponseBox.innerHTML += `<details><summary>${msgTitleStr}</summary><pre>${msgBodyStr}</pre></details>`;
+
+        console.log(response_payload);
     }
 }
 
