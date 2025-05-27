@@ -1,4 +1,9 @@
 :root {
+  --bg-layer-1: #121212;
+  --bg-layer-2: #2a2a2a;
+  --bg-layer-3: #444;
+  --border-color: #333333;
+
   --bg-primary: #1a1a1a;
   --bg-secondary: #2d2d2d;
   --text-primary: #ffffff;
@@ -12,7 +17,7 @@ html * {
 }
 
 body {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-layer-1);
   color: var(--text-primary);
   font-family: 'Inter', -apple-system, system-ui, sans-serif;
   margin: 0;
@@ -35,13 +40,49 @@ footer {
 textarea, input[type="text"] {
   width: 100%;
   padding: 10px;
-  border: 1px solid gray;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-layer-2);
   color: var(--text-primary);
 }
 
-.message {
-  border-bottom: 1px solid var(--text-secondary);
-  padding: 10px;
+
+/* expandable */
+
+details {
+    background: var(--bg-layer-2);
+    padding: 5px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid var(--bg-secondary);
+}
+
+summary {
+    cursor: pointer;
+    padding:  5px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+summary:hover {
+    color: var(--accent-hover);
+}
+
+details[open] {
+    background: var(--bg-layer-3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+details[open] summary {
+    margin-bottom: 5px;
+    border-bottom: 1px solid var(--bg-primary)
+}
+
+details p, details div {
+    margin: 0;
+    padding: 5px;
+}
+
+pre {
+    margin: 4px 0;
 }
