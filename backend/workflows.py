@@ -1,8 +1,9 @@
 import time
 from shared import send_status_message  # import the SSE‐helper
-from workflow_types import WorkflowStatus, WorkflowAction, WorkflowMessage, WorkflowResult
+from response_types import ResponseStatus, ResponseAction, ResponseMessage, ResponseResult
 
 
+# ----------------------
 # Workflow decorator
 def workflow(**kwargs):
     """Decorator to define workflow functions with metadata."""
@@ -18,54 +19,47 @@ def workflow(**kwargs):
     return decorator
 
 
+# ----------------------
+# Example workflow functions using the decorator
 @workflow(name="Test Workflow 1", category="Test")
 def test1(task_id):
     """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
     """
-    # Initialize the workflow
-    send_status_message(task_id, {"title": "Started", "body": "Initializing workflow…"})
-    
-    # Do some work
+    send_status_message(task_id, {"title": "Started", "body": "Initializing workflow…"})    
     time.sleep(1)
     data = list(range(5))
     send_status_message(task_id, {
         "title": "API Fetched",
         "body": f"Received {len(data)} items"
     })
-
-    # Now pause until the user confirms
     user_input = yield {
         "action": "interaction_request",
         "message": "Continue processing these items?"
     }
-
-    # Resume once user_input is sent
     send_status_message(task_id, {
         "title": "Processing",
         "body": f"User said “{user_input}” — now processing…"
     })
     time.sleep(1)  # simulate more work
-
     send_status_message(task_id, {
         "title": "Almost done",
         "body": "Finalizing results…"
     })
     time.sleep(1)
-
     send_status_message(task_id, {
         "title": "Done",
         "body": "Workflow completed successfully."
     })
-
-    return WorkflowResult(
-        status=WorkflowStatus.SUCCESS,
-        action=WorkflowAction.WORKFLOW_FINISHED,
-        message=WorkflowMessage(
+    return ResponseResult(
+        status=ResponseStatus.SUCCESS,
+        action=ResponseAction.WORKFLOW_FINISHED,
+        message=ResponseMessage(
             title="Workflow completed successfully",
             body=f"Processed {len(data)} items"
         ),
         data=data
     ).to_dict()
+
 
 @workflow(name="Test Workflow 2", category="Test")
 def test2(task_id):
@@ -74,10 +68,10 @@ def test2(task_id):
     send_status_message(task_id, {"title": "Ahoj, zaciname", "body": "Initializing workflow…"})    
     time.sleep(1)
     data = list(range(5))
-    send_status_message(task_id, {
-        "title": "API Fetched",
-        "body": f"Received {len(data)} items"
-    })
+    send_status_message(task_id, ResponseMessage(
+            title="API Fetched",
+            body=f"Received {len(data)} items"
+        ).to_dict())
     time.sleep(0.1)
     user_input = yield {
         "action": "interaction_request",
@@ -92,11 +86,10 @@ def test2(task_id):
         "title": "Done",
         "body": "Workflow completed successfully."
     })
-
-    return WorkflowResult(
-        status=WorkflowStatus.SUCCESS,
-        action=WorkflowAction.WORKFLOW_FINISHED,
-        message=WorkflowMessage(
+    return ResponseResult(
+        status=ResponseStatus.SUCCESS,
+        action=ResponseAction.WORKFLOW_FINISHED,
+        message=ResponseMessage(
             title="Workflow completed successfully",
             body=f"Processed {len(data)} items"
         ),
