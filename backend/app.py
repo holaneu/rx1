@@ -71,14 +71,7 @@ def start_task():
             **msg
         ))"""
     except Exception as e:
-        return jsonify(error_response(
-            error=str(e),
-            action=ResponseAction.WORKFLOW_FAILED,
-            message=ResponseMessage(
-                title="Workflow failed",
-                body=str(e)
-            )
-        )), 500
+        return jsonify(error_response(str(e))), 500
     
 
 @app.route("/continue_task", methods=["POST"])

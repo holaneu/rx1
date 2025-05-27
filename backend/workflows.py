@@ -1,6 +1,6 @@
 import time
 from shared import send_status_message  # import the SSE‐helper
-from response_types import success_response, error_response, ResponseAction, ResponseMessage
+from response_types import success_response, error_response, interaction_request, ResponseAction, ResponseMessage
 
 
 # ----------------------
@@ -73,10 +73,11 @@ def test2(task_id):
                 body=f"Received {len(data)} items"
             ).to_dict())
         time.sleep(0.1)
-        user_input = yield {
+        """user_input = yield {
             "action": "interaction_request",
             "message": "Continue processing these items?"
-        }
+        }"""
+        user_input = yield interaction_request(prompt="Continue processing these items?")
         send_status_message(task_id, {
             "title": "Processing",
             "body": f"User said “{user_input}” — now processing…"

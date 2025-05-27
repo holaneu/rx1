@@ -86,3 +86,20 @@ def error_response(
     
     response.update(additional_fields)
     return response
+
+def interaction_request(
+    prompt: str,
+    title: str = "User Input Required",
+    **additional_fields: Any
+) -> Dict:
+    response = ResponseResult(
+        status=ResponseStatus.PENDING,
+        action=ResponseAction.INTERACTION_REQUEST,
+        message=ResponseMessage(
+            title=title,
+            body=prompt
+        )
+    ).to_dict()
+    
+    response.update(additional_fields)
+    return response

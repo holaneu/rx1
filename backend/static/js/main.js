@@ -58,7 +58,8 @@ function handleMsg(msg) {
         domResponseBox.innerHTML += `<details><summary>${JSON.stringify(msg.message.title, null, 2)}</summary><pre>${JSON.stringify(msg, null, 2)}</pre></details>`;
     }
     else if (msg.action === 'interaction_request') {
-        domResponseBox.innerHTML += `<div class="message"><div>${msg.message}</div><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></div>`;
+        //domResponseBox.innerHTML += `<div class="message"><div>${msg.message}</div><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></div>`;
+        domResponseBox.innerHTML += `<details open><summary>${JSON.stringify(msg.message.title, null, 2)}</summary><pre>${JSON.stringify(msg.message.body, null, 2)}</pre><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></details>`;
     }
     else if (msg.action === 'task_done') {
         domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
