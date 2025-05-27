@@ -80,7 +80,8 @@ def continue_task():
     task_id = body.get("task_id")
     generator_func = task_gens.get(task_id)
     if not generator_func:
-        return jsonify({"error": "unknown task_id"}), 404
+        #return jsonify({"error": "unknown task_id"}), 404
+        return jsonify(error_response(error="nknown task_id")), 400
     try:
         msg = generator_func.send(body.get("user_input"))
         return jsonify(msg)
@@ -89,7 +90,17 @@ def continue_task():
         status_queues[task_id].put(None)
         task_gens.pop(task_id, None)
         #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
-        return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id, "timestamp": time.time()})
+        #return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id, "timestamp": time.time()})
+        """return jsonify(success_response(
+            data=getattr(e, "value", None),
+            action=ResponseAction.WORKFLOW_FINISHED,
+            message=ResponseMessage(
+                title="Workflow finished",
+                body=getattr(e, "value", None)
+            ),
+            task_id=task_id
+        ))"""
+        return jsonify(getattr(e, "value", None) or {})
 
 @app.route("/msg/stream")
 def status_stream():
