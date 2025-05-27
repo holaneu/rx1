@@ -63,8 +63,9 @@ function handleMsg(response_payload) {
         domResponseBox.innerHTML += `<details open><summary>${JSON.stringify(response_payload.message.title, null, 2)}</summary><pre>${JSON.stringify(response_payload.message.body, null, 2)}</pre><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></details>`;
         console.log(response_payload);
     }
-    else if (response_payload.action === 'task_done') {
-        domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(response_payload, null, 2)}</pre></div>`;
+    else if (response_payload.action === 'task_done' || response_payload.action === 'workflow_finished') {
+        //domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(response_payload, null, 2)}</pre></div>`;
+        domResponseBox.innerHTML += `<details open><summary>${JSON.stringify(response_payload.message.title, null, 2)}</summary><pre>${JSON.stringify(response_payload.message.body, null, 2)}</pre></details>`;
         console.log(response_payload);
         // IMPORTANT: Close the SSE connection when the task is done
         if (es) es.close();
