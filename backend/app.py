@@ -39,19 +39,21 @@ def start_task():
         task_id = str(uuid.uuid4())
         data = request.json
         if not data or 'workflow_id' not in data:
-            return jsonify({"error": "workflow_id is required"}), 400
+            #return jsonify({"error": "workflow_id is required"}), 400
+            return jsonify(error_response(error="workflow_id is required")), 400
         workflow_id = data.get('workflow_id')
-        #test
         workflow = WORKFLOWS_REGISTRY.get(workflow_id)
         if not workflow:
-            return jsonify({'error': 'Invalid workflow'}), 400
+            #return jsonify({'error': 'Invalid workflow'}), 400
+            return jsonify(error_response(error="Invalid workflow")), 400
         workflow_func_params = inspect.signature(workflow['function']).parameters
         # Build kwargs based on required parameters
         kwargs = {}
         if 'input' in workflow_func_params:
             input_text = data.get('input')
             if input_text is None:
-                return jsonify({'error': 'Missing required input'}), 400
+                #return jsonify({'error': 'Missing required input'}), 400
+                return jsonify(error_response(error="Missing required input")), 400
             kwargs['input'] = input_text
         if 'model' in workflow_func_params:
             kwargs['model'] = workflow['model']
@@ -59,25 +61,35 @@ def start_task():
             kwargs['task_id'] = task_id
 
         status_queues[task_id] = queue.Queue()
-        gen = workflow['function'](**kwargs)
-        task_gens[task_id] = gen
+        generator_func = workflow['function'](**kwargs)
+        task_gens[task_id] = generator_func
         # Kick off the generator until first yield
-        msg = next(gen)
+        msg = next(generator_func)
         return jsonify({"task_id": task_id, "timestamp": time.time(), **msg})
+        """return jsonify(success_response(
+            data={"task_id": task_id},
+            **msg
+        ))"""
     except Exception as e:
-        #return jsonify({'error': str(e)}), 500
-        return jsonify(error
+        return jsonify(error_response(
+            error=str(e),
+            action=ResponseAction.WORKFLOW_FAILED,
+            message=ResponseMessage(
+                title="Workflow failed",
+                body=str(e)
+            )
+        )), 500
     
 
 @app.route("/continue_task", methods=["POST"])
 def continue_task():
     body = request.json
     task_id = body.get("task_id")
-    gen = task_gens.get(task_id)
-    if not gen:
+    generator_func = task_gens.get(task_id)
+    if not generator_func:
         return jsonify({"error": "unknown task_id"}), 404
     try:
-        msg = gen.send(body.get("user_input"))
+        msg = generator_func.send(body.get("user_input"))
         return jsonify(msg)
     except StopIteration as e:
         # Signal SSE stream to close
