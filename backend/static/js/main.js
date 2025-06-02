@@ -52,59 +52,55 @@ async function continueWorkflow(input) {
     handleMsg(response_payload);
 }
 
-function responseBoxMessageComponent(title, body, data, form, isOpen = false) {
-    this.title = title;
-    this.body = body;
-    this.data = data;
-    this.form = form;
-
-    let bodyHtml = this.body ? `<div class="message-body"><pre>${this.body}</pre></div>` : '';
-    let dataHtml = this.data ? `<div class="message-data"><pre>${this.data}</pre></div>` : '';
-    let formHtml = this.form ? `<div class="message-form">${this.form}</div>` : '';
+function responseBoxMessageComponent({ title, body, data, form, isOpen = false }) { 
+    const bodyHtml = body ? `<div class="message-body"><pre>${body}</pre></div>` : '';
+    const dataHtml = data ? `<div class="message-data"><pre>${data}</pre></div>` : '';
+    const formHtml = form ? `<div class="message-form">${form}</div>` : '';
 
     return `<div class="message">
-        <details>
-            <summary>${this.title}</summary>
-            <div><pre>${bodyHtml}</pre></div>
+        <details${isOpen ? ' open' : ''}>
+            <summary>${title}</summary>
+            ${bodyHtml}
             ${dataHtml}
             ${formHtml}
         </details>
     </div>`;
 }
 
+
 function handleMsg(response_payload) {
     if (response_payload.action === 'status_message') {
-        //domResponseBox.innerHTML += `<details><summary>${response_payload.message.title}</summary><div><pre>${JSON.stringify(response_payload, null, 2)}</pre></div></details>`;
-        domResponseBox.innerHTML += responseBoxMessageComponent(
-            msgTitle=response_payload.message.title,
-            msgBody=JSON.stringify(response_payload, null, 2)
-        );
-        console.log(response_payload);
+        domResponseBox.innerHTML += responseBoxMessageComponent({
+            title: response_payload.message.title,
+            body: JSON.stringify(response_payload, null, 2)
+        });
     }
     else if (response_payload.action === 'interaction_request') {
-        //domResponseBox.innerHTML += `<div class="message"><div>${msg.message}</div><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></div>`;
-        domResponseBox.innerHTML += `<details open><summary>${response_payload.message.title}</summary><div><pre>${JSON.stringify(response_payload.message.body, null, 2)}</pre></div><div><button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button></div></details>`;
-        console.log(response_payload);
+        domResponseBox.innerHTML += responseBoxMessageComponent({
+            isOpen: true,
+            title: response_payload.message.title,
+            body: response_payload.message.body,
+            form: `<button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button>`,
+            data: JSON.stringify(response_payload, null, 2)
+        });
     }
     else if (response_payload.action === 'task_done' || response_payload.action === 'workflow_finished') {
-        //domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(response_payload, null, 2)}</pre></div>`;
-        domResponseBox.innerHTML += `<details open>
-        <summary>${response_payload.message.title}</summary>
-        <div><pre>${JSON.stringify(response_payload.message.body, null, 2)}</pre></div>
-        <div><pre>${JSON.stringify(response_payload, null, 2)}</pre></div>
-        </details>`;
-        console.log(response_payload);
+        domResponseBox.innerHTML += responseBoxMessageComponent({
+            isOpen: true,
+            title: response_payload.message.title,
+            body: response_payload.message.body,
+            data: JSON.stringify(response_payload, null, 2)
+        });
         // IMPORTANT: Close the SSE connection when the task is done
         if (es) es.close();
     } else {
-        //domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(response_payload, null, 2)}</pre></div>`;
         let msgTitle = response_payload.message.title || response_payload.action || 'No action specified';
         let msgBody = response_payload.message.body || response_payload.data || response_payload;
-        //let msgTitleStr = JSON.stringify(msgTitle, null, 2);
         let msgBodyStr = JSON.stringify(msgBody, null, 2);        
-        domResponseBox.innerHTML += `<details><summary>${msgTitle}</summary><div><pre>${msgBodyStr}</pre></div></details>`;
-
-        console.log(response_payload);
+        domResponseBox.innerHTML += responseBoxMessageComponent({
+            title: msgTitle,
+            body: msgBody
+        });
     }
 }
 

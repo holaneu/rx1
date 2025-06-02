@@ -1,6 +1,6 @@
 import time
 from shared import send_status_message  # import the SSE‐helper
-from response_types import success_response, error_response, interaction_request, ResponseAction, ResponseMessage
+from response_types import success_response, error_response, interaction_request_response, ResponseAction, ResponseMessage
 
 
 # ----------------------
@@ -77,7 +77,11 @@ def test2(task_id):
             "action": "interaction_request",
             "message": "Continue processing these items?"
         }"""
-        user_input = yield interaction_request(prompt="Continue processing these items?")
+        user_input = yield interaction_request_response(
+            prompt="Continue processing these items?",
+            title="Confirmation Required",
+            task_id=task_id
+        )
         send_status_message(task_id, {
             "title": "Processing",
             "body": f"User said “{user_input}” — now processing…"

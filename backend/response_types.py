@@ -87,7 +87,7 @@ def error_response(
     response.update(additional_fields)
     return response
 
-def interaction_request(
+def interaction_request_response(
     prompt: str,
     title: str = "User Input Required",
     **additional_fields: Any
