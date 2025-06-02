@@ -52,19 +52,20 @@ async function continueWorkflow(input) {
     handleMsg(response_payload);
 }
 
-function responseBoxMessageComponent(msgTitle, msgBody, msgData, msgForm) {
-    this.title = msgTitle;
-    this.body = msgBody;
-    this.data = msgData;
-    this.form = msgForm;
+function responseBoxMessageComponent(title, body, data, form, isOpen = false) {
+    this.title = title;
+    this.body = body;
+    this.data = data;
+    this.form = form;
 
-    let dataHtml = this.data ? `<div class="message-data"><pre>${JSON.stringify(this.data, null, 2)}</pre></div>` : '';
+    let bodyHtml = this.body ? `<div class="message-body"><pre>${this.body}</pre></div>` : '';
+    let dataHtml = this.data ? `<div class="message-data"><pre>${this.data}</pre></div>` : '';
     let formHtml = this.form ? `<div class="message-form">${this.form}</div>` : '';
 
     return `<div class="message">
         <details>
             <summary>${this.title}</summary>
-            <div><pre>${this.body}</pre></div>
+            <div><pre>${bodyHtml}</pre></div>
             ${dataHtml}
             ${formHtml}
         </details>
@@ -73,8 +74,11 @@ function responseBoxMessageComponent(msgTitle, msgBody, msgData, msgForm) {
 
 function handleMsg(response_payload) {
     if (response_payload.action === 'status_message') {
-        //domResponseBox.innerHTML += `<div class="message"><pre>${JSON.stringify(msg, null, 2)}</pre></div>`;
-        domResponseBox.innerHTML += `<details><summary>${response_payload.message.title}</summary><div><pre>${JSON.stringify(response_payload, null, 2)}</pre></div></details>`;
+        //domResponseBox.innerHTML += `<details><summary>${response_payload.message.title}</summary><div><pre>${JSON.stringify(response_payload, null, 2)}</pre></div></details>`;
+        domResponseBox.innerHTML += responseBoxMessageComponent(
+            msgTitle=response_payload.message.title,
+            msgBody=JSON.stringify(response_payload, null, 2)
+        );
         console.log(response_payload);
     }
     else if (response_payload.action === 'interaction_request') {
