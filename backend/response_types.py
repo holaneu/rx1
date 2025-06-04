@@ -16,6 +16,23 @@ class ResponseAction(str, Enum):
     DATA_UPDATED = "data_updated"
     STATUS_MESSAGE = "status_message"
 
+class ResponseKey(str, Enum):
+    STATUS = "status"
+    TASK_ID = "task_id"
+    TIMESTAMP = "timestamp"
+    MESSAGE = "message"
+    ACTION = "action"
+    DATA = "data"
+    ERROR = "error"
+
+def response_output(response: Dict[str, Any]) -> Dict[str, Any]:
+    """Helper to format the response output."""
+    return {
+        **response,
+        ResponseKey.TIMESTAMP: response.get(ResponseKey.TIMESTAMP, datetime.now().timestamp())        
+    }
+
+
 @dataclass
 class ResponseMessage:
     title: str

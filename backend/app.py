@@ -9,7 +9,7 @@ import time
 
 from workflows import WORKFLOWS_REGISTRY
 from shared import status_queues
-from response_types import success_response, error_response, ResponseAction, ResponseMessage
+from response_types import error_response, ResponseAction, ResponseStatus, ResponseKey
 
 
 # ----------------------
@@ -28,9 +28,11 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 # In‐memory stores for this example
 task_gens: dict[str, any] = {}
 
+
 @app.route('/')
 def index():
     return render_template('index.html', workflows=WORKFLOWS_REGISTRY)
+
 
 @app.route("/start_task", methods=["POST"])
 def start_task():
@@ -45,6 +47,7 @@ def start_task():
         workflow = WORKFLOWS_REGISTRY.get(workflow_id)
         if not workflow:
             #return jsonify({'error': 'Invalid workflow'}), 400
+            #return jsonify(error_response(error="Invalid workflow")), 400
             return jsonify(error_response(error="Invalid workflow")), 400
         workflow_func_params = inspect.signature(workflow['function']).parameters
         # Build kwargs based on required parameters
@@ -102,6 +105,7 @@ def continue_task():
         ))"""
         return jsonify(getattr(e, "value", None) or {})
 
+
 @app.route("/msg/stream")
 def status_stream():
     task_id = request.args.get("task_id")
@@ -113,15 +117,26 @@ def status_stream():
             task_status_item = task_status_queue.get() # block until next status or None
             if task_status_item is None:
                 break # generator finished
-            payload = {"action": "status_message", "category": "workflow", "message": task_status_item.get("message", ""), "task_id": task_id, "timestamp": task_status_item.get("timestamp", time.time())}
+            payload = {
+                ResponseKey.STATUS: ResponseStatus.SUCCESS, 
+                ResponseKey.ACTION: ResponseAction.STATUS_MESSAGE, 
+                "category": "workflow", 
+                **task_status_item
+                }
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
+
 
 # --- API routes can go below ---
 @app.route('/api/tools/test', methods=['POST'])
 def test():
     data = request.json
-    return jsonify({"data": data.get("message", "")})
+    response = {
+        ResponseKey.STATUS: ResponseStatus.SUCCESS, 
+        ResponseKey.DATA: data.get("message", "")
+    }
+    return jsonify(response)
+
 
 if __name__ == '__main__':
     app.run(port=5005, debug=True)
