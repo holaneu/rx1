@@ -105,15 +105,15 @@ def continue_task():
 @app.route("/msg/stream")
 def status_stream():
     task_id = request.args.get("task_id")
-    q = status_queues.get(task_id)
-    if not q:
+    task_status_queue = status_queues.get(task_id) # Get the queue for this task_id
+    if not task_status_queue:
         return "", 404
     def event_stream():
         while True:
-            msg = q.get()          # block until next status or None
-            if msg is None:
-                break              # generator finished
-            payload = {"action": "status_message", "category": "workflow", "message": msg, "task_id": task_id, "timestamp": time.time()}
+            task_status_item = task_status_queue.get() # block until next status or None
+            if task_status_item is None:
+                break # generator finished
+            payload = {"action": "status_message", "category": "workflow", "message": task_status_item, "task_id": task_id, "timestamp": time.time()}
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
 
