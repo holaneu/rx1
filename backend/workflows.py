@@ -1,5 +1,5 @@
 import time
-from shared import send_status_message  # import the SSE‐helper
+from shared import put_status_to_queue  # import the SSE‐helper
 from response_types import success_response, error_response, interaction_request_response, ResponseAction, ResponseMessage
 
 
@@ -25,10 +25,10 @@ def workflow(**kwargs):
 def test1(task_id):
     """Workflow that demonstrates the use of status updates and user input. It fetches data from an API, waits for user confirmation, and then processes the data.
     """
-    send_status_message(task_id, {"title": "Started", "body": "Initializing workflow…"})    
+    put_status_to_queue(task_id, {"title": "Started", "body": "Initializing workflow…"})    
     time.sleep(1)
     data = list(range(5))
-    send_status_message(task_id, {
+    put_status_to_queue(task_id, {
         "title": "API Fetched",
         "body": f"Received {len(data)} items"
     })
@@ -36,17 +36,17 @@ def test1(task_id):
         "action": "interaction_request",
         "message": "Continue processing these items?"
     }
-    send_status_message(task_id, {
+    put_status_to_queue(task_id, {
         "title": "Processing",
         "body": f"User said “{user_input}” — now processing…"
     })
     time.sleep(1)  # simulate more work
-    send_status_message(task_id, {
+    put_status_to_queue(task_id, {
         "title": "Almost done",
         "body": "Finalizing results…"
     })
     time.sleep(1)
-    send_status_message(task_id, {
+    put_status_to_queue(task_id, {
         "title": "Done",
         "body": "Workflow completed successfully."
     })
@@ -65,10 +65,10 @@ def test2(task_id):
     try:
         """testing workflow test2.
         """
-        send_status_message(task_id, {"title": "Ahoj, zaciname", "body": "Initializing workflow…"})    
+        put_status_to_queue(task_id, {"title": "Ahoj, zaciname", "body": "Initializing workflow…"})    
         time.sleep(1)
         data = list(range(5))
-        send_status_message(task_id, ResponseMessage(
+        put_status_to_queue(task_id, ResponseMessage(
                 title="API Fetched",
                 body=f"Received {len(data)} items"
             ).to_dict())
@@ -82,12 +82,12 @@ def test2(task_id):
             title="Confirmation Required",
             task_id=task_id
         )
-        send_status_message(task_id, {
+        put_status_to_queue(task_id, {
             "title": "Processing",
             "body": f"User said “{user_input}” — now processing…"
         })
         time.sleep(1)  # simulate more work
-        send_status_message(task_id, {
+        put_status_to_queue(task_id, {
             "title": "Done",
             "body": "Workflow completed successfully."
         })

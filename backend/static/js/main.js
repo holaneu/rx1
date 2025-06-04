@@ -35,10 +35,10 @@ async function startWorkflow() {
         console.log('SSE message:', msg);
         handleMsg(msg);
     };
-    es.onerror = (error) => console.error('SSE error', error);
-    
+    es.onerror = (error) => console.error('SSE error', error);    
     domResponseBox.innerHTML = "";
 
+    // 3) Handle the initial response
     handleMsg(data);
 };
 

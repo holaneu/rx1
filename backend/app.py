@@ -8,7 +8,7 @@ import os
 import time
 
 from workflows import WORKFLOWS_REGISTRY
-from shared import send_status_message, status_queues
+from shared import put_status_to_queue, status_queues
 from response_types import success_response, error_response, ResponseAction, ResponseMessage
 
 
@@ -81,7 +81,7 @@ def continue_task():
     generator_func = task_gens.get(task_id)
     if not generator_func:
         #return jsonify({"error": "unknown task_id"}), 404
-        return jsonify(error_response(error="nknown task_id")), 400
+        return jsonify(error_response(error="unknown task_id")), 400
     try:
         msg = generator_func.send(body.get("user_input"))
         return jsonify(msg)
