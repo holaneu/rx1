@@ -91,6 +91,20 @@ def test2(task_id):
             "title": "Done",
             "body": "Workflow completed successfully."
         })
+        user_input = yield interaction_request_response(
+            prompt="Continue processing these items?",
+            title="Confirmation Required",
+            task_id=task_id
+        )
+        put_status_to_queue(task_id, {
+            "title": "Processing",
+            "body": f"User said “{user_input}” — now processing…"
+        })
+        time.sleep(1)  # simulate more work
+        put_status_to_queue(task_id, {
+            "title": "Done",
+            "body": "Workflow completed successfully."
+        })
         
         return(success_response(
             data=data,

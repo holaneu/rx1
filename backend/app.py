@@ -8,7 +8,7 @@ import os
 import time
 
 from workflows import WORKFLOWS_REGISTRY
-from shared import put_status_to_queue, status_queues
+from shared import status_queues
 from response_types import success_response, error_response, ResponseAction, ResponseMessage
 
 
@@ -113,7 +113,7 @@ def status_stream():
             task_status_item = task_status_queue.get() # block until next status or None
             if task_status_item is None:
                 break # generator finished
-            payload = {"action": "status_message", "category": "workflow", "message": task_status_item, "task_id": task_id, "timestamp": time.time()}
+            payload = {"action": "status_message", "category": "workflow", "message": task_status_item.get("message", ""), "task_id": task_id, "timestamp": task_status_item.get("timestamp", time.time())}
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
 
