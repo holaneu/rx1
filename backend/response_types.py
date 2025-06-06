@@ -24,15 +24,39 @@ class ResponseKey(str, Enum):
     ACTION = "action"
     DATA = "data"
     ERROR = "error"
+    TITLE = "title"
+    BODY = "body"
 
 def response_output(response: Dict[str, Any]) -> Dict[str, Any]:
     """Helper to format the response output."""
-    return {
+    payload = {
         **response,
         ResponseKey.TIMESTAMP: response.get(ResponseKey.TIMESTAMP, datetime.now().timestamp())        
     }
+    """if response.get(ResponseKey.MESSAGE) is None:
+        payload[ResponseKey.MESSAGE] = {
+            ResponseKey.TITLE: "Error",
+            ResponseKey.BODY: response.get(ResponseKey.ERROR, "An error occurred.")
+        }"""
+    return payload
+
+def response_output_error(response: Dict[str, Any]) -> Dict[str, Any]:
+    """Helper to format the error response output."""
+    payload = {
+        **response,
+        ResponseKey.STATUS: ResponseStatus.ERROR,
+        ResponseKey.TIMESTAMP: response.get(ResponseKey.TIMESTAMP, datetime.now().timestamp()),
+        ResponseKey.ERROR: response.get(ResponseKey.ERROR, "An error occurred.")
+    }
+    if response.get(ResponseKey.MESSAGE) is None:
+        payload[ResponseKey.MESSAGE] = {
+            ResponseKey.TITLE: "Error",
+            ResponseKey.BODY: response.get(ResponseKey.ERROR, "An error occurred.")
+        }
+    return payload
 
 
+# ResponseMessage and ResponseResult classes for structured responses
 @dataclass
 class ResponseMessage:
     title: str

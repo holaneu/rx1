@@ -9,7 +9,7 @@ import time
 
 from workflows import WORKFLOWS_REGISTRY
 from shared import status_queues
-from response_types import error_response, ResponseAction, ResponseStatus, ResponseKey
+from response_types import response_output, response_output_error, error_response, ResponseAction, ResponseStatus, ResponseKey
 
 
 # ----------------------
@@ -42,13 +42,14 @@ def start_task():
         data = request.json
         if not data or 'workflow_id' not in data:
             #return jsonify({"error": "workflow_id is required"}), 400
-            return jsonify(error_response(error="workflow_id is required")), 400
+            #return jsonify(error_response(error="workflow_id is required")), 400
+            return jsonify(response_output_error({ResponseKey.ERROR: "workflow_id is required"})), 400
         workflow_id = data.get('workflow_id')
         workflow = WORKFLOWS_REGISTRY.get(workflow_id)
         if not workflow:
             #return jsonify({'error': 'Invalid workflow'}), 400
             #return jsonify(error_response(error="Invalid workflow")), 400
-            return jsonify(error_response(error="Invalid workflow")), 400
+            return jsonify(response_output_error({ResponseKey.ERROR: "Invalid workflow"})), 400            
         workflow_func_params = inspect.signature(workflow['function']).parameters
         # Build kwargs based on required parameters
         kwargs = {}
@@ -56,7 +57,8 @@ def start_task():
             input_text = data.get('input')
             if input_text is None:
                 #return jsonify({'error': 'Missing required input'}), 400
-                return jsonify(error_response(error="Missing required input")), 400
+                #return jsonify(error_response(error="Missing required input")), 400
+                return jsonify(response_output_error({ResponseKey.ERROR: "Missing required input"})), 400
             kwargs['input'] = input_text
         if 'model' in workflow_func_params:
             kwargs['model'] = workflow['model']
@@ -74,7 +76,8 @@ def start_task():
             **msg
         ))"""
     except Exception as e:
-        return jsonify(error_response(str(e))), 500
+        #return jsonify(error_response(str(e))), 500
+        return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
     
 
 @app.route("/continue_task", methods=["POST"])
@@ -84,7 +87,8 @@ def continue_task():
     generator_func = genenerators.get(task_id)
     if not generator_func:
         #return jsonify({"error": "unknown task_id"}), 404
-        return jsonify(error_response(error="unknown task_id")), 400
+        #return jsonify(error_response(error="unknown task_id")), 400
+        return jsonify(response_output_error({ResponseKey.ERROR: "unknown task_id"})), 400
     try:
         data_back_to_generator = generator_func.send(data.get("user_input"))
         return jsonify(data_back_to_generator)
@@ -131,10 +135,10 @@ def status_stream():
 @app.route('/api/tools/test', methods=['POST'])
 def test():
     data = request.json
-    payload = {
+    payload = response_output({
         ResponseKey.STATUS: ResponseStatus.SUCCESS, 
-        ResponseKey.DATA: data.get("message", "")
-    }
+        ResponseKey.DATA: data.get("message", "") + " - from test endpoint"
+    })
     return jsonify(payload)
 
 
