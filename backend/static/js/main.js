@@ -16,6 +16,7 @@ async function sendTest() {
     });
     const data = await response.json();
     domResponseTest.innerHTML += `<p>${data.data}</p>`;
+    console.log('sendTest - response:', data);
 }
 
 async function startWorkflow() {
@@ -27,6 +28,7 @@ async function startWorkflow() {
     });
     const data = await res.json();
     taskId = data.task_id;
+    console.log('startWorkflow - response:', data);
 
     // 2) Open SSE stream for status updates
     es = new EventSource(`/msg/stream?task_id=${taskId}`);
@@ -50,6 +52,7 @@ async function continueWorkflow(input) {
     });
     const response_payload = await res.json();
     handleMsg(response_payload);
+    console.log('continueWorkflow - response:', response_payload);
 }
 
 function renderMessageComponent({ title, body, data, form, isOpen = false, style }) { 

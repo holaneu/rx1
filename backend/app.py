@@ -26,7 +26,7 @@ load_dotenv(dotenv_path)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # In‐memory stores for this example
-task_gens: dict[str, any] = {}
+genenerators: dict[str, any] = {}
 
 
 @app.route('/')
@@ -65,10 +65,10 @@ def start_task():
 
         status_queues[task_id] = queue.Queue()
         generator_func = workflow['function'](**kwargs)
-        task_gens[task_id] = generator_func
+        genenerators[task_id] = generator_func
         # Kick off the generator until first yield
-        msg = next(generator_func)
-        return jsonify({"task_id": task_id, "timestamp": time.time(), **msg})
+        response_from_generator = next(generator_func)
+        return jsonify({"task_id": task_id, "timestamp": time.time(), **response_from_generator})
         """return jsonify(success_response(
             data={"task_id": task_id},
             **msg
@@ -79,19 +79,19 @@ def start_task():
 
 @app.route("/continue_task", methods=["POST"])
 def continue_task():
-    body = request.json
-    task_id = body.get("task_id")
-    generator_func = task_gens.get(task_id)
+    data = request.json
+    task_id = data.get("task_id")
+    generator_func = genenerators.get(task_id)
     if not generator_func:
         #return jsonify({"error": "unknown task_id"}), 404
         return jsonify(error_response(error="unknown task_id")), 400
     try:
-        msg = generator_func.send(body.get("user_input"))
-        return jsonify(msg)
+        data_back_to_generator = generator_func.send(data.get("user_input"))
+        return jsonify(data_back_to_generator)
     except StopIteration as e:
         # Signal SSE stream to close
         status_queues[task_id].put(None)
-        task_gens.pop(task_id, None)
+        genenerators.pop(task_id, None)
         #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
         #return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id, "timestamp": time.time()})
         """return jsonify(success_response(
@@ -131,11 +131,11 @@ def status_stream():
 @app.route('/api/tools/test', methods=['POST'])
 def test():
     data = request.json
-    response = {
+    payload = {
         ResponseKey.STATUS: ResponseStatus.SUCCESS, 
         ResponseKey.DATA: data.get("message", "")
     }
-    return jsonify(response)
+    return jsonify(payload)
 
 
 if __name__ == '__main__':
