@@ -6,6 +6,7 @@ const domTextareaTest = document.getElementById('textareaTest');
 const domResponseTest = document.getElementById('responseTest');
 const domResponseBox = document.getElementById('responseBox');
 const domWorkflowSelect = document.getElementById('workflowSelect');
+const domUserInteractions = document.getElementById('userInteractions');
 
 // functions
 async function sendTest() {
@@ -125,7 +126,7 @@ function handleMsg(response) {
     // Handle different actions
     switch (response.action) {
         case 'interaction_request':
-            domResponseBox.innerHTML += renderMessageComponent({
+            domUserInteractions.innerHTML += renderMessageComponent({
                 isOpen: true,
                 title: response.message.title,
                 body: response.message.body,
