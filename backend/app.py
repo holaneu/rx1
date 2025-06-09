@@ -9,7 +9,7 @@ import time
 
 from workflows import WORKFLOWS_REGISTRY
 from shared import status_queues
-from response_types import response_output, response_output_error, error_response, ResponseAction, ResponseStatus, ResponseKey
+from response_types import response_output, response_output_error, response_output_success, error_response, ResponseAction, ResponseStatus, ResponseKey
 
 
 # ----------------------
@@ -43,13 +43,19 @@ def start_task():
         if not data or 'workflow_id' not in data:
             #return jsonify({"error": "workflow_id is required"}), 400
             #return jsonify(error_response(error="workflow_id is required")), 400
-            return jsonify(response_output_error({ResponseKey.ERROR: "workflow_id is required"})), 400
+            return jsonify(response_output_error({
+                ResponseKey.ERROR: "workflow_id is required",
+                ResponseKey.TASK_ID: task_id
+                })), 400
         workflow_id = data.get('workflow_id')
         workflow = WORKFLOWS_REGISTRY.get(workflow_id)
         if not workflow:
             #return jsonify({'error': 'Invalid workflow'}), 400
             #return jsonify(error_response(error="Invalid workflow")), 400
-            return jsonify(response_output_error({ResponseKey.ERROR: "Invalid workflow"})), 400            
+            return jsonify(response_output_error({
+                ResponseKey.ERROR: "Invalid workflow",
+                ResponseKey.TASK_ID: task_id
+                })), 400            
         workflow_func_params = inspect.signature(workflow['function']).parameters
         # Build kwargs based on required parameters
         kwargs = {}
@@ -58,7 +64,10 @@ def start_task():
             if input_text is None:
                 #return jsonify({'error': 'Missing required input'}), 400
                 #return jsonify(error_response(error="Missing required input")), 400
-                return jsonify(response_output_error({ResponseKey.ERROR: "Missing required input"})), 400
+                return jsonify(response_output_error({
+                    ResponseKey.ERROR: "Missing required input",
+                    ResponseKey.TASK_ID: task_id
+                    })), 400
             kwargs['input'] = input_text
         if 'model' in workflow_func_params:
             kwargs['model'] = workflow['model']
@@ -90,8 +99,8 @@ def continue_task():
         #return jsonify(error_response(error="unknown task_id")), 400
         return jsonify(response_output_error({ResponseKey.ERROR: "unknown task_id"})), 400
     try:
-        data_back_to_generator = generator_func.send(data.get("user_input"))
-        return jsonify(data_back_to_generator)
+        continue_generator = generator_func.send(data.get("user_input")) # .send() will resume the generator
+        return jsonify(continue_generator)
     except StopIteration as e:
         # Signal SSE stream to close
         status_queues[task_id].put(None)
@@ -121,12 +130,11 @@ def status_stream():
             task_status_item = task_status_queue.get() # block until next status or None
             if task_status_item is None:
                 break # generator finished
-            payload = {
-                ResponseKey.STATUS: ResponseStatus.SUCCESS, 
+            payload = response_output_success({
                 ResponseKey.ACTION: ResponseAction.STATUS_MESSAGE, 
-                "category": "workflow", 
+                ResponseKey.CATEGORY: "workflow", 
                 **task_status_item
-                }
+                })
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
 
@@ -134,13 +142,15 @@ def status_stream():
 # --- API routes can go below ---
 @app.route('/api/tools/test', methods=['POST'])
 def test():
-    data = request.json
-    payload = response_output({
-        ResponseKey.STATUS: ResponseStatus.SUCCESS, 
-        ResponseKey.DATA: data.get("message", "") + " - from test endpoint"
-    })
-    return jsonify(payload)
-
+    try:
+        data = request.json
+        payload = response_output_success({
+            ResponseKey.DATA: data.get("message", "") + " - from test endpoint"
+        })
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
+    
 
 if __name__ == '__main__':
     app.run(port=5005, debug=True)

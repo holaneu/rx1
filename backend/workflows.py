@@ -1,6 +1,6 @@
 import time
 from shared import put_status_to_queue  # import the SSE‐helper
-from response_types import success_response, error_response, interaction_request_response, ResponseAction, ResponseMessage
+from response_types import *
 
 
 # ----------------------
@@ -51,6 +51,13 @@ def test1(task_id):
         "body": "Workflow completed successfully."
     })
 
+    """return success_response(
+        data=data,  
+        action=ResponseAction.WORKFLOW_FINISHED,
+        message=ResponseMessage(
+            title="Workflow completed successfully",
+            body=f"Processed {len(data)} items"
+        ))"""
     return success_response(
         data=data,  
         action=ResponseAction.WORKFLOW_FINISHED,
@@ -63,66 +70,66 @@ def test1(task_id):
 @workflow(name="Test Workflow 2", category="Test")
 def test2(task_id):
     try:
-        """testing workflow test2.
-        """
-        put_status_to_queue(task_id, {"title": "Ahoj, zaciname", "body": "Initializing workflow…"})    
-        time.sleep(1)
+        """testing workflow test2."""
+        put_status_to_queue(task_id=task_id, message={
+            ResponseKey.TITLE: "Ahoj, zaciname", 
+            ResponseKey.BODY: "Initializing workflow…"
+        })    
         data = list(range(5))
-        put_status_to_queue(task_id, ResponseMessage(
-                title="API Fetched",
-                body=f"Received {len(data)} items"
-            ).to_dict())
-        time.sleep(0.1)
-        """user_input = yield {
-            "action": "interaction_request",
-            "message": "Continue processing these items?"
-        }"""
-        user_input = yield interaction_request_response(
-            prompt="Continue processing these items?",
-            title="Confirmation Required",
-            task_id=task_id
-        )
-        put_status_to_queue(task_id, {
-            "title": "Processing",
-            "body": f"User said “{user_input}” — now processing…"
+        put_status_to_queue(task_id=task_id, message={
+            ResponseKey.TITLE: "API Fetched", 
+            ResponseKey.BODY: f"Received {len(data)} items"
+        }) 
+        user_input = yield response_output_interaction_request({
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "Confirmation Required",
+                ResponseKey.BODY: "Continue processing these items?"
+            },
+            ResponseKey.TASK_ID: task_id
         })
-        time.sleep(1)  # simulate more work
-        put_status_to_queue(task_id, {
-            "title": "Done",
-            "body": "Workflow completed successfully."
+        put_status_to_queue(task_id=task_id, message={
+            ResponseKey.TITLE: "Processing",
+            ResponseKey.BODY: f"User said “{user_input}” — now processing…"
         })
-        user_input = yield interaction_request_response(
-            prompt="Continue processing these items?",
-            title="Confirmation Required",
-            task_id=task_id
-        )
         put_status_to_queue(task_id, {
-            "title": "Processing",
-            "body": f"User said “{user_input}” — now processing…"
+            ResponseKey.TITLE: "Done",
+            ResponseKey.BODY: "Workflow completed successfully."
         })
-        time.sleep(1)  # simulate more work
-        put_status_to_queue(task_id, {
-            "title": "Done",
-            "body": "Workflow completed successfully."
+        user_input = yield response_output_interaction_request({
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "Confirmation Required",
+                ResponseKey.BODY: "Continue processing these items?"
+            },
+            ResponseKey.TASK_ID: task_id
         })
-        
-        return(success_response(
-            data=data,
-            action=ResponseAction.WORKFLOW_FINISHED,
-            message=ResponseMessage(
-                title="Workflow completed successfully",
-                body=f"Processed {len(data)} items"
-            )        
-        ))  
+        put_status_to_queue(task_id=task_id, message={
+            ResponseKey.TITLE: "Processing",
+            ResponseKey.BODY: f"User said “{user_input}” — now processing…"
+        })
+        put_status_to_queue(task_id=task_id, message={
+            ResponseKey.TITLE: "Done",
+            ResponseKey.BODY: "Workflow completed successfully."
+        })
+        return response_output_success({
+            ResponseKey.DATA: data,
+            ResponseKey.ACTION: ResponseAction.WORKFLOW_FINISHED,
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE:"Workflow completed successfully",
+                ResponseKey.BODY: f"Processed {len(data)} items"
+            },
+            ResponseKey.TASK_ID: task_id
+        })
+           
     except Exception as e:
-        return error_response(
-            error=str(e),
-            action=ResponseAction.WORKFLOW_FAILED,
-            message=ResponseMessage(
-                title="Workflow failed",
-                body=str(e)
-            )
-        )
+        return response_output_error({
+            ResponseKey.ERROR: str(e),
+            ResponseKey.ACTION: ResponseAction.WORKFLOW_FAILED,
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "Workflow failed",
+                ResponseKey.BODY: str(e)
+            },
+            ResponseKey.TASK_ID: task_id
+        })
 
 
 # ----------------------
