@@ -1,0 +1,13 @@
+{
+  "folders": [
+  {
+	  "path": "."
+  }
+  ],
+  "settings": {
+    "editor.tabSize": 4,          // Sets the tab size to 2 spaces
+    "editor.insertSpaces": true, // Ensures spaces are used instead of tabs
+    "editor.detectIndentation": false, // Disables auto-detection of indentation settings
+    "editor.wordWrap": "on"
+  }
+}
