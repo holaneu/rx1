@@ -32,10 +32,19 @@ generators: dict[str, any] = {}
 # Workflows registry
 wf_registry = WORKFLOWS_REGISTRY2
 
+
+# Routes
 @app.route('/')
-def index():
+def page_index():
     return render_template('index.html', workflows=wf_registry)
 
+@app.route('/workflows')
+def page_workflows():
+    return render_template('workflows.html', workflows=wf_registry)
+
+@app.route('/test')
+def page_test():
+    return render_template('test.html')
 
 @app.route("/start_task", methods=["POST"])
 def start_task():
@@ -76,7 +85,7 @@ def start_task():
         generators[task_id] = generator_func
         
         #response_from_generator = next(generator_func)
-        
+
         # Check if the result is a generator
         if hasattr(generator_func, '__iter__') and hasattr(generator_func, '__next__'):
             # Kick off the generator until first yield
