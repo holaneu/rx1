@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 import os
 import time
 
-from workflows import WORKFLOWS_REGISTRY
+#from workflows import WORKFLOWS_REGISTRY
+from workflows_module.registry import WORKFLOWS_REGISTRY2
 from shared import status_queues
-from response_types import response_output, response_output_error, response_output_success, error_response, ResponseAction, ResponseStatus, ResponseKey
+from response_types import response_output_error, response_output_success, response_output, ResponseAction, ResponseKey
 
 
 # ----------------------
@@ -26,12 +27,14 @@ load_dotenv(dotenv_path)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 # In‐memory stores for this example
-genenerators: dict[str, any] = {}
+generators: dict[str, any] = {}
 
+# Workflows registry
+wf_registry = WORKFLOWS_REGISTRY2
 
 @app.route('/')
 def index():
-    return render_template('index.html', workflows=WORKFLOWS_REGISTRY)
+    return render_template('index.html', workflows=wf_registry)
 
 
 @app.route("/start_task", methods=["POST"])
@@ -41,17 +44,13 @@ def start_task():
         task_id = str(uuid.uuid4())
         data = request.json
         if not data or 'workflow_id' not in data:
-            #return jsonify({"error": "workflow_id is required"}), 400
-            #return jsonify(error_response(error="workflow_id is required")), 400
             return jsonify(response_output_error({
                 ResponseKey.ERROR: "workflow_id is required",
                 ResponseKey.TASK_ID: task_id
                 })), 400
         workflow_id = data.get('workflow_id')
-        workflow = WORKFLOWS_REGISTRY.get(workflow_id)
+        workflow = wf_registry.get(workflow_id)
         if not workflow:
-            #return jsonify({'error': 'Invalid workflow'}), 400
-            #return jsonify(error_response(error="Invalid workflow")), 400
             return jsonify(response_output_error({
                 ResponseKey.ERROR: "Invalid workflow",
                 ResponseKey.TASK_ID: task_id
@@ -62,8 +61,6 @@ def start_task():
         if 'input' in workflow_func_params:
             input_text = data.get('input')
             if input_text is None:
-                #return jsonify({'error': 'Missing required input'}), 400
-                #return jsonify(error_response(error="Missing required input")), 400
                 return jsonify(response_output_error({
                     ResponseKey.ERROR: "Missing required input",
                     ResponseKey.TASK_ID: task_id
@@ -76,16 +73,19 @@ def start_task():
 
         status_queues[task_id] = queue.Queue()
         generator_func = workflow['function'](**kwargs)
-        genenerators[task_id] = generator_func
-        # Kick off the generator until first yield
-        response_from_generator = next(generator_func)
-        return jsonify({"task_id": task_id, "timestamp": time.time(), **response_from_generator})
-        """return jsonify(success_response(
-            data={"task_id": task_id},
-            **msg
-        ))"""
+        generators[task_id] = generator_func
+        
+        #response_from_generator = next(generator_func)
+        
+        # Check if the result is a generator
+        if hasattr(generator_func, '__iter__') and hasattr(generator_func, '__next__'):
+            # Kick off the generator until first yield
+            response_from_generator = next(generator_func)
+        else:
+            # If it's not a generator, use the return value directly
+            response_from_generator = generator_func
+        return jsonify({"task_id": task_id, "timestamp": time.time(), **response_from_generator})        
     except Exception as e:
-        #return jsonify(error_response(str(e))), 500
         return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
     
 
@@ -93,10 +93,8 @@ def start_task():
 def continue_task():
     data = request.json
     task_id = data.get("task_id")
-    generator_func = genenerators.get(task_id)
+    generator_func = generators.get(task_id)
     if not generator_func:
-        #return jsonify({"error": "unknown task_id"}), 404
-        #return jsonify(error_response(error="unknown task_id")), 400
         return jsonify(response_output_error({ResponseKey.ERROR: "unknown task_id"})), 400
     try:
         continue_generator = generator_func.send(data.get("user_input")) # .send() will resume the generator
@@ -104,18 +102,7 @@ def continue_task():
     except StopIteration as e:
         # Signal SSE stream to close
         status_queues[task_id].put(None)
-        genenerators.pop(task_id, None)
-        #return jsonify({"action": "done", "result": getattr(e, "value", None), "task_id": task_id})
-        #return jsonify({"action": "task_done", "category": "workflow", "message": {"title": "Workflow finished", "body": getattr(e, "value", None)}, "task_id": task_id, "timestamp": time.time()})
-        """return jsonify(success_response(
-            data=getattr(e, "value", None),
-            action=ResponseAction.WORKFLOW_FINISHED,
-            message=ResponseMessage(
-                title="Workflow finished",
-                body=getattr(e, "value", None)
-            ),
-            task_id=task_id
-        ))"""
+        generators.pop(task_id, None)        
         return jsonify(getattr(e, "value", None) or {})
 
 
@@ -144,10 +131,10 @@ def status_stream():
 def test():
     try:
         data = request.json
-        payload = response_output_success({
-            ResponseKey.DATA: data.get("message", "") + " - from test endpoint"
-        })
-        return jsonify(payload)
+        input_message = data.get("message", "")
+        if not input_message:
+            return jsonify(response_output_error({ResponseKey.DATA: "No input"}))
+        return jsonify(response_output_success({ResponseKey.DATA: input_message + " - from test endpoint"}))
     except Exception as e:
         return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
     

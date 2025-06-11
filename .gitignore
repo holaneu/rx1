@@ -26,3 +26,6 @@ Thumbs.db
 .vscode/
 #*.code-workspace
 #.code-workspace
+
+# Personal workflows (files)
+workflows_old_imported.py

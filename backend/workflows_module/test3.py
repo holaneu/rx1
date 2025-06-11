@@ -2,9 +2,9 @@ from workflows_module.registry import workflow
 from shared import put_status_to_queue
 from response_types import *
 
-@workflow(name="Test Workflow 3", category="Test")
-def test3(task_id):
-    """testing workflow test2."""
+@workflow( category="Test")
+def test_multiple_yields_single_return(task_id):
+    """testing workflow test3."""
     try:
         put_status_to_queue(task_id=task_id, message={
             ResponseKey.TITLE: "Ahoj, zaciname",
@@ -25,6 +25,17 @@ def test3(task_id):
         put_status_to_queue(task_id=task_id, message={
             ResponseKey.TITLE: "Processing",
             ResponseKey.BODY: f"User said “{user_input}” — now processing…"
+        })
+        user_input2 = yield response_output_interaction_request({
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "Confirmation Required",
+                ResponseKey.BODY: "Continue processing these items?"
+            },
+            ResponseKey.TASK_ID: task_id
+        })
+        put_status_to_queue(task_id=task_id, message={
+            ResponseKey.TITLE: "Processing",
+            ResponseKey.BODY: f"User said “{user_input2}” — now processing…"
         })
         put_status_to_queue(task_id=task_id, message={
             ResponseKey.TITLE: "Done",
