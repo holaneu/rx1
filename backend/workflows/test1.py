@@ -1,6 +1,6 @@
 from workflows.registry import workflow
-from shared import put_status_to_queue
-from response_types import *
+from utils.shared import put_status_to_queue
+from utils.response_types import *
 
 @workflow(category="Test")
 def test_single_return_no_yield(task_id):

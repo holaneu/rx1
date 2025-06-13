@@ -9,14 +9,14 @@ import time
 
 #from workflows import WORKFLOWS_REGISTRY
 from workflows.registry import WORKFLOWS_REGISTRY
-from shared import status_queues
-from response_types import response_output_error, response_output_success, response_output, ResponseAction, ResponseKey
+from utils.shared import status_queues
+from utils.response_types import response_output_error, response_output_success, response_output, ResponseAction, ResponseKey
 
 
 # ----------------------
 # Flask app setup
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+app = Flask(__name__, static_folder='web/static', template_folder='web/templates')
 
 # Enable CORS for API routes only
 CORS(app, resources={r"/api/*": {"origins": "*"}})
