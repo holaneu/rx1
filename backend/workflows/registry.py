@@ -1,6 +1,6 @@
 import inspect
 
-WORKFLOWS_REGISTRY2 = {}
+WORKFLOWS_REGISTRY = {}
 
 def workflow(**kwargs):
     def decorator(func):
@@ -19,7 +19,7 @@ def workflow(**kwargs):
         )
 
         # Register automatically
-        WORKFLOWS_REGISTRY2[func.id] = {
+        WORKFLOWS_REGISTRY[func.id] = {
             'name': func.name,
             'description': func.description,
             'function': func,

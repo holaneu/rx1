@@ -8,7 +8,7 @@ import os
 import time
 
 #from workflows import WORKFLOWS_REGISTRY
-from workflows_module.registry import WORKFLOWS_REGISTRY2
+from workflows.registry import WORKFLOWS_REGISTRY
 from shared import status_queues
 from response_types import response_output_error, response_output_success, response_output, ResponseAction, ResponseKey
 
@@ -30,7 +30,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 generators: dict[str, any] = {}
 
 # Workflows registry
-wf_registry = WORKFLOWS_REGISTRY2
+wf_registry = WORKFLOWS_REGISTRY
 
 
 # Routes

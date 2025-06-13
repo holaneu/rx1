@@ -10,4 +10,4 @@ for filename in os.listdir(module_path):
         importlib.import_module(module_name)
 
 # Optionally expose the registry directly
-from .registry import WORKFLOWS_REGISTRY2
+from .registry import WORKFLOWS_REGISTRY

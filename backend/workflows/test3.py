@@ -1,9 +1,9 @@
-from workflows_module.registry import workflow
+from workflows.registry import workflow
 from shared import put_status_to_queue
 from response_types import *
 
 @workflow( category="Test")
-def test_multiple_yields_no_return(task_id):
+def test_multiple_yields_single_return(task_id):
     """testing workflow test3."""
     try:
         put_status_to_queue(task_id=task_id, message={
@@ -41,7 +41,7 @@ def test_multiple_yields_no_return(task_id):
             ResponseKey.TITLE: "Done",
             ResponseKey.BODY: "Workflow completed successfully."
         })
-        yield response_output_success({
+        return response_output_success({
             ResponseKey.DATA: data,
             ResponseKey.ACTION: ResponseAction.WORKFLOW_FINISHED,
             ResponseKey.MESSAGE: {
@@ -51,7 +51,7 @@ def test_multiple_yields_no_return(task_id):
             ResponseKey.TASK_ID: task_id
         })
     except Exception as e:
-        yield response_output_error({
+        return response_output_error({
             ResponseKey.ERROR: str(e),
             ResponseKey.ACTION: ResponseAction.WORKFLOW_FAILED,
             ResponseKey.MESSAGE: {
