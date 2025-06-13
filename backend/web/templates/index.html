@@ -1,58 +1,33 @@
-<!-- backend/templates/index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>RX1</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-  <div class="container">
-    <header>
-        <h1>RX1</h1>
-    </header> 
-    
-    <main>        
+{% extends "base.html" %}
 
-        <h2>Test 1</h2>
-        <div class="form-row">
-            <textarea id="textareaTest" rows="4" cols="50"></textarea>
-        </div>
-        <div class="form-row">
-            <button id="buttonSendTest">Send test</button>
-        </div>
-        <div class="form-row">
-            <div id="responseTest"></div>
-        </div>   
-        
-        <hr>
-        
-        <h2>Status msg & interactions</h2>  
+{% block title %}Home{% endblock %}
 
-        <div class="form-row">
-            <select id="workflowSelect">
-                <option value="" disabled selected>Select workflow ...</option>
-                {% for id, workflow in workflows.items() %}
-                <option value="{{ id }}">{{ workflow.name }}</option>
-                {% endfor %}
-            </select>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
 
-            <button id="startBtn">Start Workflow</button>
-        </div>
+{% block content %}  
 
-        <div id="responseBox"></div>       
-        <div id="userInteractions"></div>
-    
-        
-    </main>
+  <header>
+    <h1>Automate Everything. Intelligently.</h1>
+    <p>Unleash the power of automated workflows with tools, AI assistants, and memory working in sync.</p>
+    <a class="cta-button" href="/workflows">🚀 Start Using Workflows</a>
+  </header>
 
-    <footer>
-    </footer>
+  <section class="features">
+    <div class="card">
+      <h3>🧠 Smart Workflows</h3>
+      <p>Utilize custom workflows with step-by-step automation.</p>
+    </div>
+    <div class="card">
+      <h3>🛠 Extensible Tools & AI Assistants</h3>
+      <p>Connect AI models, file utilities, or your own functions.</p>
+    </div>
+    <div class="card">
+      <h3>💾 Persistent Memory & Integration</h3>
+      <p>Store data as files or JSON databases. Database and cloud support coming soon.</p>
+    </div>
+  </section>
 
-  </div>
-     
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
-</body>
-</html>
+{% endblock %}

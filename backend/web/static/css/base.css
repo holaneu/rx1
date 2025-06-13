@@ -1,0 +1,328 @@
+:root {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --accent: #646cff;
+  --accent-hover: #7c83ff;
+}
+
+html * {  
+  box-sizing: border-box;
+}
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  margin: 0;
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  background-color: transparent;
+  padding: 0 1rem; /* Use padding for horizontal spacing, not height */
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: background-color 0.3s ease, border-color 0.3s ease, font-color 0.3s ease;
+  border-bottom: 1px solid transparent;
+  height: 70px; /* Fixed height */
+  display: flex; /* Use flex to vertically center content within fixed height */
+  align-items: center;
+}
+
+.header .container { /* Ensure container takes full height */
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Ensure container uses full header width */
+}
+
+.header.scrolled {
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  flex-shrink: 0; /* Prevent logo from shrinking */
+}
+.logo a {
+  color: inherit; /* Inherit color from header */
+  text-decoration: none;
+}
+
+/* --- Header Content Colors & Visibility --- */
+
+/* Default state (scrolled or light hero) */
+.header .logo,
+.header .nav-main a {
+  color: #333;
+}
+.header .hamburger span {
+  background-color: #333; /* Dark hamburger lines */
+}
+
+/* State when header is transparent (NOT scrolled) */
+.header:not(.scrolled) .logo,
+.header:not(.scrolled) .nav-main a {
+  color: #fff; /* Light text */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* Shadow for visibility */
+}
+/* Hamburger when transparent - ensure visibility */
+.header:not(.scrolled) .hamburger span {
+  background-color: #fff; /* Light hamburger lines */
+   /* Optional: Add a subtle border/shadow for extra contrast if needed */
+   /* border: 1px solid rgba(0, 0, 0, 0.2); */
+   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.nav-main {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto; /* Push nav to the right, before hamburger */
+  margin-right: 1.5rem; /* Space between nav and hamburger */
+}
+
+.nav-main a {
+  text-decoration: none;
+  white-space: nowrap; /* Prevent nav links wrapping */
+}
+
+
+
+h1 {
+  color: var(--text-primary);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+textarea {
+  width: 100%;
+  min-height: 200px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid #404040;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.control-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  /*padding: 1rem;*/
+  /*background-color: var(--bg-secondary);*/
+  border-radius: 8px;
+}
+
+.control-section select {
+  margin-bottom: 0;
+  min-width: 250px;
+}
+
+.control-section button {
+  white-space: nowrap;
+}
+
+select {
+  width: 60%;
+  padding: 0.75rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid #404040;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button {
+  background-color: var(--accent);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: var(--accent-hover);
+}
+
+#result {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--bg-secondary);
+  display: none;  /* Hide by default */
+}
+
+/* Show result only when status OR response has content */
+#result:has(.status:not(:empty)),
+#result:has(.response:not(:empty)) {
+  display: block;
+}
+
+/* Hide result when both status and response are empty */
+#result .status:empty + .response:empty {
+  display: none;
+}
+
+#result .status:empty + .response:empty ~ #result {
+  display: none;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.success {
+  color: #69db7c;
+}
+
+.response-data {
+  margin: 10px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-family: monospace;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 250px;
+  background: #2c3e50;
+  color: white;
+  transform: translateX(-220px);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-toggle {
+  position: absolute;
+  right: 0;
+  top: 0px;
+  width: 30px;
+  height: 30px;
+  background: #2c3e50;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  color: #ecf0f1;
+}
+
+.sidebar-link {
+  display: block;
+  color: #bdc3c7;
+  text-decoration: none;
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+
+.sidebar-link:hover {
+  color: #ffffff;
+}
+
+/* FILES */
+.file-list {
+  margin: 1em 0;
+}
+.item {
+  padding: 0.3em 0;
+}
+.item a {
+  text-decoration: none;
+  color: #ccc;
+}
+.item a:hover {
+  text-decoration: underline;
+}
+.folder a {
+  color: #ccc;
+  font-weight: bold;
+}
+
+.file-detail pre {
+  overflow: hidden;
+  text-wrap: auto;
+}
+
+.breadcrumbs {
+  margin: 1em 0;
+  padding: 0.5em;
+  position: sticky;
+  top: 70px;
+  left: 0;
+  background: #1a1a1a;
+  border-top: 1px dotted gray;
+  border-bottom: 1px dotted gray;
+}
+.breadcrumb-item {
+  text-decoration: none;
+  color: #8aacd6;
+}
+.breadcrumb-item.current {
+  color: #666;
+  font-weight: 500;
+}
+.breadcrumb-separator {
+  margin: 0 0.5em;
+  color: #666;
+}

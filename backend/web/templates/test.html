@@ -1,38 +1,36 @@
-<!-- backend/templates/index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>RX1</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-  <div class="container">
-    <header>
-        <h1>Test</h1>
-    </header> 
-    
-    <main>        
+{% extends "base.html" %}
 
-        <div class="form-row">
-            <textarea id="textareaTest" rows="4" cols="50"></textarea>
-        </div>
-        <div class="form-row">
-            <button id="buttonSendTest">Send test</button>
-        </div>
-        <div class="form-row">
-            <div id="responseTest"></div>
-        </div>    
-        
-    </main>
+{% block title %}Test{% endblock %}
 
-    <footer>
-    </footer>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% endblock %}
 
-  </div>
-     
+{% block content %}  
+
+    <div class="container">
+
+        <header>
+            <h1>Test</h1>
+        </header> 
+
+        <main>
+            <div class="form-row">
+                <textarea id="textareaTest" rows="4" cols="50"></textarea>
+            </div>
+            <div class="form-row">
+                <button id="buttonSendTest">Send test</button>
+            </div>
+            <div class="form-row">
+                <div id="responseTest"></div>
+            </div>    
+            
+        </main>
+
+        <footer></footer>
+
+    </div>     
 
     <script src="{{ url_for('static', filename='js/test.js') }}"></script>
-    
-</body>
-</html>
+
+{% endblock %}

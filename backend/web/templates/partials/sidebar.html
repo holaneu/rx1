@@ -4,23 +4,24 @@
   </div>
   
   <div class="sidebar-content">
+
     <div class="sidebar-section">
       <h3 class="section-title">Navigation</h3>
       <div class="section-content">
-        <a href="{{ url_for('index') }}" class="sidebar-link">Home</a>
-        <a href="{{ url_for('workflows') }}" class="sidebar-link">Workflows</a>
-        <a href="{{ url_for('files') }}" class="sidebar-link">Files</a>
-        <a href="{{ url_for('database') }}" class="sidebar-link">Database</a>
-        <a href="{{ url_for('chat') }}" class="sidebar-link">Chat</a>
-        <a href="{{ url_for('apps') }}" class="sidebar-link">Apps</a>
+        <a href="{{ url_for('page_index') }}" class="sidebar-link">Home</a>
+        <a href="{{ url_for('page_workflows') }}" class="sidebar-link">Workflows</a>
+        <a href="{{ url_for('page_test') }}" class="sidebar-link">Test</a>
       </div>
     </div>
 
+    <!--
     <div class="sidebar-section">
       <h3 class="section-title">Recent Items</h3>
       <div class="section-content">
-        <!-- This section can be populated dynamically -->
+        
       </div>
     </div>
+    -->
+
   </div>
 </div>

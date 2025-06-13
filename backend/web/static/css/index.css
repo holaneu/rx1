@@ -1,0 +1,40 @@
+header {
+    background-color: #2e2e2e;
+    color: #fff;
+    text-align: center;
+    padding: 60px 20px;
+    border-radius: 10px;
+}
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+header p {
+    font-size: 1.2em;
+    margin: 10px 0 20px;
+}
+.cta-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-size: 1em;
+    border-radius: 5px;
+}
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.card {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid gray;
+}
+.card h3 {
+    margin-top: 0;
+}

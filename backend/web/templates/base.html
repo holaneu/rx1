@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>{% block title %}{% endblock %} - RX1</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <!--<script src="{{ url_for('static', filename='js/shared.js') }}"></script>-->
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} - RX1</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
 
   {% block head %}{% endblock %}
 </head>
 <body>
-  <!--{% include 'partials/sidebar.html' %}-->
+  {% include 'partials/sidebar.html' %}
 
   <div class="container">
     
@@ -18,8 +19,8 @@
           <div class="logo"><a href="/">RX1</a></div>
           <nav class="nav-main">
             <a href="/">Home</a>
-            <a href="{{ url_for('workflows') }}">Workflows</a>
-            <a href="{{ url_for('test') }}">Test</a>
+            <a href="{{ url_for('page_workflows') }}">Workflows</a>
+            <a href="{{ url_for('page_test') }}">Test</a>
           </nav>
           <div class="hamburger" id="hamburger">
               <span></span><span></span><span></span>
