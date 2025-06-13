@@ -1,5 +1,11 @@
+# Private files
 private/
+/user/*
+!/user/.gitkeep
 test/
+test_user/
+test_files/
+copied_from_old/
 
 # Python specific files
 __pycache__/
