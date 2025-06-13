@@ -1,12 +1,3 @@
-# Private files
-private/
-/user/*
-!/user/.gitkeep
-test/
-test_user/
-test_files/
-copied_from_old/
-
 # Python specific files
 __pycache__/
 *.pyc
@@ -33,5 +24,17 @@ Thumbs.db
 #*.code-workspace
 #.code-workspace
 
-# Personal workflows (files)
+# Local testing folders and files
+test/
+test_user/
+test_files/
+
+# Private files
+private/
+/user/*
+/users/*
+!/user/.gitkeep
+!/users/.gitkeep
+
+copied_from_old/
 workflows_old_imported.py
