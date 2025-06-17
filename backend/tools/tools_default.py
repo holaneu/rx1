@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, Any
 
 from tools.registry import tool
-from configs.ai_models_config import ai_models
+from configs.ai_config import ai_models
 from configs.app_config import APP_SETTINGS
 
 
