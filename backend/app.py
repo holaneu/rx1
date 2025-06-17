@@ -68,13 +68,13 @@ def start_task():
         # Build kwargs based on required parameters
         kwargs = {}
         if 'input' in workflow_func_params:
-            input_text = data.get('input')
-            if input_text is None:
+            user_input = data.get('user_input')
+            if user_input is None or user_input.strip() == "":
                 return jsonify(response_output_error({
                     ResponseKey.ERROR: "Missing required input",
                     ResponseKey.TASK_ID: task_id
                     })), 400
-            kwargs['input'] = input_text
+            kwargs['input'] = user_input
         if 'model' in workflow_func_params:
             kwargs['model'] = workflow['model']
         if 'task_id' in workflow_func_params:

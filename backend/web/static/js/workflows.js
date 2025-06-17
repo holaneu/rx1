@@ -3,6 +3,7 @@ let taskId, es;
 // DOM elements
 
 const domTextareaTest = document.getElementById('textareaTest');
+const domTextareaInput = document.getElementById('textareaInput');
 const domResponseTest = document.getElementById('responseTest');
 const domResponseBox = document.getElementById('responseBox');
 const domWorkflowSelect = document.getElementById('workflowSelect');
@@ -12,11 +13,15 @@ const domUserInteractions = document.getElementById('userInteractions');
 // Functions
 
 async function startWorkflow() {
+    // Clear previous responses
+    domResponseBox.innerHTML = "";
+    domUserInteractions.innerHTML = "";
+
     // 1) Start the workflow (runs until first yield)
     const res = await fetch('/start_task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workflow_id: domWorkflowSelect.value })
+        body: JSON.stringify({ workflow_id: domWorkflowSelect.value, user_input: domTextareaInput.value })
     });
     const data = await res.json();
     taskId = data.task_id;
@@ -30,9 +35,7 @@ async function startWorkflow() {
         handleMsg(msg);
     };
     es.onerror = (error) => console.error('SSE error', error);    
-    domResponseBox.innerHTML = "";
-    domUserInteractions.innerHTML = "";
-
+    
     // 3) Handle the initial response
     handleMsg(data);
 };

@@ -497,18 +497,3 @@ def assistant_sarcastic_tech_editor(input, model=None):
       print(__name__, response, sep="\n", end="\n\n")
   return response
 
-
-# ----------------------
-# Registry of assistants - Extract all assistants dynamically
-import inspect
-ASSISTANTS_REGISTRY = {
-    func.id: {
-      'name': func.name, 
-      'description': func.description, 
-      'function': func, 
-      'model': func.model, 
-      'category': func.category
-    }
-    for name, func in inspect.getmembers(__import__(__name__), inspect.isfunction)
-    if hasattr(func, 'id') and hasattr(func, 'is_assistant')  # Check for workflow marker
-}
