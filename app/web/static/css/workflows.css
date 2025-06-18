@@ -1,0 +1,16 @@
+
+#result-box-responses,
+#result-box-interactions {
+  display: none;  /* Hide by default */
+  margin-top: 20px;
+}
+
+#result-box-responses:has(#responses:not(:empty)),
+#result-box-interactions:has(#interactions:not(:empty)) {
+  display: block; /* Show when there is content */
+}
+
+#result-box-responses #responses:empty,
+#result-box-interactions #interactions:empty {
+  display: block; /* Show when there is content */
+}

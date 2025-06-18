@@ -14,6 +14,3 @@ def put_status_to_queue(task_id: str, message: dict):
         }
         task_status_queue.put(task_status_item)
 
-class RaisedError(Exception):
-    """Custom exception for translation related errors"""
-    pass

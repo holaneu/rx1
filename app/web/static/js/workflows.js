@@ -2,12 +2,10 @@ let taskId, es;
 
 // DOM elements
 
-const domTextareaTest = document.getElementById('textareaTest');
 const domTextareaInput = document.getElementById('textareaInput');
-const domResponseTest = document.getElementById('responseTest');
-const domResponseBox = document.getElementById('responseBox');
+const domResponseBox = document.getElementById('responses');
 const domWorkflowSelect = document.getElementById('workflowSelect');
-const domUserInteractions = document.getElementById('userInteractions');
+const domUserInteractions = document.getElementById('interactions');
 
 
 // Functions

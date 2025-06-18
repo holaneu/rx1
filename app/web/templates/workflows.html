@@ -3,7 +3,9 @@
 {% block title %}Workflows{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/workflows.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ui_components/forms.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ui_components/expandable.css') }}">
 {% endblock %}
 
 {% block content %}  
@@ -30,9 +32,15 @@
             <button id="startBtn">Start Workflow</button>
         </div>
 
-        <div id="responseBox"></div>  
-
-        <div id="userInteractions"></div>    
+        <div id="result-box-responses">
+            <div class="box-header">Responses:</div>
+            <div id="responses"></div>
+        </div>        
+        
+        <div id="result-box-interactions">
+            <div class="box-header">Required user interactions:</div>
+            <div id="interactions"></div>
+        </div> 
         
     </main>
 

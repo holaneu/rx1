@@ -1,11 +1,11 @@
 from workflows.registry import workflow
 from tools.tools_default import save_to_file, user_files_folder_path
 from assistants.assistants_default import assistant_translator_cs_en
-from utils.response_types import response_output_error, response_output_success, ResponseKey, ResponseAction
-from utils.shared import put_status_to_queue, RaisedError
+from utils.response_types import response_output_error, response_output_success, ResponseKey, ResponseAction, RaisedError
+from utils.shared import put_status_to_queue
 
 @workflow()
-def translation_cs_en_basic(input, model=None, task_id=None):
+def translation_cs_en_basic(task_id, input, model=None):
     """Translates text between Czech and English."""
     try:
         if not input or not input.strip():

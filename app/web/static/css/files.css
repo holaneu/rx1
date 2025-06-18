@@ -1,0 +1,46 @@
+/* FILES */
+.file-list {
+  margin: 1em 0;
+}
+.item {
+  padding: 0.3em 0;
+}
+.item a {
+  text-decoration: none;
+  color: #ccc;
+}
+.item a:hover {
+  text-decoration: underline;
+}
+.folder a {
+  color: #ccc;
+  font-weight: bold;
+}
+
+.file-detail pre {
+  overflow: hidden;
+  text-wrap: auto;
+}
+
+.breadcrumbs {
+  margin: 1em 0;
+  padding: 0.5em;
+  position: sticky;
+  top: 70px;
+  left: 0;
+  background: #1a1a1a;
+  border-top: 1px dotted gray;
+  border-bottom: 1px dotted gray;
+}
+.breadcrumb-item {
+  text-decoration: none;
+  color: #8aacd6;
+}
+.breadcrumb-item.current {
+  color: #666;
+  font-weight: 500;
+}
+.breadcrumb-separator {
+  margin: 0 0.5em;
+  color: #666;
+}

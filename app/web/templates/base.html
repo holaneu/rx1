@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - RX1</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ui_components/sidebar.css') }}">
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 
   {% block head %}{% endblock %}
 </head>
 <body>
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
   {% include 'partials/sidebar.html' %}
 
-  <div class="container">
+  <div class="main_container">
     
 
-    <header class="header" id="header">
+    <div class="top_bar" id="header">
       <div class="container header-content">
           <div class="logo"><a href="/">RX1</a></div>
           <nav class="nav-main">
@@ -26,7 +29,7 @@
               <span></span><span></span><span></span>
           </div>
       </div>
-    </header>
+    </div>
 
     {% block content %}{% endblock %} 
   </div>  
