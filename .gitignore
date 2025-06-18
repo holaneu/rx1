@@ -25,7 +25,7 @@ Thumbs.db
 #.code-workspace
 
 # Private backups and archive
-_archvie/
+_archive/
 
 # Local testing folders and files
 test/
