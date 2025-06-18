@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Files{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/files.css') }}">
+{% endblock %}
+
+{% block content %}
+
+  <h1>File Explorer</h1>
+
+  {% include 'partials/files_breadcrumbs.html' %}
+
+  <div class="file-list">
+      {% if current_folder %}
+      <div class="item folder">
+          <a href="{{ url_for('files', item_id=current_folder.parent) if current_folder.parent else url_for('files') }}">
+              📁 ..
+          </a>
+      </div>
+      {% endif %}
+      
+      {% for item in items %}
+      <div class="item {{ item.type }}">
+          {% if item.type == 'folder' %}
+          <a href="{{ url_for('files', item_id=item.id) }}">📁 {{ item.title }}</a>
+          {% else %}
+          <a href="{{ url_for('item_detail', item_id=item.id) }}">📄 {{ item.title }}</a>
+          {% endif %}
+      </div>
+      {% endfor %}
+  </div>
+
+{% endblock %}
