@@ -1,5 +1,5 @@
 @echo off
 cd d %~dp0
-cd backend
+cd app
 python app.py
 pause
