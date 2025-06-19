@@ -26,7 +26,7 @@
           {% if item.type == 'folder' %}
           <a href="{{ url_for('files', item_id=item.id) }}">📁 {{ item.title }}</a>
           {% else %}
-          <a href="{{ url_for('item_detail', item_id=item.id) }}">📄 {{ item.title }}</a>
+          <a href="{{ url_for('files_file_detail', item_id=item.id) }}">📄 {{ item.title }}</a>
           {% endif %}
       </div>
       {% endfor %}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response, abort
+from flask import Flask, render_template, request, jsonify, Response, abort, redirect, url_for
 import uuid
 import json
 import queue
@@ -142,6 +142,10 @@ def status_stream():
             yield f"data: {json.dumps(payload)}\n\n"
     return Response(event_stream(), mimetype="text/event-stream")
 
+# redirect to handle the trailing slash issue
+@app.route('/files/')
+def files_with_slash():
+    return redirect(url_for('files'))
 
 @app.route('/files')
 @app.route('/files/folder/<item_id>')
@@ -183,7 +187,7 @@ def files(item_id=None):
 
 
 @app.route('/files/file/<item_id>')
-def item_detail(item_id):
+def files_file_detail(item_id):
     structure = file_manager.get_structure()
     item = next((item for item in structure['items'] if item.id == item_id), None)
     
@@ -205,7 +209,7 @@ def item_detail(item_id):
         full_path = os.path.join(FILES_FOLDER, item.file_path)
         with open(full_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        return render_template('file_detail.html', item=item, content=content, breadcrumbs=breadcrumbs)
+        return render_template('files_file_detail.html', item=item, content=content, breadcrumbs=breadcrumbs)
     except Exception as e:
         abort(500)
 
