@@ -41,12 +41,6 @@ def translation_cs_en_basic(task_id, input, model=None):
             ResponseKey.TASK_ID: task_id
         })
 
-    except RaisedError as e:
-        return response_output_error({
-            ResponseKey.ERROR: str(e),
-            ResponseKey.ACTION: ResponseAction.WORKFLOW_FAILED,
-            ResponseKey.TASK_ID: task_id
-        })
     except Exception as e:
         return response_output_error({
             ResponseKey.ERROR: f"Unexpected error: {str(e)}",

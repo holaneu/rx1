@@ -59,6 +59,7 @@ def start_task():
     try:
         import inspect
         task_id = str(uuid.uuid4())
+        status_queues[task_id] = queue.Queue()
         data = request.json
         if not data or 'workflow_id' not in data:
             return jsonify(response_output_error({
@@ -88,7 +89,7 @@ def start_task():
         if 'task_id' in workflow_func_params:
             kwargs['task_id'] = task_id
 
-        status_queues[task_id] = queue.Queue()
+        
         generator_func = workflow['function'](**kwargs)
         generators[task_id] = generator_func
         

@@ -3,17 +3,17 @@ let taskId, es;
 // DOM elements
 
 const domTextareaInput = document.getElementById('textareaInput');
-const domResponseBox = document.getElementById('responses');
+const domResponses = document.getElementById('responses');
 const domWorkflowSelect = document.getElementById('workflowSelect');
-const domUserInteractions = document.getElementById('interactions');
+const domInteractions = document.getElementById('interactions');
 
 
 // Functions
 
 async function startWorkflow() {
     // Clear previous responses
-    domResponseBox.innerHTML = "";
-    domUserInteractions.innerHTML = "";
+    domResponses.innerHTML = "";
+    domInteractions.innerHTML = "";
 
     // 1) Start the workflow (runs until first yield)
     const res = await fetch('/start_task', {
@@ -64,12 +64,26 @@ function renderMessageComponent({ title, body, data, form, isOpen = false, style
     </div>`;
 }
 
+function processCollectedMessages(response) {
+    if (response.collected_messages && response.collected_messages.length > 0) {
+        response.collected_messages.forEach(status => {
+            domResponses.innerHTML += renderMessageComponent({
+                title: status.title,
+                body: status.body,
+                data: status.data ? JSON.stringify(status.data, null, 2) : null,
+                style: 'color: #22b3e4;'
+            });
+        });
+    }
+}
+
 function handleMsg(response) {
     if (!response) return;
 
     // Handle errors
     if (response.status === 'error') {
-        domResponseBox.innerHTML += renderMessageComponent({
+        processCollectedMessages(response);
+        domResponses.innerHTML += renderMessageComponent({
             title: 'Error',
             body: response.message.body,
             isOpen: true,
@@ -81,7 +95,7 @@ function handleMsg(response) {
     // Handle different actions
     switch (response.action) {
         case 'interaction_request':
-            domUserInteractions.innerHTML += renderMessageComponent({
+            domInteractions.innerHTML += renderMessageComponent({
                 isOpen: true,
                 title: response.message.title,
                 body: response.message.body,
@@ -93,18 +107,19 @@ function handleMsg(response) {
 
         case 'workflow_finished':
         case 'task_done':
-            domResponseBox.innerHTML += renderMessageComponent({
+            processCollectedMessages(response);
+            domResponses.innerHTML += renderMessageComponent({
                 isOpen: false,
                 title: response.message.title,
                 body: response.message.body,
                 data: response.data ? JSON.stringify(response.data, null, 2) : null,
                 style: 'color: green;'
-            });
+            });            
             if (es) es.close();
             break;
 
         case 'status_message':
-            domResponseBox.innerHTML += renderMessageComponent({
+            domResponses.innerHTML += renderMessageComponent({
                 title: response.message.title,
                 body: response.message.body,
                 data: JSON.stringify(response, null, 2),
@@ -113,7 +128,7 @@ function handleMsg(response) {
             break;
 
         default:
-            domResponseBox.innerHTML += renderMessageComponent({
+            domResponses.innerHTML += renderMessageComponent({
                 title: response.message?.title || 'Status Update',
                 body: response.message?.body,
                 data: response.data ? JSON.stringify(response.data, null, 2) : null

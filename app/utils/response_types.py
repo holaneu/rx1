@@ -27,6 +27,7 @@ class ResponseKey(str, Enum):
     TITLE = "title"
     BODY = "body"
     CATEGORY = "category"
+    COLLECTED_MESSAGES = "collected_messages"
 
 class RaisedError(Exception):
     """Custom exception for errors"""
