@@ -27,12 +27,13 @@ class ResponseKey(str, Enum):
     TITLE = "title"
     BODY = "body"
     CATEGORY = "category"
-    COLLECTED_MESSAGES = "collected_messages"
+    COLLECTED_MESSAGES = "collected_messages" # REMOVE
+    FUNC_LOG = "func_log" 
 
-class RaisedError(Exception):
-    """Custom exception for errors"""
-    pass
 
+
+# Helper functions to format responses - these can be used in workflows or other parts of the application
+# Remove if not needed in the final implementation
 def response_output(response: Dict[str, Any]) -> Dict[str, Any]:
     """Helper to format the response output."""
     payload = {

@@ -64,9 +64,9 @@ function renderMessageComponent({ title, body, data, form, isOpen = false, style
     </div>`;
 }
 
-function processCollectedMessages(response) {
-    if (response.collected_messages && response.collected_messages.length > 0) {
-        response.collected_messages.forEach(status => {
+function processFuncLog(response) {
+    if (response.func_log && response.func_log.length > 0) {
+        response.func_log.forEach(status => {
             domResponses.innerHTML += renderMessageComponent({
                 title: status.title,
                 body: status.body,
@@ -82,7 +82,7 @@ function handleMsg(response) {
 
     // Handle errors
     if (response.status === 'error') {
-        processCollectedMessages(response);
+        processFuncLog(response);
         domResponses.innerHTML += renderMessageComponent({
             title: 'Error',
             body: response.message.body,
@@ -107,7 +107,7 @@ function handleMsg(response) {
 
         case 'workflow_finished':
         case 'task_done':
-            processCollectedMessages(response);
+            processFuncLog(response);
             domResponses.innerHTML += renderMessageComponent({
                 isOpen: false,
                 title: response.message.title,

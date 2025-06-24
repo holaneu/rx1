@@ -1,4 +1,4 @@
-from workflows.registry import workflow
+from workflows.core import workflow
 from utils.shared import put_status_to_queue
 from utils.response_types import *
 

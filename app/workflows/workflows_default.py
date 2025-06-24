@@ -1,4 +1,4 @@
-from workflows.registry import workflow
+from workflows.core import workflow
 from assistants.assistants_default import *
 from tools.tools_default import save_to_file, download_news_newsapi, json_db_add_entry, current_datetime_iso, generate_id, user_files_folder_path
 from configs.app_config import APP_SETTINGS

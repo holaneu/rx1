@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 import time
 
-from workflows.registry import WORKFLOWS_REGISTRY
+from workflows.core import WORKFLOWS_REGISTRY
 from utils.shared import status_queues
 from utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
 from storage.manager import FileStorageManager

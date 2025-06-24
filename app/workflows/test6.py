@@ -1,42 +1,28 @@
-from workflows.registry import workflow
-from utils.response_types import *
-
-def collect_message(collection, title, body):
-    collection.append({
-        ResponseKey.TITLE: title,
-        ResponseKey.BODY: body
-    })
+from workflows.core import *
 
 @workflow(category="Test")
 def test_raise(task_id):
     """testing workflow"""
     try:          
-        collected_messages = []
+        wf = Workflow()
 
-        data = list(range(6))
+        data = list(range(7))
 
-        collect_message(collected_messages, "Simulated date generated v2", data)
+        wf.add_func_log("Simulated date generated v2", data)     
 
         if len(data) <= 6:
-            raise RaisedError("data length is too short")
+            raise Exception("data length is too short")
 
-        collect_message(collected_messages, "Condition matched", f"Data length is {len(data)}, which is sufficient for processing.")     
+        wf.add_func_log("Condition matched", f"Data length is {len(data)}, which is sufficient for processing.")   
 
-        return response_output_success({
-            ResponseKey.DATA: data,
-            ResponseKey.ACTION: ResponseAction.WORKFLOW_FINISHED,
-            ResponseKey.MESSAGE: {
-                ResponseKey.TITLE:"test_raise completed successfully",
-                ResponseKey.BODY: f"Processed {len(data)} items"
-            },
-            ResponseKey.TASK_ID: task_id,
-            ResponseKey.COLLECTED_MESSAGES: collected_messages
-        })   
+        return wf.workflow_success(
+            data=data,
+            msgTitle= "Test Raise Workflow",
+            msgBody=f"Processed {len(data)} items successfully."
+        )      
     
     except Exception as e:
-        return response_output_error({
-            ResponseKey.ERROR: str(e),
-            ResponseKey.ACTION: ResponseAction.WORKFLOW_FAILED,
-            ResponseKey.TASK_ID: task_id,
-            ResponseKey.COLLECTED_MESSAGES: collected_messages
-        })
+        return wf.workflow_error(
+            error=e
+        )
+        
