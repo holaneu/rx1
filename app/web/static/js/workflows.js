@@ -95,6 +95,7 @@ function handleMsg(response) {
     // Handle different actions
     switch (response.action) {
         case 'interaction_request':
+            processFuncLog(response);
             domInteractions.innerHTML += renderMessageComponent({
                 isOpen: true,
                 title: response.message.title,
@@ -119,6 +120,7 @@ function handleMsg(response) {
             break;
 
         case 'status_message':
+            processFuncLog(response);
             domResponses.innerHTML += renderMessageComponent({
                 title: response.message.title,
                 body: response.message.body,
@@ -128,6 +130,7 @@ function handleMsg(response) {
             break;
 
         default:
+            processFuncLog(response);
             domResponses.innerHTML += renderMessageComponent({
                 title: response.message?.title || 'Status Update',
                 body: response.message?.body,

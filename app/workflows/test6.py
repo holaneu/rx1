@@ -8,21 +8,21 @@ def test_raise(task_id):
 
         data = list(range(7))
 
-        wf.add_func_log("Simulated date generated v2", data)     
+        #x = aaa # TEST: intentionally incorrect to test raising an exception
+
+        wf.add_to_func_log(msgTitle="Simulated date generated v2", msgBody=data)     
 
         if len(data) <= 6:
             raise Exception("data length is too short")
 
-        wf.add_func_log("Condition matched", f"Data length is {len(data)}, which is sufficient for processing.")   
+        wf.add_to_func_log(msgTitle="Condition matched", msgBody=f"Data length is {len(data)}, which is sufficient for processing.")   
 
-        return wf.workflow_success(
+        return wf.success_response(
             data=data,
             msgTitle= "Test Raise Workflow",
             msgBody=f"Processed {len(data)} items successfully."
         )      
     
     except Exception as e:
-        return wf.workflow_error(
-            error=e
-        )
+        return wf.error_response(error=e)
         

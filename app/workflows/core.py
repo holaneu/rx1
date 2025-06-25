@@ -40,14 +40,19 @@ def workflow(**kwargs):
 
 # Workflow class to manage workflow execution and logging
 class Workflow:
-    def __init__(self):
+    def __init__(self, task_id=None):
         self.func_log = []
+        self.task_id = task_id  # Store task_id for usage within the instance
 
-    def add_func_log(self, title, body=None):
+    def set_task_id(self, task_id):
+        """Set the task_id for this workflow instance."""
+        self.task_id = task_id
+
+    def add_to_func_log(self, msgTitle, msgBody=None):
         """Add a dict message to the func_log list."""
         message = {
-            ResponseKey.TITLE: title,
-            ResponseKey.BODY: body if body is not None else ""
+            ResponseKey.TITLE: msgTitle,
+            ResponseKey.BODY: msgBody if msgBody is not None else ""
         }
         self.func_log.append(message)
 
@@ -70,7 +75,7 @@ class Workflow:
             raise Exception("Message does not contain content.")        
         return message['content'].strip()
     
-    def workflow_success(self, data, msgTitle=None, msgBody=None, task_id=None):
+    def success_response(self, data, msgTitle=None, msgBody=None):
         """Format a successful workflow response."""
         from datetime import datetime
         return {
@@ -83,10 +88,10 @@ class Workflow:
                 ResponseKey.TITLE: msgTitle or "Workflow completed successfully",
                 ResponseKey.BODY: msgBody or ""
             },
-            ResponseKey.TASK_ID: task_id
+            ResponseKey.TASK_ID: self.task_id
         }
     
-    def workflow_error(self, error, msgTitle=None, msgBody=None, task_id=None):
+    def error_response(self, error, msgTitle=None, msgBody=None):
         """Format an error workflow response."""
         from datetime import datetime
         return {
@@ -99,7 +104,21 @@ class Workflow:
                 ResponseKey.TITLE: msgTitle or "Workflow failed",
                 ResponseKey.BODY: msgBody or str(error)
             },
-            ResponseKey.TASK_ID: task_id
+            ResponseKey.TASK_ID: self.task_id 
         }
-    
-    
+
+    def interaction_request(self, msgTitle=None, msgBody=None, message: dict=None):
+        """Helper to format an interaction request response."""
+        from datetime import datetime
+        return {
+            ResponseKey.STATUS: ResponseStatus.PENDING,
+            ResponseKey.ACTION: ResponseAction.INTERACTION_REQUEST,
+            ResponseKey.TIMESTAMP: datetime.now().timestamp(),
+            ResponseKey.FUNC_LOG: self.get_and_clear_func_log(),
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: msgTitle or "User Interaction Required",
+                ResponseKey.BODY: msgBody
+            },
+            ResponseKey.TASK_ID: self.task_id 
+        }
+

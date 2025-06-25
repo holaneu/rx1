@@ -1,9 +1,10 @@
-from workflows.core import workflow
+from workflows.core import *
 from assistants.assistants_default import *
 from tools.tools_default import save_to_file, download_news_newsapi, json_db_add_entry, current_datetime_iso, generate_id, user_files_folder_path
 from configs.app_config import APP_SETTINGS
 import json
-from utils.shared import put_status_to_queue
+
+from utils.shared import put_msg_to_task_sse_queue
 from utils.response_types import *
 
 # ----------------------
@@ -11,36 +12,45 @@ from utils.response_types import *
 
 @workflow()
 def workflow_translation_cs_en_json(input, model=None):
-    """Translates text between Czech and English and outputs it in JSON format."""
-    if input is None or input.strip() == "":
-        return "No input provided." 
-    translation_str = assistant_translator_cs_en_json(input=input.strip(), model=model, structured_output=True)
-    if not translation_str or not translation_str.get("message", {}).get("content"):
-        return "no translation generated"
-    translation_str = translation_str.get("message", {}).get("content", "").strip()
+    """Translates text between Czech and English and outputs it in JSON format."""    
     try:
-        file_name = "vocabulary"
-        translation_parsed = json.loads(translation_str)
+        wf = Workflow()
+        translation = assistant_translator_cs_en_json(input=input.strip(), model=model, structured_output=True)
+        translation_str = wf.get_assistant_output_or_raise(translation)        
+        translation_parsed = json.loads(translation_str)        
         if not isinstance(translation_parsed, dict):
-          return "invalid JSON structure"
-        translation_str = json.dumps(translation_parsed, indent=2, ensure_ascii=False)
-        save_to_file(user_files_folder_path(f"{file_name}.md"), translation_str + "\n\n-----\n", prepend=True)
+          raise Exception("invalid JSON structure")
+        translation_readable = json.dumps(translation_parsed, indent=2, ensure_ascii=False)
+        file_name = "vocabulary"
+        save_to_file(user_files_folder_path(f"{file_name}.md"), translation_readable + "\n\n-----\n", prepend=True)
         json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=translation_parsed, add_createdat=True)
-        return translation_str
-    except json.JSONDecodeError:
-        return "failed to decode JSON"
+        return wf.success_response(
+            data=translation_parsed,
+            msgTitle="Translation Completed",
+            msgBody=f"Translated text saved to {user_files_folder_path(f'{file_name}.md')}"
+        )
+    except Exception as e:
+        return wf.error_response(error=e)
 
 
 @workflow()
 def workflow_translation_cs_en_yaml(input, model=None):
     """Translates text between Czech and English in YAML format."""
-    if input is None or input.strip() == "":
-        return "No input provided." 
-    translation = assistant_translator_cs_en_yaml(input=input, model=model)
-    if translation:
-        translation = translation["message"]["content"].strip()
-        save_to_file(user_files_folder_path("vocabulary_yaml.txt"), translation + "\n\n-----\n", prepend=True)
-    return translation
+    try:
+        wf = Workflow()
+        if input is None or input.strip() == "":
+            return "No input provided." 
+        translation = assistant_translator_cs_en_yaml(input=input.strip(), model=model)
+        translated_text = wf.get_assistant_output_or_raise(translation)
+        file_path = user_files_folder_path("vocabulary_yaml.txt")
+        save_to_file(file_path, translated_text + "\n\n-----\n", prepend=True)
+        return wf.success_response(
+            data=translated_text,
+            msgTitle="Translation Completed",
+            msgBody=f"Translated text saved to {file_path}"
+        )
+    except Exception as e:
+        return wf.error_response(error=e)
 
 
 @workflow()

@@ -8,7 +8,7 @@ import os
 import time
 
 from workflows.core import WORKFLOWS_REGISTRY
-from utils.shared import status_queues
+from utils.shared import all_task_sse_queues
 from utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
 from storage.manager import FileStorageManager
 from configs.app_config import APP_SETTINGS
@@ -59,7 +59,7 @@ def start_task():
     try:
         import inspect
         task_id = str(uuid.uuid4())
-        status_queues[task_id] = queue.Queue()
+        all_task_sse_queues[task_id] = queue.Queue()
         data = request.json
         if not data or 'workflow_id' not in data:
             return jsonify(response_output_error({
@@ -119,7 +119,7 @@ def continue_task():
         return jsonify(continue_generator)
     except StopIteration as e:
         # Signal SSE stream to close
-        status_queues[task_id].put(None)
+        all_task_sse_queues[task_id].put(None)
         generators.pop(task_id, None)        
         return jsonify(getattr(e, "value", None) or {})
 
@@ -127,7 +127,7 @@ def continue_task():
 @app.route("/msg/stream")
 def status_stream():
     task_id = request.args.get("task_id")
-    task_status_queue = status_queues.get(task_id) # Get the queue for this task_id
+    task_status_queue = all_task_sse_queues.get(task_id) # Get the queue for this task_id
     if not task_status_queue:
         return "", 404
     def event_stream():
