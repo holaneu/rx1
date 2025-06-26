@@ -6,9 +6,9 @@ import datetime
 from pathlib import Path
 from typing import Dict, Any
 
-from tools.registry import tool
-from configs.ai_config import ai_models
-from configs.app_config import APP_SETTINGS
+from app.tools.registry import tool
+from app.configs.ai_config import ai_models
+from app.configs.app_config import APP_SETTINGS
 
 
 @tool()

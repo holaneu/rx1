@@ -7,16 +7,16 @@ from dotenv import load_dotenv
 import os
 import time
 
-from workflows.core import WORKFLOWS_REGISTRY
-from utils.shared import all_task_sse_queues
-from utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
-from storage.manager import FileStorageManager
-from configs.app_config import APP_SETTINGS
+from app.workflows.core import WORKFLOWS_REGISTRY
+from app.utils.shared import all_task_sse_queues
+from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
+from app.storage.manager import FileStorageManager
+from app.configs.app_config import APP_SETTINGS
 
 # ----------------------
 # Flask app setup
 
-app = Flask(__name__, static_folder='web/static', template_folder='web/templates')
+app = Flask(__name__, static_folder='app/web/static', template_folder='app/web/templates')
 
 # Enable CORS for API routes only
 CORS(app, resources={r"/api/*": {"origins": "*"}})

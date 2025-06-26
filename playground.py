@@ -1,5 +1,4 @@
-from workflows import WORKFLOWS_REGISTRY
-from workflows.core import WORKFLOWS_REGISTRY
+from app.workflows.core import WORKFLOWS_REGISTRY
 import json
 
 def testing_registries():

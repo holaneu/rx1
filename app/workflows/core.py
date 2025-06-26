@@ -1,5 +1,5 @@
 import inspect
-from utils.response_types import ResponseKey, ResponseAction, ResponseStatus
+from app.utils.response_types import ResponseKey, ResponseAction, ResponseStatus
 
 # Define a registry to hold all workflows
 # This allows for dynamic discovery and management of workflows

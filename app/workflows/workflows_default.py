@@ -1,11 +1,11 @@
-from workflows.core import *
-from assistants.assistants_default import *
-from tools.tools_default import save_to_file, download_news_newsapi, json_db_add_entry, current_datetime_iso, generate_id, user_files_folder_path
-from configs.app_config import APP_SETTINGS
+from app.workflows.core import *
+from app.assistants.assistants_default import *
+from app.tools.tools_default import save_to_file, download_news_newsapi, json_db_add_entry, current_datetime_iso, generate_id, user_files_folder_path
+from app.configs.app_config import APP_SETTINGS
 import json
 
-from utils.shared import put_msg_to_task_sse_queue
-from utils.response_types import *
+from app.utils.shared import put_msg_to_task_sse_queue
+from app.utils.response_types import *
 
 # ----------------------
 # Workflow functions

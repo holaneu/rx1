@@ -1,5 +1,5 @@
-from tools.tools_default import fetch_ai
-from assistants.registry import assistant
+from app.tools.tools_default import fetch_ai
+from app.assistants.registry import assistant
 
 # ----------------------
 # Assistant functions

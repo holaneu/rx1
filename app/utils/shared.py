@@ -3,7 +3,7 @@
 
 import queue
 import time
-from utils.response_types import ResponseKey
+from app.utils.response_types import ResponseKey
 
 all_task_sse_queues: dict[str, queue.Queue] = {}
 

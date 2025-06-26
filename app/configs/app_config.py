@@ -10,6 +10,6 @@ USER_SETTINGS = {
 
 # Application Settings
 APP_SETTINGS = {
-  "user_files_folder_path": f"user/{USER_SETTINGS["user_id"]}/files",
+  "user_files_folder_path": f"user_data/{USER_SETTINGS["user_id"]}/files",
   "locale_dropbox_path": os.getenv('LOCALE_DROPBOX_PATH'),
 }

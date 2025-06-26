@@ -1,4 +1,4 @@
-from workflows.core import *
+from app.workflows.core import *
 
 @workflow(category="Test")
 def test_single_return_no_yield(task_id):
