@@ -134,7 +134,7 @@ def assistant_translator_cs_en(input, model=None):
 def assistant_summarize_text(input, model=None):
     """Summarizes the input text."""
     config = {
-        "default_model": "gemini-1.5-flash", 
+        "default_model": "gemini-2.5-flash", 
         "verbose": True
     }
     model = model if model is not None else config['default_model']

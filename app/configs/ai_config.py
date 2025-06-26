@@ -55,7 +55,7 @@ ai_models = [
     "provider": "mistral"
   },
   {
-    "name": "gemini-2.0-flash",
+    "name": "gemini-2.5-flash",
     "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", 
     "api_key": os.getenv('GEMINI_API_KEY'),
     "api_type": "openai",

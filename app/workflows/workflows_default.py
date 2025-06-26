@@ -15,19 +15,17 @@ def workflow_translation_cs_en_json(input, model=None):
     """Translates text between Czech and English and outputs it in JSON format."""    
     try:
         wf = Workflow()
-        translation = assistant_translator_cs_en_json(input=input.strip(), model=model, structured_output=True)
-        translation_str = wf.get_assistant_output_or_raise(translation)        
-        translation_parsed = json.loads(translation_str)        
-        if not isinstance(translation_parsed, dict):
+        ai_data = wf.get_assistant_output_or_raise(assistant_translator_cs_en_json(input=input.strip(), model=model, structured_output=True))
+        ai_data_parsed = json.loads(ai_data)        
+        if not isinstance(ai_data_parsed, dict):
           raise Exception("invalid JSON structure")
-        translation_readable = json.dumps(translation_parsed, indent=2, ensure_ascii=False)
+        ai_data_readable = json.dumps(ai_data_parsed, indent=2, ensure_ascii=False)
         file_name = "vocabulary"
-        save_to_file(user_files_folder_path(f"{file_name}.md"), translation_readable + "\n\n-----\n", prepend=True)
-        json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=translation_parsed, add_createdat=True)
+        save_to_file(user_files_folder_path(f"{file_name}.md"), ai_data_readable + "\n\n-----\n", prepend=True)
+        json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=ai_data_parsed, add_createdat=True)
         return wf.success_response(
-            data=translation_parsed,
-            msgTitle="Translation Completed",
-            msgBody=f"Translated text saved to {user_files_folder_path(f'{file_name}.md')}"
+            data=ai_data_parsed,
+            msgBody=f"Result saved to {user_files_folder_path(f'{file_name}.md')}"
         )
     except Exception as e:
         return wf.error_response(error=e)
@@ -38,106 +36,118 @@ def workflow_translation_cs_en_yaml(input, model=None):
     """Translates text between Czech and English in YAML format."""
     try:
         wf = Workflow()
-        if input is None or input.strip() == "":
-            return "No input provided." 
-        translation = assistant_translator_cs_en_yaml(input=input.strip(), model=model)
-        translated_text = wf.get_assistant_output_or_raise(translation)
+        ai_data = wf.get_assistant_output_or_raise(assistant_translator_cs_en_yaml(input=input.strip(), model=model))
         file_path = user_files_folder_path("vocabulary_yaml.txt")
-        save_to_file(file_path, translated_text + "\n\n-----\n", prepend=True)
+        save_to_file(file_path, ai_data + "\n\n-----\n", prepend=True)
         return wf.success_response(
-            data=translated_text,
-            msgTitle="Translation Completed",
-            msgBody=f"Translated text saved to {file_path}"
+            data=ai_data,
+            msgBody=f"Result saved to {file_path}"
         )
     except Exception as e:
         return wf.error_response(error=e)
 
 
 @workflow()
-def workflow_translation_cs_en(input, model=None):
-    """Translates text between Czech and English."""
-    if input is None:
-        return None 
-    translation = assistant_translator_cs_en(input=input, model=model)
-    if translation:
-        translation = translation["message"]["content"].strip()
-        save_to_file(user_files_folder_path("translations.txt"), translation + "\n\n-----\n", prepend=True)
-    return translation
-
-
-@workflow()
 def workflow_text_summarization(input, model=None):
     """Summarizes input text."""
-    if input is None:
-        return None 
-    summarization = assistant_summarize_text(input=input, model=model)
-    if summarization:
-        summarization = summarization["message"]["content"].strip()
-        save_to_file(user_files_folder_path("summaries.txt"), summarization + "\n\n-----\n", prepend=True)
-    return summarization
-
+    try:
+        wf = Workflow()
+        ai_data = wf.get_assistant_output_or_raise(assistant_summarize_text(input=input.strip(), model=model))
+        file_path = user_files_folder_path("summaries.txt")
+        save_to_file(file_path, ai_data + "\n\n-----\n", prepend=True)
+        return wf.success_response(
+            data=ai_data,
+            msgBody=f"Result saved to {file_path}"
+        )
+    except Exception as e:
+        return wf.error_response(error=e)
 
 @workflow()
 def workflow_situation_analysis(input, model=None):
     """Analyzes a given situation and provides insights."""
-    if input is None:
-        return None 
-    analysis = assistant_analyze_situation(input=input, model=model)
-    if analysis:
-        analysis = analysis["message"]["content"].strip()
-        save_to_file(user_files_folder_path("situace.txt"), analysis + "\n\n-----\n", prepend=True)
-    return analysis
+    try:
+        wf = Workflow()
+        ai_data = wf.get_assistant_output_or_raise(assistant_analyze_situation(input=input.strip(), model=model))
+        file_path = user_files_folder_path("situace.txt")
+        save_to_file(file_path, ai_data + "\n\n-----\n", prepend=True)
+        return wf.success_response(
+            data=ai_data,
+            msgBody=f"Result saved to {file_path}"
+        )
+    except Exception as e:
+        return wf.error_response(error=e)
 
 
 @workflow()
 def workflow_video_transcript_summarization(input, model=None):
     """Summarizes the transcript of a video."""
-    if input is None:
-        return None 
-    summarization = assistant_summarize_video_transcript(input=input, model=model)
-    if summarization:
-        summarization = summarization["message"]["content"].strip()
-        save_to_file(user_files_folder_path("video_transcript_summaries.txt"), summarization + "\n\n-----\n", prepend=True)
-    return summarization
+    try:
+        wf = Workflow()
+        ai_data = wf.get_assistant_output_or_raise(assistant_summarize_video_transcript(input=input.strip(), model=model))
+        file_name = "video_transcript_summaries.txt"
+        save_to_file(user_files_folder_path(file_name), ai_data + "\n\n-----\n", prepend=True)
+        return wf.success_response(
+            data=ai_data,
+            msgBody=f"Result saved to {user_files_folder_path(file_name)}"
+        )
+    except Exception as e:
+        return wf.error_response(error=e) 
 
 
 @workflow()
 def workflow_explain_simply_lexicon(input, model=None):
     """Provides simple explanations, synonyms, and examples for a given phrase."""
-    if input is None:
-        return None 
-    lexicon = assistant_explain_simply_lexicon(input=input, model=model)
-    if lexicon:
-        lexicon = lexicon["message"]["content"].strip()
-        save_to_file(user_files_folder_path("lexicon.txt"), lexicon + "\n\n-----\n", prepend=True)        
-    return lexicon
+    try:
+        wf = Workflow()
+        ai_data = wf.get_assistant_output_or_raise(assistant_explain_simply_lexicon(input=input.strip(), model=model))
+        file_name = "lexicon.txt"
+        save_to_file(user_files_folder_path(file_name), ai_data + "\n\n-----\n", prepend=True)
+        return wf.success_response(
+            data=ai_data,
+            msgBody=f"Result saved to {user_files_folder_path(file_name)}"
+        )
+    except Exception as e:
+        return wf.error_response(error=e) 
 
 
 @workflow()
 def workflow_create_assistatnt_prompt(input, model=None):
-    """Creates a new assistant based on the input."""
-    if input is None:
-        return None 
-    assistant = assistant_assistant_instructions_creator(input=input, model=model)
-    if assistant:
-        assistant = assistant["message"]["content"].strip()
-        save_to_file(user_files_folder_path("assistants.txt"), assistant + "\n\n-----\n", prepend=True)
-    return assistant
+    """Creates a new assistant based on the input."""    
+    try:
+        wf = Workflow()
+        ai_data = wf.get_assistant_output_or_raise(assistant_assistant_instructions_creator(input=input.strip(), model=model))
+        file_name = "assistants.txt"
+        save_to_file(user_files_folder_path(file_name), ai_data + "\n\n-----\n", prepend=True)
+        return wf.success_response(
+            data=ai_data,
+            msgBody=f"Result saved to {user_files_folder_path(file_name)}"
+        )
+    except Exception as e:
+        return wf.error_response(error=e) 
 
 
 @workflow()
 def workflow_take_quick_note(input, model=None):
     """Takes a quick note and saves it to both JSON database and file."""
-    if input is None:
-        return None 
-    note = input.strip()
-    db_entry = {
-        "content": note
-    }
-    json_db_add_entry(db_filepath=user_files_folder_path("databases/quick_notes.json"), collection="notes", entry=db_entry)
-    save_to_file(user_files_folder_path("quick_notes.md"), note + "\n\n-----\n", prepend=True)
-    #save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True)    
-    return note
+    try:
+        wf = Workflow()
+        if input is None or input.strip() == "":
+            raise Exception("No input provided for quick note.")
+        note = input.strip()
+        db_entry = {
+            "content": note
+        }
+        file_path = user_files_folder_path("quick_notes.md")
+        db_file_path = user_files_folder_path("databases/quick_notes.json")
+        json_db_add_entry(db_filepath=db_file_path, collection="notes", entry=db_entry)
+        save_to_file(file_path, note + "\n\n-----\n", prepend=True)
+        #save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True) 
+        return wf.success_response(
+            data=note,
+            msgBody=f"Result saved to {file_path} and also to the database file {db_file_path}."
+        )
+    except Exception as e:
+        return wf.error_response(error=e)
 
 
 @workflow()
