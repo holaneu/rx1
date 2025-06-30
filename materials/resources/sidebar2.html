@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sidebar 2</title>
+  <style>
+    :root {
+      --bg-layer-1: #121212;
+      --bg-layer-2: #2a2a2a;
+      --bg-layer-3: #444;
+      --border-color: #333333;
+
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --accent: #646cff;
+      --accent-hover: #7c83ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-layer-1);
+      color: var(--text-primary);
+      font-family: sans-serif;
+      overflow-x: hidden;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      z-index: 1000;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .top-bar-left,
+    .top-bar-center,
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .hamburger {
+      cursor: pointer;
+      margin-right: 15px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .search-placeholder {
+      color: var(--text-secondary);
+      background-color: var(--bg-layer-2);
+      padding: 6px 12px;
+      border-radius: 4px;
+    }
+
+    .user-icon, .add-icon {
+      margin-left: 15px;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 230px;
+      height: calc(100% - 60px);
+      background-color: var(--bg-layer-2);
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 1100;
+      padding: 15px;
+      transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: calc(100% - 60px);
+      background: rgba(0,0,0,0.5);
+      z-index: 1090;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    .full-width-content {
+      padding-top: 60px;
+      width: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .main-content {
+      margin: 0 auto;
+      max-width: 800px;
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    @media (min-width: 1024px) {
+      .sidebar.active + .overlay {
+        display: none;
+      }
+      .sidebar.active ~ .full-width-content .main-content {
+        transform: translateX(115px); /* 230/2 to keep centered */
+      }
+    }
+
+    .sidebar nav a {
+      display: block;
+      padding: 10px;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .sidebar nav a:hover {
+      color: var(--accent-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="hamburger" id="hamburger">
+        <svg width="24" height="24" stroke="var(--text-primary)" stroke-width="2" fill="none" viewBox="0 0 24 24">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </div>
+      <div class="logo">RX1</div>
+    </div>
+    <div class="top-bar-center">
+      <div class="search-placeholder">Search...</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="add-icon">
+        <svg width="24" height="24" stroke="var(--text-primary)" stroke-width="2" fill="none" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </div>
+      <div class="user-icon">
+        <svg width="24" height="24" stroke="var(--text-primary)" stroke-width="2" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <nav>
+      <a href="#">Menu Item 1</a>
+      <a href="#">Menu Item 2</a>
+      <a href="#">Menu Item 3</a>
+      <a href="#">Menu Item 4</a>
+    </nav>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="full-width-content" id="contentContainer">
+    <div class="main-content">
+      <h1>Main Content</h1>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+      <p>More placeholder text to simulate page scrolling.</p>
+      <p style="margin-top: 1000px;">Scroll down to see the fixed top bar stays visible.</p>
+    </div>
+  </div>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.querySelector('.main-content');
+
+    function adjustSidebar() {
+      const windowWidth = window.innerWidth;
+      const contentMax = 800;
+      const sidebarWidth = 230;
+      if (windowWidth >= contentMax + sidebarWidth + 20) {
+        sidebar.classList.add('active');
+        overlay.classList.remove('active');
+        mainContent.style.transform = "translateX(115px)";
+      } else {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        mainContent.style.transform = "translateX(0)";
+      }
+    }
+
+
+
+    hamburger.addEventListener('click', () => {
+      const windowWidth = window.innerWidth;
+      const isActive = sidebar.classList.contains('active');
+      if (!isActive) {
+        sidebar.classList.add('active');
+        if (windowWidth < 1024) {
+          overlay.classList.add('active');
+        } else {
+          mainContent.style.transform = "translateX(115px)";
+        }
+      } else {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        mainContent.style.transform = "translateX(0)";
+      }
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+
+    window.addEventListener('resize', adjustSidebar);
+    window.addEventListener('DOMContentLoaded', adjustSidebar);
+  </script>
+</body>
+</html>

@@ -1,181 +1,135 @@
 :root {
-  --bg-layer-1: #121212;
-  --bg-layer-2: #2a2a2a;
-  --bg-layer-3: #444;
-  --border-color: #333333;
+      --bg-layer-1: #121212;
+      --bg-layer-2: #2a2a2a;
+      --bg-layer-3: #444;
+      --border-color: #333333;
 
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --accent: #646cff;
-  --accent-hover: #7c83ff;
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --accent: #646cff;
+      --accent-hover: #7c83ff;
 }
 
-html * {  
-  box-sizing: border-box;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  background-color: var(--bg-layer-1);
-  color: var(--text-primary);
-  font-family: 'Inter', -apple-system, system-ui, sans-serif;
-  margin: 0;
-  line-height: 1.6;
-  display: flex;
-  min-height: 100vh;
+    background-color: var(--bg-layer-1);
+    color: var(--text-primary);
+    font-family: sans-serif;
+    overflow-x: hidden;
 }
 
-.main_container {
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* ------------------------- */
-
-/* top_bar */
-.top_bar {
-  background-color: transparent;
-  padding: 0 1rem; /* Use padding for horizontal spacing, not height */
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  transition: background-color 0.3s ease, border-color 0.3s ease, font-color 0.3s ease;
-  border-bottom: 1px solid transparent;
-  height: 70px; /* Fixed height */
-  display: flex; /* Use flex to vertically center content within fixed height */
-  align-items: center;
-}
-
-.top_bar .container { /* Ensure container takes full height */
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%; /* Ensure container uses full header width */
-}
-
-.top_bar .scrolled {
-  background-color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  border-bottom: 1px solid #ddd;
-}
-
-.top_bar .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  flex-shrink: 0; /* Prevent logo from shrinking */
-}
-.top_bar .logo a {
-  color: inherit; /* Inherit color from header */
-  text-decoration: none;
-}
-
-/* --- Header Content Colors & Visibility --- */
-
-.top_bar .hamburger span {
-  background-color: #333; /* Dark hamburger lines */
-}
-
-/* State when header is transparent (NOT scrolled) */
-.top_bar:not(.scrolled) .logo,
-.top_bar:not(.scrolled) .nav-main a {
-  color: #fff; /* Light text */
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* Shadow for visibility */
-}
-/* Hamburger when transparent - ensure visibility */
-.top_bar:not(.scrolled) .hamburger span {
-  background-color: #fff; /* Light hamburger lines */
-   /* Optional: Add a subtle border/shadow for extra contrast if needed */
-   /* border: 1px solid rgba(0, 0, 0, 0.2); */
-   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-}
-
-.top_bar .nav-main {
-  display: flex;
-  gap: 1rem;
-  margin-left: auto; /* Push nav to the right, before hamburger */
-  margin-right: 1.5rem; /* Space between nav and hamburger */
-}
-
-.top_bar .nav-main a {
-  text-decoration: none;
-  white-space: nowrap; /* Prevent nav links wrapping */
-  color: #333;
-}
-
-/* ------------------------- */
-
-h1 {
-  color: var(--text-primary);
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-
-/* ------------------------- */
-
-
-/* Mobile menu styles */
-.hamburger {
-    display: none;
-    cursor: pointer;
-    padding: 10px;
-}
-
-.hamburger span {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background: #333;
-    margin: 5px 0;
-    transition: 0.3s;
-}
-
-.mobile-nav-overlay {
-    display: none;
+.top-bar {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 998;
+    width: 100%;
+    height: 60px;
+    background-color: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
 }
 
-@media (max-width: 768px) {
-    .hamburger {
-        display: block;
-    }
+.top-bar-left,
+.top-bar-center,
+.top-bar-right {
+    display: flex;
+    align-items: center;
+}
 
-    .top_bar .nav-main {
-        display: none;
-        position: fixed;
-        top: 60px;
-        right: 0;
-        background: white;
-        width: 200px;
-        padding: 20px;
-        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-        z-index: 999;
-    }
+.hamburger {
+    cursor: pointer;
+    margin-right: 15px;
+}
 
-    .top_bar .nav-main.active {
-        display: flex;
-        flex-direction: column;
-    }
+.logo {
+    font-size: 18px;
+    font-weight: bold;
+}
 
-    .top_bar .nav-main a {
-        padding: 10px 0;
-    }
+.search-placeholder {
+    color: var(--text-secondary);
+    background-color: var(--bg-layer-2);
+    padding: 6px 12px;
+    border-radius: 4px;
+}
 
-    .mobile-nav-overlay.active {
-        display: block;
+.user-icon, .add-icon {
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 230px;
+    height: calc(100% - 60px);
+    background-color: var(--bg-layer-2);
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1100;
+    padding: 15px;
+    transform: translateX(-100%);
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.overlay {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 60px);
+    background: rgba(0,0,0,0.5);
+    z-index: 1090;
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+
+.full-width-content {
+    padding-top: 60px;
+    width: 100%;
+    transition: transform 0.3s ease;
+}
+
+.main-content {
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+    .sidebar.active + .overlay {
+    display: none;
     }
+    .sidebar.active ~ .full-width-content .main-content {
+    transform: translateX(115px); /* 230/2 to keep centered */
+    }
+}
+
+.sidebar nav a {
+    display: block;
+    padding: 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+.sidebar nav a:hover {
+    color: var(--accent-hover);
 }

@@ -4,37 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - RX1</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/ui_components/sidebar.css') }}">
-    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">    
 
-  {% block head %}{% endblock %}
+    {% block head %}{% endblock %}
 </head>
+
 <body>
-    <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
-  {% include 'partials/sidebar.html' %}
 
-  <div class="main_container">
-    
-
-    <div class="top_bar" id="header">
-      <div class="container header-content">
-          <div class="logo"><a href="/">RX1</a></div>
-          <nav class="nav-main">
-            <a href="/">Home</a>
-            <a href="{{ url_for('page_workflows') }}">Workflows</a>
-            <a href="{{ url_for('files') }}">Files</a>
-            <a href="{{ url_for('page_test') }}">Test</a>
-          </nav>
-          <div class="hamburger" id="hamburger">
-              <span></span><span></span><span></span>
-          </div>
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="hamburger" id="hamburger">
+        <svg width="24" height="24" stroke="var(--text-primary)" stroke-width="2" fill="none" viewBox="0 0 24 24">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </div>
+      <div class="logo"><a href="/">RX1</a></div>
+    </div>
+    <div class="top-bar-center">
+      <div class="search-placeholder">Search...</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="add-icon">
+        <svg width="24" height="24" stroke="var(--text-primary)" stroke-width="2" fill="none" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </div>
+      <div class="user-icon">
+        <svg width="24" height="24" stroke="var(--text-primary)" stroke-width="2" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
       </div>
     </div>
+  </div>
 
-    {% block content %}{% endblock %} 
-  </div>  
-    
+  <div class="sidebar" id="sidebar">
+    <nav>
+        <a href="/">Home</a>
+        <a href="{{ url_for('page_workflows') }}">Workflows</a>
+        <a href="{{ url_for('files') }}">Files</a>
+        <a href="{{ url_for('page_test') }}">Test</a>
+    </nav>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="full-width-content" id="contentContainer">
+    <div class="main-content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+
 </body>
+
 </html>
 
