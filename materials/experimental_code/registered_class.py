@@ -51,3 +51,4 @@ print(all_as_json)
 
 # spuštění jednoho workflow
 wf.run()
+wf2.run()
