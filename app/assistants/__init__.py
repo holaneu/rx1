@@ -10,4 +10,4 @@ for filename in os.listdir(module_path):
         importlib.import_module(module_name)
 
 # Optionally expose the registry directly
-from .registry import ASSISTANTS_REGISTRY
+from .core import ASSISTANTS_REGISTRY

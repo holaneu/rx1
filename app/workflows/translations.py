@@ -8,10 +8,9 @@ def translation_cs_en_basic2(task_id, input, model=None):
     try:
         wf = Workflow()
 
-        wf.add_to_func_log(msgTitle="Translation Workflow Started", msgBody=f"Task ID: {task_id}, Input: {input}, Model: {model}")
+        wf.add_to_func_log(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Input: {input}, Model: {model}")
 
-        translation = assistant_translator_cs_en(input=input, model=model)
-        translated_text = wf.get_assistant_output_or_raise(translation)
+        translated_text = wf.get_assistant_output_or_raise(assistant_translator_cs_en(input=input, model=model))
         
         wf.add_to_func_log(msgTitle="Translation Completed", msgBody=f"Translated text: {translated_text}")
         
@@ -22,8 +21,7 @@ def translation_cs_en_basic2(task_id, input, model=None):
         
         return wf.success_response(
             data=translated_text,
-            msgTitle="Translation Completed",
-            msgBody=f"Translated text saved to {file_path}"
+            msgBody=f"Result saved to {file_path}"
         )
 
     except Exception as e:
