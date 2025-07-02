@@ -88,30 +88,54 @@ The goal is to **gradually expand the app’s capabilities**:
 
 ## Directory Structure
 
-| Folder           | Purpose                                      |
-|------------------|----------------------------------------------|
-| `app/assistants` | AI assistant definitions and logic           |
-| `app/tools`      | Utility and integration functions ("tools")  |
-| `app/workflows`  | Workflow orchestration logic                 |
-| `app/storage`    | Persistent storage and models                |
-| `user_data/`     | User-generated data and workflow configs     |
-| `materials/`     | Documentation and terminology                |
+| Folder           | Purpose                                                                 |
+|------------------|-------------------------------------------------------------------------|
+| `app/assistants` | AI assistant definitions and logic                                      |
+| `app/tools`      | Utility and integration functions ("tools")                             |
+| `app/workflows`  | Workflow orchestration logic                                            |
+| `app/storage`    | Persistent storage and models                                           |
+| `app/utils`      | Shared utility functions and helpers                                    |
+| `app/configs`    | Application configuration files and settings                            |
+| `app/web`        | Web interface: HTML templates, static files (CSS, JS, images)           |
+| `user_data/`     | User-generated data and workflow configs                                |
+| `materials/`     | Documentation and terminology                                           |
 
 
 ## Extending RX1
 
-To add a new tool, assistant, or workflow, simply create a Python function and decorate it:
-
-```python
-from app.tools.core import tool
-
-@tool()
-def my_custom_tool(input):
-    # Your logic here
-    return f"Processed: {input}"
-```
+To add a new workflow, tool or assistant, simply create a Python function and decorate it:
 
 The system will auto-discover and register it.
 
+Workflow example:
 
+```python
+from app.workflows.core import *
+from app.tools.public import save_to_file, user_files_folder_path
+from app.assistants.public import assistant_translator_cs_en
 
+@workflow()
+def translation_cs_en_basic_custom(task_id, input, model=None):
+    """Translates text between Czech and English v2."""
+    try:
+        wf = Workflow()
+
+        wf.add_to_func_log(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Input: {input}, Model: {model}")
+
+        translated_text = wf.get_assistant_output_or_raise(assistant_translator_cs_en(input=input, model=model))
+        
+        wf.add_to_func_log(msgTitle="Translation Completed", msgBody=f"Translated text: {translated_text}")
+        
+        file_path = user_files_folder_path("translations.txt")
+        save_to_file(file_path, translated_text + "\n\n-----\n", prepend=True)
+        
+        wf.add_to_func_log(msgTitle="Translation Saved to File", msgBody=f"File path: {file_path}")
+        
+        return wf.success_response(
+            data=translated_text,
+            msgBody=f"Result saved to {file_path}"
+        )
+
+    except Exception as e:
+        return wf.error_response(error=e)
+```
