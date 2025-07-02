@@ -3,10 +3,11 @@ let taskId, es;
 // DOM elements
 
 const domTextareaInput = document.getElementById('textareaInput');
-const domResponses = document.getElementById('responses');
 const domWorkflowSelect = document.getElementById('workflowSelect');
-const domInteractions = document.getElementById('interactions');
 
+const domInteractions = document.getElementById('interactions');
+const domResponses = document.getElementById('responses');
+const domLogs = document.getElementById('logs');
 
 // Functions
 
@@ -67,7 +68,7 @@ function renderMessageComponent({ title, body, data, form, isOpen = false, style
 function processFuncLog(response) {
     if (response.func_log && response.func_log.length > 0) {
         response.func_log.forEach(status => {
-            domResponses.innerHTML += renderMessageComponent({
+            domLogs.innerHTML += renderMessageComponent({
                 title: status.title,
                 body: status.body,
                 data: status.data ? JSON.stringify(status.data, null, 2) : null,

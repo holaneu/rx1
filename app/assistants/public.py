@@ -1,4 +1,4 @@
-from app.tools.tools_default import fetch_ai
+from app.tools.public import fetch_ai
 from app.assistants.core import assistant
 
 # ----------------------
