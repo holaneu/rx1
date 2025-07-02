@@ -15,18 +15,14 @@ The main concept of the app and its logic includes:
 
 - **Memory** refers to persistent data storage, allowing the system to retain and retrieve data as needed to support workflows and tasks. Currently, the system supports **storing data in local files**. However, the memory system is **extensible**, allowing for the addition of more storage types in the future, such as **database integrations**, **committing data to remote GitHub repositories** or other forms of persistent storage.
 
-### **Current and Long-Term Goals**
-
-The current intention of the app's author is to use the application to automate various personal and work-related tasks.
-
-At present, the application runs in a local environment and supports **API integrations over the internet** to extend its automation capabilities. 
+### **Goals**
 
 The goal is to **gradually expand the app’s capabilities**:
-- **Keep the simplicity** — focus on linear, sequential step processing.
 - **Simple workflow builder** — sequential, without any drag-and-drop canvases. Users can build workflows by adding steps (functions, tools, assistants) one after another. Each workflow is stored as JSON in private user data, with options to run, edit, or remove it.
 - **Cloud-hosted option** — the app should later support cloud deployment, making it accessible on mobile devices with centralized storage for user assets, along with user sign-up and sign-in capabilities.
 - **Plugin system** — allow tools, functions, assistants, workflows, and prompts to be extended via plugins, with two parallel resource pools: a public library distributed with the app, and a private library stored in user data.
 - **Prompts library** — maintain a structured library of prompts to support reusable and consistent AI interactions.
+- **Keep the simplicity** — focus on linear, sequential step processing.
 
 
 ## Details
