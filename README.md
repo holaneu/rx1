@@ -1,5 +1,12 @@
 # RX1 
 
+## 🚀 Looking for Contributors!
+
+We're seeking collaborators to help bring RX1 to a production-ready release! If you're passionate about workflow automation, AI integration, or building extensible Python applications, we'd love to have you on board.
+
+Whether you're interested in coding, testing, documentation, UI/UX, or just sharing ideas, your help is welcome. Please read the Goals and let us know if you'd like to join or contribute!
+
+
 ## Overview
 The main concept of the app and its logic includes:  
 - **Tools**, **AI assistants**, and **memory** combined together within **workflows** to automate tasks efficiently. Usage of AI is not necessary, AI is just one type of available actions (workflow steps) which user can utilize.  
@@ -17,12 +24,15 @@ The main concept of the app and its logic includes:
 
 ### **Goals**
 
-The goal is to **gradually expand the app’s capabilities**:
-- **Simple workflow builder** — sequential, without any drag-and-drop canvases. Users can build workflows by adding steps (functions, tools, assistants) one after another. Each workflow is stored as JSON in private user data, with options to run, edit, or remove it.
-- **Cloud-hosted option** — the app should later support cloud deployment, making it accessible on mobile devices with centralized storage for user assets, along with user sign-up and sign-in capabilities.
-- **Plugin system** — allow tools, functions, assistants, workflows, and prompts to be extended via plugins, with two parallel resource pools: a public library distributed with the app, and a private library stored in user data.
-- **Prompts library** — maintain a structured library of prompts to support reusable and consistent AI interactions.
-- **Keep the simplicity** — focus on linear, sequential step processing.
+The goal is to **gradually expand the app’s capabilities** while maintaining simplicity:
+- **Simple UI workflow builder** — Sequential, without any drag-and-drop canvases. Users can build workflows by adding steps (functions, tools, assistants) one after another. Each workflow is stored as JSON in private user data, with options to run, edit, or remove it.
+- **Cloud-hosted option** — The app should later support cloud deployment (simply using `git clone`, updating by `git pull`, etc.). The cloud option will make it accessible on mobile devices, with personal centralized storage for user assets, along with secure user authentication (sign-up and sign-in capabilities).
+- **Plugin system** — Allow tools, functions, assistants, workflows, and prompts to be extended as modules or plugins, with two parallel resource pools: a "public/default" library distributed with the app, and a "private/personal" library stored in user data.
+- **Prompts library** — Maintain a structured library of prompts to support reusable and consistent AI interactions.
+- **Asynchronous functions** — Enable support for asynchronous execution of functions to improve performance and responsiveness. *(Nice to have)*
+- **Realtime SSE messages** — Fix already implemented Server-Sent Events (SSE) for real-time updates and notifications in the UI. Now it doesn't work "real time" as expected, probably because of lack of async function?? *(Nice to have)*
+- **Simplicity and independancy** — Focus on linear step processing. Keep the codebase as simple as possible. Prefer using Python’s built-in standard libraries over external packages whenever feasible, minimizing dependencies and making the system easier to maintain and extend.
+- **Use classes** - Thinking about replace decorated functions by classes / instances, for workflows, tools, assistants etc.
 
 
 ## Details
