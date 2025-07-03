@@ -22,7 +22,8 @@ The main concept of the app and its logic includes:
 
 - **Memory** refers to persistent data storage, allowing the system to retain and retrieve data as needed to support workflows and tasks. Currently, the system supports **storing data in local files**. However, the memory system is **extensible**, allowing for the addition of more storage types in the future, such as **database integrations**, **committing data to remote GitHub repositories** or other forms of persistent storage.
 
-### **Goals**
+
+## **Goals**
 
 The goal is to **gradually expand the app’s capabilities** while maintaining simplicity:
 - **Simple UI workflow builder** — Sequential, without any drag-and-drop canvases. Users can build workflows by adding steps (functions, tools, assistants) one after another. Each workflow is stored as JSON in private user data, with options to run, edit, or remove it.
