@@ -1,0 +1,80 @@
+from app.workflows.core import *
+from app.tools.public import save_to_file, user_files_folder_path, json_db_add_entry
+from app.assistants.public import assistant_universal_no_instructions
+import json
+
+@workflow()
+def logbook_entry(input, model=None):
+    """Writes a logbook entry."""
+    try:
+        wf = Workflow()
+        source_text = input.strip()
+        instructions = f"""Na základě zadaného vstupu (může jít o větu, poznámku nebo kus kódu) vytvoř výstup ve strukturovaném JSON formátu se třemi klíčovými poli:
+        - "summary": Shrň, co daný úkol nebo kód dělá z pohledu uživatele (co mu to přinese nebo umožní). Pokud se jedná o kód, na začátek věty dej "Kód který, " (např. "Kód, který převede YAML na JSON").
+        - "procedure": V bodech popiš, co se děje krok za krokem. Každý bod formuluj jednoduše tak, aby mu rozuměl i netechnický čtenář. Za popis připoj do závorky krátké technické vysvětlení nebo zmínku o použitých funkcích, pokud to dává smysl. Pokud se jedná o kód, je preferované uvést do závorku funkci či metodu. Tam kde to dává smysl, např. pokud se jedná o kód, použij infinitivní slovesa bez podmětu (např. "Vybrat nejvhodnější výsledek ...", "Stáhnout obsah z ..." atd.). 
+        - "key_words": Vyjmenuj nejdůležitější použité technologie, knihovny, metody nebo klíčové pojmy. Vypisuj pouze ty, které vystihují účel a průběh úkolu nebo kódu.
+
+        Použij výstupní formát JSON, např.:
+        {{
+        "summary": "...",
+        "procedure": [
+            "...",
+            "..."
+        ],
+        "key_words": [
+            "...",
+            "..."
+        ]
+        }}
+
+        Vstup:
+        {source_text}
+
+        Priklady:
+        Priklad vstupu:
+        import json
+        data = {{"name": "Alice", "age": 30}}
+        json_string = json.dumps(data)
+        print(json_string)
+
+        Priklad vystupu:
+        {{
+        "summary": "Kód, který převede slovník s údaji o osobě na JSON řetězec a zobrazí ho.",
+        "procedure": [
+            "Načíst knihovnu pro práci s JSON formátem (import json).",
+            "Vytvořit slovník s informacemi o osobě, jako je jméno a věk (data = {{...}}).",
+            "Převést slovník na textový formát JSON (json.dumps()).",
+            "Vypsat výsledný JSON řetězec do konzole (print())."
+        ],
+        "key_words": [
+            "Python",
+            "json.dumps()",
+            "slovník",
+            "JSON"
+        ]
+        }}
+        """
+        entry = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions, model="gpt-4o", structured_output=True)).strip()
+        try:
+            entry_parsed = json.loads(entry)
+            if not isinstance(entry_parsed, dict):
+                return "invalid JSON structure"            
+            # Save pretty-printed JSON to file
+            entry_str = json.dumps(entry_parsed, indent=2, ensure_ascii=False)
+            save_to_file(user_files_folder_path("logbook.md"), entry_str + "\n\n-----\n", prepend=True)        
+            # Save parsed dictionary directly to database
+            json_db_add_entry(
+                db_filepath=user_files_folder_path("databases/logbook.json"), 
+                collection="entries", 
+                entry=entry_parsed,  # Use the parsed dict instead of JSON string
+                add_createdat=True
+            )        
+            return wf.success_response(
+                data=entry_parsed,
+                msgBody=f"Logbook entry saved to {user_files_folder_path('logbook.md')} and database."
+            )
+        except json.JSONDecodeError:
+            raise Exception("failed to decode JSON")
+    except Exception as e:
+        return wf.error_response(error=e)
+

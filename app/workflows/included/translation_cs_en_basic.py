@@ -3,7 +3,7 @@ from app.tools.public import save_to_file, user_files_folder_path
 from app.assistants.public import assistant_translator_cs_en
 
 @workflow()
-def translation_cs_en_basic2(task_id, input, model=None):
+def translation_cs_en_basic(task_id, input, model=None):
     """Translates text between Czech and English v2."""
     try:
         wf = Workflow()

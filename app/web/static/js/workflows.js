@@ -13,6 +13,7 @@ const domLogs = document.getElementById('logs');
 
 async function startWorkflow() {
     // Clear previous responses
+    domLogs.innerHTML = "";
     domResponses.innerHTML = "";
     domInteractions.innerHTML = "";
 
