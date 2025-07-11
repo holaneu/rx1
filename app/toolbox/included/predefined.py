@@ -6,12 +6,12 @@ import datetime
 from pathlib import Path
 from typing import Dict, Any
 
-from app.tools.core import tool
+from app.toolbox.core import toolbox
 from app.configs.ai_config import ai_models
 from app.configs.app_config import APP_SETTINGS
 
 
-@tool()
+@toolbox()
 def get_model(model_name):
   """
   Retrieves an AI model configuration from a list of available models by its name.
@@ -27,14 +27,14 @@ def get_model(model_name):
   return None
 
 
-@tool()
+@toolbox()
 def format_str_as_message_obj(input):
     if isinstance(input, str):
         return [{"role": "user", "content": input}]
     return input
 
 
-@tool()
+@toolbox()
 def fetch_ai(model, input, structured_output=None, response_format=None):
   """
   Fetches AI response using specified model and input.
@@ -63,7 +63,7 @@ def fetch_ai(model, input, structured_output=None, response_format=None):
   return None
 
 
-@tool()
+@toolbox()
 def call_api_of_type_openai_official(model, input):
   from openai import OpenAI
   client = OpenAI()
@@ -115,7 +115,7 @@ def call_api_of_type_openai_official(model, input):
 
 
 # TESTING: call_api_of_type_openai_v3
-@tool()
+@toolbox()
 def call_api_of_type_openai_v3(model, input, structured_output=None, response_format=None, temperature=None):
   """
   Calls OpenAI API with the given model and input.
@@ -207,7 +207,7 @@ def call_api_of_type_openai_v3(model, input, structured_output=None, response_fo
     return None
 
 
-@tool()
+@toolbox()
 def call_api_of_type_anthropic(model, messages):
   model_data = get_model(model['name'])
   if model_data is None:
@@ -242,7 +242,7 @@ def call_api_of_type_anthropic(model, messages):
     return None
 
 
-@tool()
+@toolbox()
 def download_news_newsapi(query=None, lastDays=None, domains=None):
   """
   Fetches news articles from NewsAPI based on configured settings.
@@ -281,7 +281,7 @@ def download_news_newsapi(query=None, lastDays=None, domains=None):
     return None
 
 
-@tool()
+@toolbox()
 def open_file(filepath):
   """
   Opens and reads a text file, returning its contents as a string.
@@ -396,7 +396,7 @@ def save_to_external_file(filename, content, prepend=False, base_path=None):
         raise
 
 
-@tool()
+@toolbox()
 def save_to_json_file(data, output_file):
   """Saves data to a JSON file with UTF-8 encoding.
   Args:
@@ -410,7 +410,7 @@ def save_to_json_file(data, output_file):
     json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-@tool()
+@toolbox()
 def split_and_strip(content):
   """
   Splits a string by a delimiter of 5 or more hyphens and strips whitespace from each part.
@@ -431,7 +431,7 @@ def split_and_strip(content):
   return stripped_parts
 
 
-@tool()
+@toolbox()
 def generate_id(length=10):    
   """
   Generate a random ID string of specified length using letters and numbers.  
@@ -451,7 +451,7 @@ def generate_id(length=10):
   return ''.join(random.choice(chars) for _ in range(length))
 
 
-@tool()
+@toolbox()
 def current_datetime_iso():
     """
     Returns the current datetime in ISO 8601 format.
@@ -464,12 +464,12 @@ def current_datetime_iso():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()   
 
 
-@tool()
+@toolbox()
 def user_files_folder_path(file_path: str) -> str:
     return os.path.join(APP_SETTINGS["user_files_folder_path"], file_path) 
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_load(db_filepath: str) -> dict:
     """
     Load JSON database from a file.
@@ -486,7 +486,7 @@ def json_db_load(db_filepath: str) -> dict:
         return {}
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_save(db_filepath: str, data: dict) -> dict:
   """
   Save JSON database to a file.
@@ -515,7 +515,7 @@ def json_db_save(db_filepath: str, data: dict) -> dict:
     }
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_create_db_without_schema(
    db_filepath: str, 
    title: str = None, 
@@ -594,7 +594,7 @@ def json_db_create_db_without_schema(
     }
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_get_entry(db_filepath: str, collection: str, entry_id: str) -> dict:
     """
     Retrieve a single entry by ID from the database.
@@ -613,7 +613,7 @@ def json_db_get_entry(db_filepath: str, collection: str, entry_id: str) -> dict:
     return None
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_get_collection(db_filepath: str, collection: str) -> dict:
     """
     Retrieve all entries from a specified collection in the database.
@@ -648,7 +648,7 @@ def json_db_get_collection(db_filepath: str, collection: str) -> dict:
     return {"success": True, "message": "Collection retrieved successfully.", "data": {"collection_name": collection, "total_entries": len(collection_data), "entries": collection_data}}
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_add_entry(db_filepath: str, collection: str, entry: dict, add_createdat: bool = None, add_updatedat: bool = None) -> str:
   """
   Add a new entry to a collection in the JSON database.
@@ -708,7 +708,7 @@ def json_db_add_entry(db_filepath: str, collection: str, entry: dict, add_create
   return {"success": True, "message": "Entry added successfully.", "data": {"entry_id": entry_id}}
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_update_entry(db_filepath: str, collection: str, entry_id: str, updates: dict) -> bool:
     """
     Update an existing entry by ID in the JSON database.
@@ -751,7 +751,7 @@ def json_db_update_entry(db_filepath: str, collection: str, entry_id: str, updat
     return {"success": False, "message": "Entry not found."}
 
 
-@tool(category='database')
+@toolbox(category='database')
 def json_db_delete_entry(db_filepath: str, collection: str, entry_id: str) -> bool:
     """
     Delete an entry by ID from the database.
@@ -829,7 +829,7 @@ def brave_search(query: str, count: int = 5) -> Dict[str, Any]:
         }
 
 
-@tool()
+@toolbox()
 def download_web_sourcecode(url: str) -> str:
     """
     Download the content of a web page.
@@ -846,7 +846,7 @@ def download_web_sourcecode(url: str) -> str:
         return str(e)
 
 
-@tool()
+@toolbox()
 def download_web_readable_content(url: str, css_selector: str = None) -> str:
     """
     Download and extract content from a web page, optionally filtered by CSS selector.
@@ -885,7 +885,7 @@ def download_web_readable_content(url: str, css_selector: str = None) -> str:
         return str(e)
 
 
-@tool()
+@toolbox()
 def crawl_website_for_urls(start_url: str, url_pattern: str = None, max_pages: int = 100) -> list:
     """
     Crawls a website starting from a given URL and collects all unique URLs containing a specific pattern.
@@ -943,7 +943,7 @@ def crawl_website_for_urls(start_url: str, url_pattern: str = None, max_pages: i
     return list(found_urls)
 
 
-@tool()
+@toolbox()
 def extract_urls_from_pages(urls: list, css_selector: str) -> list:
     """
     Extracts all unique URLs from specified elements within each page.
@@ -983,7 +983,7 @@ def extract_urls_from_pages(urls: list, css_selector: str) -> list:
             
     return list(found_urls)
 
-@tool()
+@toolbox()
 def slugify(text: str) -> str:    
     """
     Convert text to URL-friendly slug.
@@ -1015,7 +1015,7 @@ def slugify(text: str) -> str:
     return text
 
 
-@tool()
+@toolbox()
 def encode_image_to_base64(file_path):
     """Convert an image file to base64 string representation."""
     
@@ -1024,7 +1024,7 @@ def encode_image_to_base64(file_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-@tool()
+@toolbox()
 def extract_text_from_image_mistral_ocr(file_path):
     """Extract text from an image using Mistral OCR API."""
     if not file_path:
@@ -1064,7 +1064,7 @@ def extract_text_from_image_mistral_ocr(file_path):
     return result.get("pages", [])[0].get("markdown", "")
 
 
-@tool()
+@toolbox()
 def extract_text_from_image_openai(file_path, model=None):
     """Extract text from an image using OpenAI ChatGPT API."""
     if not file_path:
@@ -1112,7 +1112,7 @@ def extract_text_from_image_openai(file_path, model=None):
     return result["choices"][0]["message"]["content"]
 
 
-@tool()
+@toolbox()
 def commit_to_github(files: list, commit_message: str, repo_name: str, branch: str = "main") -> dict:
     """
     Commits and pushes files to a GitHub repository.

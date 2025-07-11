@@ -2,7 +2,7 @@ import inspect
 
 TOOLBOX_REGISTRY = {}
 
-def tool(**kwargs):
+def toolbox(**kwargs):
     def decorator(func):
         func.id = func.__name__
         func.name = kwargs.get('name', func.__name__.replace('tool_', '').replace('_', ' '))
