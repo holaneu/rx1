@@ -1,5 +1,5 @@
 from app.workflows.core import workflow, Workflow
-from app.tools.public import save_to_file, user_files_folder_path
+from app.tools.included import save_to_file, user_data_files_path
 from app.assistants.public import assistant_summarize_video_transcript
 
 @workflow()
@@ -9,10 +9,10 @@ def video_transcript_summarization(input, model=None):
         wf = Workflow()
         ai_data = wf.get_assistant_output_or_raise(assistant_summarize_video_transcript(input=input.strip(), model=model))
         file_name = "video_transcript_summaries.txt"
-        save_to_file(user_files_folder_path(file_name), ai_data + "\n\n-----\n", prepend=True)
+        save_to_file(user_data_files_path(file_name), ai_data + "\n\n-----\n", prepend=True)
         return wf.success_response(
             data=ai_data,
-            msgBody=f"Result saved to {user_files_folder_path(file_name)}"
+            msgBody=f"Result saved to {user_data_files_path(file_name)}"
         )
     except Exception as e:
         return wf.error_response(error=e) 

@@ -1,5 +1,5 @@
 from app.workflows.core import *
-from app.tools.public import save_to_file, user_files_folder_path, json_db_add_entry
+from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
 from app.assistants.public import assistant_universal_no_instructions
 import json
 
@@ -61,17 +61,17 @@ def logbook_entry(input, model=None):
                 return "invalid JSON structure"            
             # Save pretty-printed JSON to file
             entry_str = json.dumps(entry_parsed, indent=2, ensure_ascii=False)
-            save_to_file(user_files_folder_path("logbook.md"), entry_str + "\n\n-----\n", prepend=True)        
+            save_to_file(user_data_files_path("logbook.md"), entry_str + "\n\n-----\n", prepend=True)        
             # Save parsed dictionary directly to database
             json_db_add_entry(
-                db_filepath=user_files_folder_path("databases/logbook.json"), 
+                db_filepath=user_data_files_path("databases/logbook.json"), 
                 collection="entries", 
                 entry=entry_parsed,  # Use the parsed dict instead of JSON string
                 add_createdat=True
             )        
             return wf.success_response(
                 data=entry_parsed,
-                msgBody=f"Logbook entry saved to {user_files_folder_path('logbook.md')} and database."
+                msgBody=f"Logbook entry saved to {user_data_files_path('logbook.md')} and database."
             )
         except json.JSONDecodeError:
             raise Exception("failed to decode JSON")

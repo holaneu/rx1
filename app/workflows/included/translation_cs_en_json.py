@@ -1,6 +1,7 @@
 from app.workflows.core import *
-from app.tools.public import save_to_file, user_files_folder_path, json_db_add_entry
+from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
 from app.assistants.public import assistant_translator_cs_en_json
+import json
 
 @workflow()
 def workflow_translation_cs_en_json(input, model=None):
@@ -13,11 +14,11 @@ def workflow_translation_cs_en_json(input, model=None):
           raise Exception("invalid JSON structure")
         ai_data_readable = json.dumps(ai_data_parsed, indent=2, ensure_ascii=False)
         file_name = "vocabulary"
-        save_to_file(user_files_folder_path(f"{file_name}.md"), ai_data_readable + "\n\n-----\n", prepend=True)
-        json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=ai_data_parsed, add_createdat=True)
+        save_to_file(user_data_files_path(f"{file_name}.md"), ai_data_readable + "\n\n-----\n", prepend=True)
+        json_db_add_entry(db_filepath=user_data_files_path(f"databases/{file_name}.json"), collection="entries", entry=ai_data_parsed, add_createdat=True)
         return wf.success_response(
             data=ai_data_parsed,
-            msgBody=f"Result saved to {user_files_folder_path(f'{file_name}.md')}"
+            msgBody=f"Result saved to {user_data_files_path(f'{file_name}.md')}"
         )
     except Exception as e:
         return wf.error_response(error=e)

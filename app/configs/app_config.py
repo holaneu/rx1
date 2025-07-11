@@ -5,11 +5,12 @@ load_dotenv()
 
 # User settings
 USER_SETTINGS = {
-  "user_id": os.getenv('USER_ID'),
+    "user_id": "test_user",
 }
 
 # Application Settings
 APP_SETTINGS = {
-  "user_files_folder_path": f"user_data/{USER_SETTINGS["user_id"]}/files",
-  "locale_dropbox_path": os.getenv('LOCALE_DROPBOX_PATH'),
+    "user_data_path": f"user_data/{USER_SETTINGS['user_id']}",
+    "user_data_files_path": f"user_data/{USER_SETTINGS["user_id"]}/files",
+    "user_files_folder_path": f"user_data/{USER_SETTINGS["user_id"]}/files"
 }

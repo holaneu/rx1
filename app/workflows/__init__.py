@@ -5,7 +5,7 @@ module_path = os.path.dirname(__file__)
 
 # Import all Python files in the workflows folder (except __init__.py and other special files)
 for filename in os.listdir(module_path):
-    if filename.endswith(".py") and filename not in {"__init__.py"}:
+    if filename.endswith(".py") and filename not in {"__init__.py", "core.py"}:
         module_name = f"{__name__}.{filename[:-3]}"
         importlib.import_module(module_name)
 
@@ -17,7 +17,7 @@ for subfolder in subfolders:
     subfolder_path = os.path.join(module_path, subfolder)
     if os.path.isdir(subfolder_path):
         for filename in os.listdir(subfolder_path):
-            if filename.endswith(".py") and filename != "__init__.py":
+            if filename.endswith(".py") and filename not in {"__init__.py", "core.py"}:
                 module_name = f"{__name__}.{subfolder}.{filename[:-3]}"
                 importlib.import_module(module_name)
 

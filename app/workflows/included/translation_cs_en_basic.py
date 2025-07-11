@@ -1,5 +1,5 @@
 from app.workflows.core import *
-from app.tools.public import save_to_file, user_files_folder_path
+from app.tools.included import save_to_file, user_data_files_path
 from app.assistants.public import assistant_translator_cs_en
 
 @workflow()
@@ -14,7 +14,7 @@ def translation_cs_en_basic(task_id, input, model=None):
         
         wf.add_to_func_log(msgTitle="Translation Completed", msgBody=f"Translated text: {translated_text}")
         
-        file_path = user_files_folder_path("translations.txt")
+        file_path = user_data_files_path("translations.txt")
         save_to_file(file_path, translated_text + "\n\n-----\n", prepend=True)
         
         wf.add_to_func_log(msgTitle="Translation Saved to File", msgBody=f"File path: {file_path}")

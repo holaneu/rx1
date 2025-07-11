@@ -1,5 +1,5 @@
 from app.workflows.core import *
-from app.tools.public import save_to_file, user_files_folder_path, generate_id, current_datetime_iso
+from app.tools.included import save_to_file, user_data_files_path, generate_id, current_datetime_iso
 from app.assistants.public import assistant_universal_no_instructions
 
 @workflow()
@@ -38,7 +38,7 @@ def quiz_from_text(input, model=None):
 
         questions = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions_questions, model="gpt-4o"))
 
-        questions_file_path = user_files_folder_path("questions.txt")
+        questions_file_path = user_data_files_path("questions.txt")
         save_to_file(questions_file_path, questions + "\n\n-----\n", prepend=True)        
         wf.add_to_func_log(msgTitle="Quiz questions generated", msgBody=f"Questions saved to {questions_file_path}")
 
@@ -75,10 +75,10 @@ def quiz_from_text(input, model=None):
         }}
         """
         quiz_questions = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions_quiz_questions, model="gpt-4o"))
-        save_to_file(user_files_folder_path("quizzes.txt"), quiz_questions + "\n\n-----\n", prepend=True)
+        save_to_file(user_data_files_path("quizzes.txt"), quiz_questions + "\n\n-----\n", prepend=True)
         return wf.success_response(
             data=quiz_questions,
-            msgBody=f"Quiz questions saved to {user_files_folder_path('quizzes.txt')}"
+            msgBody=f"Quiz questions saved to {user_data_files_path('quizzes.txt')}"
         )
     except Exception as e:
         return wf.error_response(error=e)

@@ -1,5 +1,5 @@
 from app.workflows.core import workflow, Workflow
-from app.tools.public import download_news_newsapi, save_to_file, json_db_add_entry, user_files_folder_path
+from app.tools.included import download_news_newsapi, save_to_file, json_db_add_entry, user_data_files_path
 import json
 
 @workflow()
@@ -12,8 +12,8 @@ def download_ai_news():
             raise Exception("no news found")
         articles = news.get("articles", [])
         
-        file_path = user_files_folder_path("news.md")
-        db_file_path = user_files_folder_path("databases/news.json")
+        file_path = user_data_files_path("news.md")
+        db_file_path = user_data_files_path("databases/news.json")
         for article in articles:
             article_readable = json.dumps(article, indent=2, ensure_ascii=False)
             json_db_add_entry(db_filepath=db_file_path, collection="entries", entry=article, add_createdat=False)

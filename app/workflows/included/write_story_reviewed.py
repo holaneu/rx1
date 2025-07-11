@@ -1,5 +1,5 @@
 from app.workflows.core import workflow, Workflow
-from app.tools.public import save_to_file, user_files_folder_path, json_db_add_entry
+from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
 from app.assistants.public import assistant_writer, assistant_universal_no_instructions
 
 @workflow()
@@ -37,11 +37,11 @@ def write_story_reviewed(input, model=None):
             "editor_feedback": editor_feedback.strip(),
             "content": writer_edited_story.strip()        
         }
-        save_to_file(user_files_folder_path("stories.md"), writer_edited_story + "\n\n-----\n", prepend=True)
-        json_db_add_entry(db_filepath=user_files_folder_path("databases/stories.json"), collection="entries", entry=db_entry, add_createdat=True)
+        save_to_file(user_data_files_path("stories.md"), writer_edited_story + "\n\n-----\n", prepend=True)
+        json_db_add_entry(db_filepath=user_data_files_path("databases/stories.json"), collection="entries", entry=db_entry, add_createdat=True)
         return wf.success_response(
             data=writer_edited_story,
-            msgBody=f"Story reviewed and saved to {user_files_folder_path('stories.md')}"
+            msgBody=f"Story reviewed and saved to {user_data_files_path('stories.md')}"
         )
 
     except Exception as e:

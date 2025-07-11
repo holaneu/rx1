@@ -1,6 +1,6 @@
 from app.workflows.core import workflow, Workflow
 from app.assistants.public import assistant_universal_no_instructions
-from app.tools.public import save_to_file, user_files_folder_path
+from app.tools.included import save_to_file, user_data_files_path
 
 @workflow()
 def exctract_theses(input, model=None):
@@ -19,7 +19,7 @@ def exctract_theses(input, model=None):
         - [teze 3]
         """
         theses = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions_theses, model="gpt-4o"))
-        file_path = user_files_folder_path("theses.txt")
+        file_path = user_data_files_path("theses.txt")
         save_to_file(file_path, theses + "\n\n-----\n", prepend=True)
         return wf.success_response(
             data=theses,

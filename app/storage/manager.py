@@ -1,11 +1,13 @@
 import os
 import hashlib
-from typing import Dict, List
+from typing import Dict, List, Optional, Set
 from .models import FileSystemItem
 
 class FileStorageManager:
-    def __init__(self, base_path: str):
+    def __init__(self, base_path: str, skip_folders: Optional[List[str]] = None):
         self.base_path = os.path.abspath(base_path)
+        # Store skip_folders as a set of lowercase names for fast lookup
+        self.skip_folders: Set[str] = set(f.lower() for f in (skip_folders or []))
 
     def _generate_id(self, path: str) -> str:
         """Generate a unique ID for a file/folder based on its path"""
@@ -17,6 +19,12 @@ class FileStorageManager:
         files: List[tuple] = []
         
         for root, dirs, filenames in os.walk(self.base_path):
+            # Filter out skipped folders from dirs so os.walk won't descend into them
+            dirs[:] = [d for d in dirs if d.lower() not in self.skip_folders]
+            # Skip processing if current directory is a skipped folder
+            if os.path.basename(root).lower() in self.skip_folders:
+                continue
+
             # Process current directory
             if root != self.base_path:  # Skip base directory itself
                 dir_id = self._generate_id(root)
@@ -31,6 +39,9 @@ class FileStorageManager:
 
             # Process files in current directory
             for file in filenames:
+                # Skip files inside skipped folders
+                if os.path.basename(root).lower() in self.skip_folders:
+                    continue
                 full_path = os.path.join(root, file)
                 file_id = self._generate_id(full_path)
                 parent_id = None if root == self.base_path else self._generate_id(root)

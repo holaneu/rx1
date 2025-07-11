@@ -2,7 +2,7 @@
 
 ## 🚀 Looking for Contributors!
 
-We're seeking collaborators to help bring RX1 to a production-ready release! If you're passionate about workflow automation, AI integration, or building extensible Python applications, we'd love to have you on board.
+I am seeking collaborators to help bring RX1 oper-source project to a production-ready release! If you're passionate about workflow automation, AI integration, or building extensible Python applications, we'd love to have you on board.
 
 Whether you're interested in coding, testing, documentation, UI/UX, or just sharing ideas, your help is welcome. Please read the Goals and let us know if you'd like to join or contribute!
 

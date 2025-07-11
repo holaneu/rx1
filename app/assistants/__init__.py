@@ -5,7 +5,7 @@ import importlib
 module_path = os.path.dirname(__file__)
 
 for filename in os.listdir(module_path):
-    if filename.endswith(".py") and filename not in {"__init__.py", "registry.py"}:
+    if filename.endswith(".py") and filename not in {"__init__.py", "core.py"}:
         module_name = f"{__name__}.{filename[:-3]}"
         importlib.import_module(module_name)
 

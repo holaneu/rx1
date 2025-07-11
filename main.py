@@ -33,8 +33,8 @@ generators: dict[str, any] = {}
 wf_registry = WORKFLOWS_REGISTRY
 
 # File storage manager
-FILES_FOLDER = APP_SETTINGS['user_files_folder_path']
-file_manager = FileStorageManager(FILES_FOLDER)
+FILES_FOLDER = APP_SETTINGS['user_data_path'] #APP_SETTINGS['user_files_folder_path']
+file_manager = FileStorageManager(base_path=FILES_FOLDER, skip_folders=["__pycache__"])
 
 @app.template_filter('active_page')
 def active_page(current_page, page_name):
