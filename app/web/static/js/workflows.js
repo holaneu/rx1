@@ -102,7 +102,7 @@ function handleMsg(response) {
                 isOpen: true,
                 title: response.message.title,
                 body: response.message.body,
-                form: `<button onclick="continueWorkflow('yes'); this.disabled=true">Continue</button>`,
+                form: `<button onclick="continueWorkflow('yes'); this.disabled=true; this.closest('details').open=false;">Continue</button>`,
                 data: response.data ? JSON.stringify(response.data, null, 2) : null,
                 style: 'color: yellow;'
             });

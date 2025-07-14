@@ -11,7 +11,7 @@ for filename in os.listdir(module_path):
 
 # Import all Python files from the listed subfolders
 # List of subfolders to import Python files from
-subfolders = ["included", "test"]
+subfolders = ["included", "custom", "test"]
 
 for subfolder in subfolders:
     subfolder_path = os.path.join(module_path, subfolder)
@@ -23,6 +23,23 @@ for subfolder in subfolders:
 
 # Expose directly
 from .core import WORKFLOWS_REGISTRY
+
 #from .core import workflow
 #from .core import Workflow
 #__all__ = ["WORKFLOWS_REGISTRY", "workflow", "Workflow"]
+
+
+# --- Import user custom workflows from user_data ---
+def import_user_custom_workflows():
+    user_wf_dir = os.path.join(os.getcwd(), "user_data", "admin", "custom_workflows")
+    if not os.path.isdir(user_wf_dir):
+        return
+    for filename in os.listdir(user_wf_dir):
+        if filename.endswith(".py"):
+            module_name = f"user_custom_workflow_{filename[:-3]}"
+            file_path = os.path.join(user_wf_dir, filename)
+            spec = importlib.util.spec_from_file_location(module_name, file_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+import_user_custom_workflows()

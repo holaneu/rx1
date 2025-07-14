@@ -154,12 +154,6 @@ def assistant_summarize_text(input, model=None):
 
 
 @assistant()
-def extract_text_from_image():
-    """Extracts text from an image."""
-    pass
-
-
-@assistant()
 def assistant_analyze_situation(input, model=None):
     """Analyzuje popsanou situaci a vytváří strukturovaný přehled."""
     config = {

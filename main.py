@@ -6,13 +6,13 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 import time
-import importlib.util
 
+from app import workflows
 from app.workflows.core import WORKFLOWS_REGISTRY
 from app.utils.shared import all_task_sse_queues
 from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
 from app.storage.manager import FileStorageManager
-from app.configs.app_config import APP_SETTINGS, USER_SETTINGS
+from app.configs.app_config import APP_SETTINGS
 # ----------------------
 # Flask app setup
 
@@ -227,24 +227,6 @@ def test():
     except Exception as e:
         return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
     
-
-"""
-# --- User workflows import ---
-def import_user_workflows(user_id):
-    user_wf_dir = os.path.join("user_data", user_id, "custom_workflows")
-    if not os.path.isdir(user_wf_dir):
-        return
-    for filename in os.listdir(user_wf_dir):
-        if filename.endswith(".py"):
-            module_name = f"user_{user_id}_workflow_{filename[:-3]}"
-            file_path = os.path.join(user_wf_dir, filename)
-            spec = importlib.util.spec_from_file_location(module_name, file_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-
-import_user_workflows(USER_SETTINGS['user_id'])
-"""
-
 
 # --- Main entry point ---
 if __name__ == '__main__':
