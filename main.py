@@ -228,9 +228,10 @@ def test():
         return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
     
 
+"""
 # --- User workflows import ---
 def import_user_workflows(user_id):
-    user_wf_dir = os.path.join("user_data", user_id, "workflows")
+    user_wf_dir = os.path.join("user_data", user_id, "custom_workflows")
     if not os.path.isdir(user_wf_dir):
         return
     for filename in os.listdir(user_wf_dir):
@@ -241,8 +242,9 @@ def import_user_workflows(user_id):
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
-# Example usage:
 import_user_workflows(USER_SETTINGS['user_id'])
+"""
+
 
 # --- Main entry point ---
 if __name__ == '__main__':
