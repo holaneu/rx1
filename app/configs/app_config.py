@@ -5,7 +5,7 @@ load_dotenv()
 
 # User settings
 USER_SETTINGS = {
-    "user_id": "test_user",
+    "user_id": "admin",
 }
 
 # Application Settings
