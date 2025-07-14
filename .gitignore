@@ -28,16 +28,10 @@ Thumbs.db
 _archive/
 
 # Local testing folders and files
+user_data/admin/*
+!user_data/admin/.gitkeep
 test/
-test_user/
-test_files/
 
 # Private files
 private/
-/user/*
-/users/*
-!/user/.gitkeep
-!/users/.gitkeep
-
-copied_from_old/
-workflows_old_imported.py
+custom.py
