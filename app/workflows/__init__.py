@@ -31,6 +31,8 @@ from .core import WORKFLOWS_REGISTRY
 
 # --- Import user custom workflows from user_data ---
 def import_user_custom_workflows():
+    import importlib.util
+    import os
     user_wf_dir = os.path.join(os.getcwd(), "user_data", "admin", "custom_workflows")
     if not os.path.isdir(user_wf_dir):
         return
@@ -41,5 +43,3 @@ def import_user_custom_workflows():
             spec = importlib.util.spec_from_file_location(module_name, file_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
-
-import_user_custom_workflows()

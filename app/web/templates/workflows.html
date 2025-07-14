@@ -13,6 +13,15 @@
   <div class="container">
     <header>
         <h1>Workflows</h1>
+
+        <button id="reload-custom-workflows">Reload Custom Workflows</button>
+        <script>
+            document.getElementById('reload-custom-workflows').onclick = function() {
+                fetch('/api/reload_custom_workflows', {method: 'POST'})
+                    .then(response => response.json())
+                    .then(data => alert(data.message || data.error));
+            };
+        </script>
     </header> 
     
     <main>

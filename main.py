@@ -54,76 +54,6 @@ def page_workflows():
 def page_test():
     return render_template('test.html')
 
-@app.route("/start_task", methods=["POST"])
-def start_task():
-    try:
-        import inspect
-        task_id = str(uuid.uuid4())
-        all_task_sse_queues[task_id] = queue.Queue()
-        data = request.json
-        if not data or 'workflow_id' not in data:
-            return jsonify(response_output_error({
-                ResponseKey.ERROR: "workflow_id is required",
-                ResponseKey.TASK_ID: task_id
-                })), 400
-        workflow_id = data.get('workflow_id')
-        workflow = wf_registry.get(workflow_id)
-        if not workflow:
-            return jsonify(response_output_error({
-                ResponseKey.ERROR: "Invalid workflow",
-                ResponseKey.TASK_ID: task_id
-                })), 400            
-        workflow_func_params = inspect.signature(workflow['function']).parameters
-        # Build kwargs based on required parameters
-        kwargs = {}
-        if 'input' in workflow_func_params:
-            user_input = data.get('user_input')
-            if user_input is None or user_input.strip() == "":
-                return jsonify(response_output_error({
-                    ResponseKey.ERROR: "Missing required input",
-                    ResponseKey.TASK_ID: task_id
-                    })), 400
-            kwargs['input'] = user_input
-        if 'model' in workflow_func_params:
-            kwargs['model'] = workflow['model']
-        if 'task_id' in workflow_func_params:
-            kwargs['task_id'] = task_id
-
-        
-        generator_func = workflow['function'](**kwargs)
-        generators[task_id] = generator_func
-        
-        #response_from_generator = next(generator_func)
-
-        # Check if the result is a generator
-        if hasattr(generator_func, '__iter__') and hasattr(generator_func, '__next__'):
-            # Kick off the generator until first yield
-            response_from_generator = next(generator_func)
-        else:
-            # If it's not a generator, use the return value directly
-            response_from_generator = generator_func
-        return jsonify({"task_id": task_id, "timestamp": time.time(), **response_from_generator})        
-    except Exception as e:
-        return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
-    
-
-@app.route("/continue_task", methods=["POST"])
-def continue_task():
-    data = request.json
-    task_id = data.get("task_id")
-    generator_func = generators.get(task_id)
-    if not generator_func:
-        return jsonify(response_output_error({ResponseKey.ERROR: "unknown task_id"})), 400
-    try:
-        continue_generator = generator_func.send(data.get("user_input")) # .send() will resume the generator
-        return jsonify(continue_generator)
-    except StopIteration as e:
-        # Signal SSE stream to close
-        all_task_sse_queues[task_id].put(None)
-        generators.pop(task_id, None)        
-        return jsonify(getattr(e, "value", None) or {})
-
-
 @app.route("/msg/stream")
 def status_stream():
     task_id = request.args.get("task_id")
@@ -215,7 +145,80 @@ def files_file_detail(item_id):
         abort(500)
 
 
-# --- API routes can go below ---
+# -------------------------------
+# --- API routes ---
+# -------------------------------
+
+@app.route("/api/start_task", methods=["POST"])
+def start_task():
+    try:
+        import inspect
+        task_id = str(uuid.uuid4())
+        all_task_sse_queues[task_id] = queue.Queue()
+        data = request.json
+        if not data or 'workflow_id' not in data:
+            return jsonify(response_output_error({
+                ResponseKey.ERROR: "workflow_id is required",
+                ResponseKey.TASK_ID: task_id
+                })), 400
+        workflow_id = data.get('workflow_id')
+        workflow = wf_registry.get(workflow_id)
+        if not workflow:
+            return jsonify(response_output_error({
+                ResponseKey.ERROR: "Invalid workflow",
+                ResponseKey.TASK_ID: task_id
+                })), 400            
+        workflow_func_params = inspect.signature(workflow['function']).parameters
+        # Build kwargs based on required parameters
+        kwargs = {}
+        if 'input' in workflow_func_params:
+            user_input = data.get('user_input')
+            if user_input is None or user_input.strip() == "":
+                return jsonify(response_output_error({
+                    ResponseKey.ERROR: "Missing required input",
+                    ResponseKey.TASK_ID: task_id
+                    })), 400
+            kwargs['input'] = user_input
+        if 'model' in workflow_func_params:
+            kwargs['model'] = workflow['model']
+        if 'task_id' in workflow_func_params:
+            kwargs['task_id'] = task_id
+
+        
+        generator_func = workflow['function'](**kwargs)
+        generators[task_id] = generator_func
+        
+        #response_from_generator = next(generator_func)
+
+        # Check if the result is a generator
+        if hasattr(generator_func, '__iter__') and hasattr(generator_func, '__next__'):
+            # Kick off the generator until first yield
+            response_from_generator = next(generator_func)
+        else:
+            # If it's not a generator, use the return value directly
+            response_from_generator = generator_func
+        return jsonify({"task_id": task_id, "timestamp": time.time(), **response_from_generator})        
+    except Exception as e:
+        return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
+    
+
+@app.route("/api/continue_task", methods=["POST"])
+def continue_task():
+    data = request.json
+    task_id = data.get("task_id")
+    generator_func = generators.get(task_id)
+    if not generator_func:
+        return jsonify(response_output_error({ResponseKey.ERROR: "unknown task_id"})), 400
+    try:
+        continue_generator = generator_func.send(data.get("user_input")) # .send() will resume the generator
+        return jsonify(continue_generator)
+    except StopIteration as e:
+        # Signal SSE stream to close
+        all_task_sse_queues[task_id].put(None)
+        generators.pop(task_id, None)        
+        return jsonify(getattr(e, "value", None) or {})
+
+
 @app.route('/api/tools/test', methods=['POST'])
 def test():
     try:
@@ -226,7 +229,17 @@ def test():
         return jsonify(response_output_success({ResponseKey.DATA: input_message + " - from test endpoint"}))
     except Exception as e:
         return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
+
     
+@app.route('/api/reload_custom_workflows', methods=['POST'])
+def reload_custom_workflows():
+    try:
+        from app.workflows import import_user_custom_workflows
+        import_user_custom_workflows()
+        return jsonify({"success": True, "message": "Custom workflows reloaded."})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 # --- Main entry point ---
 if __name__ == '__main__':

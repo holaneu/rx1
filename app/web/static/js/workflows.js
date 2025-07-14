@@ -18,7 +18,7 @@ async function startWorkflow() {
     domInteractions.innerHTML = "";
 
     // 1) Start the workflow (runs until first yield)
-    const res = await fetch('/start_task', {
+    const res = await fetch('/api/start_task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ workflow_id: domWorkflowSelect.value, user_input: domTextareaInput.value })
@@ -41,7 +41,7 @@ async function startWorkflow() {
 };
 
 async function continueWorkflow(input) {
-    const res = await fetch('/continue_task', {
+    const res = await fetch('/api/continue_task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task_id: taskId, user_input: input })
