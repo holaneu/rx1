@@ -356,7 +356,14 @@ def save_to_file(filepath, content, prepend=False):
       # Normal append mode
       with open(full_path, 'a', encoding='utf-8') as outfile:
         outfile.write(content + '\n')
-        
+    # Return JSON status after successful save
+    return {
+      "status": "success",
+      "message": {
+        "title": "File saved",
+        "body": f"File path: {full_path}"
+      }
+    }
   except (IOError, OSError) as e:
     print(f"Error writing to file {filepath}: {e}")
     raise

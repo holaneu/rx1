@@ -17,7 +17,11 @@ def download_ai_news():
         for article in articles:
             article_readable = json.dumps(article, indent=2, ensure_ascii=False)
             json_db_add_entry(db_filepath=db_file_path, collection="entries", entry=article, add_createdat=False)
-            save_to_file(file_path, article_readable + "\n\n-----\n", prepend=True)
+            save_file_result = save_to_file(file_path, article_readable + "\n\n-----\n", prepend=True)
+            wf.add_to_func_log(
+                msgTitle=save_file_result["message"]["title"],
+                msgBody=save_file_result["message"]["body"]
+            )
         return wf.success_response(
             data=articles,
             msgBody=f"Downloaded {len(articles)} articles and saved to {file_path} and also to the database file {db_file_path}."

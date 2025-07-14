@@ -9,7 +9,11 @@ def explain_simply_lexicon(input, model=None):
         wf = Workflow()
         ai_data = wf.get_assistant_output_or_raise(assistant_explain_simply_lexicon(input=input.strip(), model=model))
         file_name = "lexicon.txt"
-        save_to_file(user_data_files_path(file_name), ai_data + "\n\n-----\n", prepend=True)
+        save_file_result = save_to_file(user_data_files_path(file_name), ai_data + "\n\n-----\n", prepend=True)
+        wf.add_to_func_log(
+            msgTitle=save_file_result["message"]["title"],
+            msgBody=save_file_result["message"]["body"]
+        )
         return wf.success_response(
             data=ai_data,
             msgBody=f"Result saved to {user_data_files_path(file_name)}"

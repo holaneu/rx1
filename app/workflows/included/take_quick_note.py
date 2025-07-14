@@ -16,8 +16,11 @@ def take_quick_note(input, model=None):
         file_path = user_data_files_path("quick_notes.md")
         db_file_path = user_data_files_path("databases/quick_notes.json")
         json_db_add_entry(db_filepath=db_file_path, collection="notes", entry=db_entry)
-        save_to_file(file_path, note + "\n\n-----\n", prepend=True)
-        #save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True) 
+        save_file_result = save_to_file(file_path, note + "\n\n-----\n", prepend=True)
+        wf.add_to_func_log(
+            msgTitle=save_file_result["message"]["title"],
+            msgBody=save_file_result["message"]["body"]
+        )
         return wf.success_response(
             data=note,
             msgBody=f"Result saved to {file_path} and also to the database file {db_file_path}."

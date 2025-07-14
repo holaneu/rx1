@@ -9,7 +9,11 @@ def situation_analysis(input, model=None):
         wf = Workflow()
         ai_data = wf.get_assistant_output_or_raise(assistant_analyze_situation(input=input.strip(), model=model))
         file_path = user_data_files_path("situace.txt")
-        save_to_file(file_path, ai_data + "\n\n-----\n", prepend=True)
+        save_file_result = save_to_file(file_path, ai_data + "\n\n-----\n", prepend=True)
+        wf.add_to_func_log(
+            msgTitle=save_file_result["message"]["title"],
+            msgBody=save_file_result["message"]["body"]
+        )
         return wf.success_response(
             data=ai_data,
             msgBody=f"Result saved to {file_path}"

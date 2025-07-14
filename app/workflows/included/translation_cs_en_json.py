@@ -14,7 +14,11 @@ def workflow_translation_cs_en_json(input, model=None):
           raise Exception("invalid JSON structure")
         ai_data_readable = json.dumps(ai_data_parsed, indent=2, ensure_ascii=False)
         file_name = "vocabulary"
-        save_to_file(user_data_files_path(f"{file_name}.md"), ai_data_readable + "\n\n-----\n", prepend=True)
+        save_file_result = save_to_file(user_data_files_path(f"{file_name}.md"), ai_data_readable + "\n\n-----\n", prepend=True)
+        wf.add_to_func_log(
+            msgTitle=save_file_result["message"]["title"],
+            msgBody=save_file_result["message"]["body"]
+        )
         json_db_add_entry(db_filepath=user_data_files_path(f"databases/{file_name}.json"), collection="entries", entry=ai_data_parsed, add_createdat=True)
         return wf.success_response(
             data=ai_data_parsed,

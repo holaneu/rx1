@@ -37,7 +37,13 @@ def write_story_reviewed(input, model=None):
             "editor_feedback": editor_feedback.strip(),
             "content": writer_edited_story.strip()        
         }
-        save_to_file(user_data_files_path("stories.md"), writer_edited_story + "\n\n-----\n", prepend=True)
+        # Save to file
+        save_file_result = save_to_file(user_data_files_path("stories.md"), writer_edited_story + "\n\n-----\n", prepend=True)
+        wf.add_to_func_log(
+            msgTitle=save_file_result["message"]["title"],
+            msgBody=save_file_result["message"]["body"]
+        )
+
         json_db_add_entry(db_filepath=user_data_files_path("databases/stories.json"), collection="entries", entry=db_entry, add_createdat=True)
         return wf.success_response(
             data=writer_edited_story,

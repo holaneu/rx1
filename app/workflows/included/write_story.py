@@ -7,14 +7,26 @@ def write_story(input, model=None):
     """Generates short feel-good stories."""
     try:
         wf = Workflow()
+        
         story = wf.get_assistant_output_or_raise(assistant_writer(input=input.strip(), model=model))
-        save_to_file(user_data_files_path("stories.md"), story + "\n\n-----\n", prepend=True)
+        wf.add_to_func_log(
+            msgTitle="Story Generated",
+            msgBody=story
+        )
+
+        save_file_result = save_to_file(user_data_files_path("stories.md"), story + "\n\n-----\n", prepend=True)
+        wf.add_to_func_log(
+            msgTitle=save_file_result["message"]["title"],
+            msgBody=save_file_result["message"]["body"]
+        )
+
         json_db_add_entry(
             db_filepath=user_data_files_path("databases/stories.json"),
             collection="entries",
             entry={"input": input.strip(), "content": story},
             add_createdat=True
         )
+
         return wf.success_response(
             data=story,
             msgBody=f"Story saved to {user_data_files_path('stories.md')}"
