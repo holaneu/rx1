@@ -35,7 +35,7 @@ def format_str_as_message_obj(input):
 
 
 @tool()
-def fetch_ai(model, input, structured_output=None, response_format=None):
+def fetch_llm(model, input, structured_output=None, response_format=None):
   """
   Fetches AI response using specified model and input.
   This function processes the input through different AI models based on their API type.

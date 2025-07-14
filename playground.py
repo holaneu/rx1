@@ -43,13 +43,13 @@ def testing_modular_workflows():
 
 
 def testing1():
-  print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
-  print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
-  print('\ngemini:\n', fetch_ai("gemini-2.0-flash", "What is the capital of France?"))
+  print('\nopenai:\n', fetch_llm("gpt-4o-mini", "What is the capital of France?"))
+  print('\nmistral:\n', fetch_llm("mistral-small-latest", "What is the capital of France?"))
+  print('\ngemini:\n', fetch_llm("gemini-2.0-flash", "What is the capital of France?"))
 
 
 def testing2():
-  save_to_file(content=fetch_ai(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
+  save_to_file(content=fetch_llm(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
   print(ASSISTANTS_REGISTRY['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
   WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="interrogate", model="gemini-2.0-flash-exp")
 
@@ -123,13 +123,13 @@ def testing20250321():
 
 def testing20250326_1():
   message="Write hello in uppercase format."
-  print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message))
-  print('\n gpt-4o:\n', fetch_ai("gpt-4o", message))
-  print('\n mistral-small-latest:\n', fetch_ai("mistral-small-latest", message))
-  print('\n mistral-large-latest:\n', fetch_ai("mistral-small-latest", message))
-  print('\n gemini-2.0-flash:\n', fetch_ai("gemini-2.0-flash", message))
-  print('\n gemini-2.0-flash-lite:\n', fetch_ai("gemini-2.0-flash", message))
-  print('\n deepseek-chat:\n', fetch_ai("deepseek-chat", message))
+  print('\n gpt-4o-mini:\n', fetch_llm("gpt-4o-mini", message))
+  print('\n gpt-4o:\n', fetch_llm("gpt-4o", message))
+  print('\n mistral-small-latest:\n', fetch_llm("mistral-small-latest", message))
+  print('\n mistral-large-latest:\n', fetch_llm("mistral-small-latest", message))
+  print('\n gemini-2.0-flash:\n', fetch_llm("gemini-2.0-flash", message))
+  print('\n gemini-2.0-flash-lite:\n', fetch_llm("gemini-2.0-flash", message))
+  print('\n deepseek-chat:\n', fetch_llm("deepseek-chat", message))
 
 
 def testing20250326_2():
@@ -147,9 +147,9 @@ def testing20250326_3():
 def testing20250326_4():
   message1="Alice and Bob are going to a science fair on Friday."
   message2="Extract the event information in json format."
-  print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message1 + " " + message2, structured_output=True))
-  print('\n mistral-small-latest:\n', fetch_ai("mistral-small-latest", message1 + " " + message2, structured_output=True))
-  print('\n gemini-2.0-flash-lite:\n', fetch_ai("gemini-2.0-flash-lite", message1 + " " + message2, structured_output=True))
+  print('\n gpt-4o-mini:\n', fetch_llm("gpt-4o-mini", message1 + " " + message2, structured_output=True))
+  print('\n mistral-small-latest:\n', fetch_llm("mistral-small-latest", message1 + " " + message2, structured_output=True))
+  print('\n gemini-2.0-flash-lite:\n', fetch_llm("gemini-2.0-flash-lite", message1 + " " + message2, structured_output=True))
 
 
 def testing20250328():
@@ -171,7 +171,7 @@ def testing20250408():
     Your task is to choose the most suitable tool for the task: {task}.
     Use json format for output and include the following fields: tool, reason.
     """
-    ai_response = fetch_ai("gemini-2.0-flash", instructions, structured_output=True)
+    ai_response = fetch_llm("gemini-2.0-flash", instructions, structured_output=True)
     return ai_response
   
   task1 = "Extract the event information from the text. Use json format for output and include the following fields: event, date, time, location."
@@ -193,7 +193,7 @@ def testing20250409():
     {search_results}    
     """
   # step 2: choose the most suitable search result
-  selected_search_result = fetch_ai(model="gemini-2.0-flash", input=instructions, structured_output=True)
+  selected_search_result = fetch_llm(model="gemini-2.0-flash", input=instructions, structured_output=True)
   print(json.dumps(selected_search_result, indent=2), end="\n\n")
   if not selected_search_result['success']:
     return "somthing went wrong"  
@@ -219,7 +219,7 @@ def testing20250409():
     Use json format for output and include the following fields: food, restaurant.
     Text: {source_shorten}
     """
-  extracted_foods = fetch_ai(model="gemini-2.0-flash", input=instructions2, structured_output=True)
+  extracted_foods = fetch_llm(model="gemini-2.0-flash", input=instructions2, structured_output=True)
   print(f"extracted foods: {json.dumps(extracted_foods.get('message', {}).get('content', ''), indent=2)}", end="\n\n")
   # step 6: clean the extracted foods data and print results
   try:
@@ -250,7 +250,7 @@ def testing20250416():
     Your task is to choose the most suitable tool for the task: {task}.
     Use json format for output and include the following fields: tool, reason.
     """
-    ai_response = fetch_ai(model="gpt-4.1", input=instructions, structured_output=True)
+    ai_response = fetch_llm(model="gpt-4.1", input=instructions, structured_output=True)
     return ai_response
   
   task1 = "Extract the event information from the text. Use json format for output and include the following fields: event, date, time, location."

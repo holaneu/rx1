@@ -1,4 +1,4 @@
-from app.tools.included import fetch_ai
+from app.tools.included import fetch_llm
 from app.assistants.core import assistant
 
 # ----------------------
@@ -67,7 +67,7 @@ def assistant_translator_cs_en_json(input, model=None, structured_output=None, r
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages, structured_output=structured_output, response_format=response_format)
+    response = fetch_llm(model, messages, structured_output=structured_output, response_format=response_format)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -103,7 +103,7 @@ def assistant_translator_cs_en_yaml(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -124,7 +124,7 @@ def assistant_translator_cs_en(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -147,7 +147,7 @@ def assistant_summarize_text(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -200,7 +200,7 @@ def assistant_analyze_situation(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -231,7 +231,7 @@ def assistant_summarize_video_transcript(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -262,7 +262,7 @@ def assistant_explain_simply_lexicon(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -307,7 +307,7 @@ def assistant_assistant_instructions_creator(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -328,7 +328,7 @@ def assistant_generate_random_poem(model=None):
     messages = [
         {"role": "system", "content": instructions}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -355,7 +355,7 @@ def assistant_generate_short_story(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -383,7 +383,7 @@ def assistant_analyze_text_attributes(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -422,7 +422,7 @@ def assistant_generate_questions(input, model=None):
         {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(model, messages)
+    response = fetch_llm(model, messages)
     if config['verbose']:
         print(f"\n{__name__}:\n{response}\n")
     return response
@@ -441,7 +441,7 @@ def assistant_universal_no_instructions(input, model=None, structured_output=Non
   messages = [
     {"role": "user", "content": input}
   ]
-  response = fetch_ai(model, messages, structured_output=structured_output, response_format=response_format)
+  response = fetch_llm(model, messages, structured_output=structured_output, response_format=response_format)
   if config['verbose']:
     print(f"\n{__name__}:\n{response}\n")
   return response
@@ -471,7 +471,7 @@ def assistant_writer(input, model=None):
       {"role": "system", "content": instructions},
       {"role": "user", "content": input}
   ]
-  response = fetch_ai(model, messages)
+  response = fetch_llm(model, messages)
   if config['verbose']:
       print(f"\n{__name__}:\n{response}\n")
   return response
@@ -492,7 +492,7 @@ def assistant_sarcastic_tech_editor(input, model=None):
   messages = [
       {"role": "system", "content": instructions}
   ]
-  response = fetch_ai(model, messages)
+  response = fetch_llm(model, messages)
   if config['verbose']:
       print(__name__, response, sep="\n", end="\n\n")
   return response

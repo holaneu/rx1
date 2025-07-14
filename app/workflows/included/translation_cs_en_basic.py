@@ -1,6 +1,6 @@
 from app.workflows.core import *
 from app.tools.included import save_to_file, user_data_files_path
-from app.assistants.public import assistant_translator_cs_en
+from app.assistants.included import assistant_translator_cs_en
 
 @workflow()
 def translation_cs_en_basic(task_id, input, model=None):

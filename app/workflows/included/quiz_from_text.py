@@ -1,6 +1,6 @@
 from app.workflows.core import *
 from app.tools.included import save_to_file, user_data_files_path, generate_id, current_datetime_iso
-from app.assistants.public import assistant_universal_no_instructions
+from app.assistants.included import assistant_universal_no_instructions
 
 @workflow()
 def quiz_from_text(input, model=None):	

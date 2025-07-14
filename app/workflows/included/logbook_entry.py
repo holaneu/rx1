@@ -1,6 +1,6 @@
 from app.workflows.core import *
 from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-from app.assistants.public import assistant_universal_no_instructions
+from app.assistants.included import assistant_universal_no_instructions
 import json
 
 @workflow()

@@ -1,6 +1,6 @@
 from app.workflows.core import *
 from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-from app.assistants.public import assistant_translator_cs_en_json
+from app.assistants.included import assistant_translator_cs_en_json
 import json
 
 @workflow()

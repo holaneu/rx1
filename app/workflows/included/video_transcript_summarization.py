@@ -1,6 +1,6 @@
 from app.workflows.core import workflow, Workflow
 from app.tools.included import save_to_file, user_data_files_path
-from app.assistants.public import assistant_summarize_video_transcript
+from app.assistants.included import assistant_summarize_video_transcript
 
 @workflow()
 def video_transcript_summarization(input, model=None):

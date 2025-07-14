@@ -1,6 +1,6 @@
 from app.workflows.core import workflow, Workflow
 from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-from app.assistants.public import assistant_writer, assistant_universal_no_instructions
+from app.assistants.included import assistant_writer, assistant_universal_no_instructions
 
 @workflow()
 def write_story_reviewed(input, model=None):

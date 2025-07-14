@@ -1,5 +1,5 @@
 from app.workflows.core import workflow, Workflow
-from app.assistants.public import assistant_universal_no_instructions
+from app.assistants.included import assistant_universal_no_instructions
 from app.tools.included import save_to_file, user_data_files_path
 
 @workflow()

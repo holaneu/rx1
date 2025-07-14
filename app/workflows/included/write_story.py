@@ -1,5 +1,5 @@
 from app.workflows.core import workflow, Workflow
-from app.assistants.public import assistant_writer
+from app.assistants.included import assistant_writer
 from app.tools.included import save_to_file, json_db_add_entry, user_data_files_path
 
 @workflow()

@@ -1,6 +1,6 @@
 from app.workflows.core import *
 from app.tools.included import save_to_file, user_data_files_path
-from app.assistants.public import assistant_analyze_situation
+from app.assistants.included import assistant_analyze_situation
 
 @workflow()
 def situation_analysis(input, model=None):
