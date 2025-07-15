@@ -36,9 +36,9 @@ def import_user_custom_workflows():
         import os
         import sys
         from .core import WORKFLOWS_REGISTRY  
-        from app.configs.app_config import APP_SETTINGS_OLD
+        from app.configs.app_config import APP_SETTINGS
 
-        custom_wf_path_list = APP_SETTINGS_OLD["custom_workflows_path_list"] #["user_data", "<user_id - admin>", "custom_workflows"]
+        custom_wf_path_list = APP_SETTINGS.CUSTOM_WORKFLOWS_PATH_LIST #["user_data", "<user_id - admin>", "custom_workflows"]
         custom_wf_path_str = ".".join(custom_wf_path_list)
 
         # Selectively clear registry entries from user's custom workflow modules

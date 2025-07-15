@@ -1,16 +1,5 @@
+# settings:
 
-# Old settings
-USER_SETTINGS_OLD = {
-    "user_id": "admin",
-}
-
-APP_SETTINGS_OLD = {
-    "user_data_path": f"user_data/{USER_SETTINGS_OLD['user_id']}",
-    "user_data_files_path": f"user_data/{USER_SETTINGS_OLD["user_id"]}/files",
-    "custom_workflows_path_list": ["user_data", USER_SETTINGS_OLD["user_id"], "custom_workflows"]
-}
-
-#New settings:
 class USER_SETTINGS:
     USER_ID = "admin"
 

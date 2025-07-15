@@ -8,7 +8,7 @@ from typing import Dict, Any
 
 from app.tools.core import tool
 from app.configs.ai_config import ai_models
-from app.configs.app_config import APP_SETTINGS_OLD
+from app.configs.app_config import APP_SETTINGS
 from app.utils.response_types import ResponseKey, ResponseStatus
 
 @tool()
@@ -490,12 +490,12 @@ def current_datetime_iso():
 
 @tool()
 def user_data_files_path(file_path: str) -> str:
-    return os.path.join(APP_SETTINGS_OLD["user_data_files_path"], file_path) 
+    return os.path.join(APP_SETTINGS.USER_DATA_FILES_PATH, file_path) 
 
 
 @tool()
 def user_data_path(file_path: str) -> str:
-    return os.path.join(APP_SETTINGS_OLD["user_data_path"], file_path) 
+    return os.path.join(APP_SETTINGS.USER_DATA_PATH, file_path) 
 
 
 @tool(category='database')
@@ -679,63 +679,74 @@ def json_db_get_collection(db_filepath: str, collection: str) -> dict:
 
 @tool(category='database')
 def json_db_add_entry(db_filepath: str, collection: str, entry: dict, add_createdat: bool = None, add_updatedat: bool = None) -> str:
-  """
-  Add a new entry to a collection in the JSON database.
+    """
+    Add a new entry to a collection in the JSON database.
 
-  Args:
-    db_filepath (str): Path to the database file
-    collection (str): Collection name 
-    entry (dict): Entry data to add
-    add_createdat (bool): If True, adds created_at timestamp to entry (optional)
-    add_updatedat (bool): If True, adds updated_at timestamp to entry (optional)
+    Args:
+        db_filepath (str): Path to the database file
+        collection (str): Collection name 
+        entry (dict): Entry data to add
+        add_createdat (bool): If True, adds created_at timestamp to entry (optional)
+        add_updatedat (bool): If True, adds updated_at timestamp to entry (optional)
 
-  Returns:
-    dict: Response object with success status and message
-    Example:
-      {"success": True, "message": "Entry added successfully.", "data": {"entry_id": "abc123"}}
-      {"success": False, "message": "Database file not found."}
-      {"success": False, "message": "Collection name is required."}
-      {"success": False, "message": "Entry data is required."}
-  """
-  db_data = json_db_load(db_filepath)
-  if not db_data:
-    return {"success": False, "message": "Database file not found."}
-  if not collection:
-    return {"success": False, "message": "Collection name (str) is required."}
-  if not entry:
-    return {"success": False, "message": "Entry (dict) is required."}
-  if "collections" not in db_data:
-    db_data["collections"] = {}        
-  if collection not in db_data["collections"]:
-    db_data["collections"][collection] = []
+    Returns:
+        dict: Response object with success status and message
+        Example:
+        {"success": True, "message": "Entry added successfully.", "data": {"entry_id": "abc123"}}
+        {"success": False, "message": "Database file not found."}
+        {"success": False, "message": "Collection name is required."}
+        {"success": False, "message": "Entry data is required."}
+    """
+    try:
+        db_data = json_db_load(db_filepath)
+        if not db_data:
+            return {"success": False, "message": "Database file not found."}
+        if not collection:
+            return {"success": False, "message": "Collection name (str) is required."}
+        if not entry:
+            return {"success": False, "message": "Entry (dict) is required."}
+        if "collections" not in db_data:
+            db_data["collections"] = {}        
+        if collection not in db_data["collections"]:
+            db_data["collections"][collection] = []
 
-  entry_datetime = current_datetime_iso()     
+        entry_datetime = current_datetime_iso()     
 
-  # Check schema for required timestamps
-  if "db_json_schema" in db_data:
-    schema = db_data["db_json_schema"]
-    if "collections" in schema.get("properties", {}):
-      collection_schema = schema["properties"]["collections"]["properties"].get(collection, {})
-      if "items" in collection_schema:
-        required_fields = collection_schema["items"].get("required", [])        
-        if "created_at" in required_fields and "created_at" not in entry:
-          entry["created_at"] = entry_datetime          
-        if "updated_at" in required_fields and "updated_at" not in entry:
-          entry["updated_at"] = entry_datetime
+        # Check schema for required timestamps
+        if "db_json_schema" in db_data:
+            schema = db_data["db_json_schema"]
+            if "collections" in schema.get("properties", {}):
+                collection_schema = schema["properties"]["collections"]["properties"].get(collection, {})
+                if "items" in collection_schema:
+                    required_fields = collection_schema["items"].get("required", [])        
+                    if "created_at" in required_fields and "created_at" not in entry:
+                        entry["created_at"] = entry_datetime          
+                    if "updated_at" in required_fields and "updated_at" not in entry:
+                        entry["updated_at"] = entry_datetime
 
-  entry_id = entry.get("id", generate_id())
-  entry["id"] = entry_id    
-  if add_createdat and "created_at" not in entry:
-    entry["created_at"] = entry_datetime
-  if add_updatedat and "updated_at" not in entry:
-    entry["updated_at"] = entry_datetime
-  db_data["collections"][collection].insert(0, entry)
+        entry_id = entry.get("id", generate_id())
+        entry["id"] = entry_id    
+        if add_createdat and "created_at" not in entry:
+            entry["created_at"] = entry_datetime
+        if add_updatedat and "updated_at" not in entry:
+            entry["updated_at"] = entry_datetime
+        db_data["collections"][collection].insert(0, entry)
 
-  if "db_info" in db_data:
-    db_data["db_info"]["updated_at"] = entry_datetime
-  json_db_save(db_filepath, db_data)    
-  return {"success": True, "message": "Entry added successfully.", "data": {"entry_id": entry_id}}
-
+        if "db_info" in db_data:
+            db_data["db_info"]["updated_at"] = entry_datetime
+        json_db_save(db_filepath, db_data)    
+        return {
+            ResponseKey.STATUS: ResponseStatus.SUCCESS,
+            ResponseKey.DATA: {
+                "entry_id": entry_id
+            },
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "Entry added to JSON DB",
+                ResponseKey.BODY: f"entry id: {entry_id}, collection: {collection}, db: {db_filepath}, entry data: {entry}"
+            }
+        }        
+    except Exception as e:
+        raise e
 
 @tool(category='database')
 def json_db_update_entry(db_filepath: str, collection: str, entry_id: str, updates: dict) -> bool:

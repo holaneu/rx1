@@ -63,22 +63,24 @@ def logbook_entry(input, model=None):
                 return "invalid JSON structure"            
             # Save pretty-printed JSON to file
             entry_str = json.dumps(entry_parsed, indent=2, ensure_ascii=False)
+            
             save_file_result = save_to_file(user_data_files_path("logbook.md"), entry_str + "\n\n-----\n", prepend=True)
-            wf.add_to_func_log(
-                msgTitle=save_file_result["message"]["title"],
-                msgBody=save_file_result["message"]["body"]
-            )
+            wf.add_to_func_log(msg=save_file_result["message"])
+
             # Save parsed dictionary directly to database
-            json_db_add_entry(
+            save_db_result = json_db_add_entry(
                 db_filepath=user_data_files_path("databases/logbook.json"), 
                 collection="entries", 
                 entry=entry_parsed,  # Use the parsed dict instead of JSON string
                 add_createdat=True
-            )        
+            )
+            wf.add_to_func_log(msg=save_db_result["message"])  
+
             return wf.success_response(
                 data=entry_parsed,
                 msgBody=f"Logbook entry saved to {user_data_files_path('logbook.md')} and database."
             )
+        
         except json.JSONDecodeError:
             raise Exception("failed to decode JSON")
     except Exception as e:

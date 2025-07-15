@@ -52,8 +52,8 @@ def write_story_reviewed(input, model=None):
             msgBody=save_file_result["message"]["body"]
         )
 
-        json_db_add_entry(db_filepath=user_data_files_path("databases/stories.json"), collection="entries", entry=db_entry, add_createdat=True)
-        
+        save_db_result = json_db_add_entry(db_filepath=user_data_files_path("databases/stories.json"), collection="entries", entry=db_entry, add_createdat=True)
+
         return wf.success_response(
             data=writer_edited_story,
             msgBody=f"Story reviewed and saved to {user_data_files_path('stories.md')}"

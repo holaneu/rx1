@@ -24,10 +24,7 @@ def exctract_theses(input, model=None):
 
         file_path = user_data_files_path("theses.txt")
         save_file_result = save_to_file(file_path, theses + "\n\n-----\n", prepend=True)
-        wf.add_to_func_log(
-            msgTitle=save_file_result["message"]["title"],
-            msgBody=save_file_result["message"]["body"]
-        )
+        wf.add_to_func_log(msg=save_file_result["message"])
 
         return wf.success_response(
             data=theses,

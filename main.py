@@ -11,7 +11,7 @@ from app.workflows.core import WORKFLOWS_REGISTRY
 from app.utils.shared import all_task_sse_queues
 from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
 from app.storage.manager import FileStorageManager
-from app.configs.app_config import APP_SETTINGS_OLD
+from app.configs.app_config import APP_SETTINGS
 # ----------------------
 # Flask app setup
 
@@ -32,7 +32,7 @@ generators: dict[str, any] = {}
 wf_registry = WORKFLOWS_REGISTRY
 
 # File storage manager
-FILES_FOLDER = APP_SETTINGS_OLD['user_data_path'] #APP_SETTINGS['user_files_folder_path']
+FILES_FOLDER = APP_SETTINGS.USER_DATA_PATH
 file_manager = FileStorageManager(base_path=FILES_FOLDER, skip_folders=["__pycache__"])
 
 @app.template_filter('active_page')

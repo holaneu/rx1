@@ -390,12 +390,14 @@ def testingConvertTxtToDb_news():
 
 def testingExportToolsRegistry():
   from app.tools.core import TOOLS_REGISTRY
-  tools_without_functions = {
+  print("TOOLS_REGISTRY without functions")
+  tools = {
     name: {k: v for k, v in tool.items() if k != 'function'}
     for name, tool in TOOLS_REGISTRY.items()
   }
-  tools_without_functions = json.dumps(tools_without_functions, indent=2, ensure_ascii=False)
-  save_to_file(content=tools_without_functions, filepath=user_data_files_path(f"tools_registry.json"), prepend=True)
+  tools_str = json.dumps(tools, indent=2, ensure_ascii=False)
+  print(tools_str)
+  save_to_file(content=tools_str + "\n\n-----\n\n", filepath=user_data_files_path(f"tools_registry.json"), prepend=True)
 
 
 def testingImportUserWf():
@@ -417,4 +419,5 @@ def testingImportUserWf():
 
 #testingExportToolsRegistry()
 #testing_registries()
-testingImportUserWf()
+#testingImportUserWf()
+testingExportToolsRegistry()

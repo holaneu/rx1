@@ -49,13 +49,18 @@ class Workflow:
         """Set the task_id for this workflow instance."""
         self.task_id = task_id
 
-    def add_to_func_log(self, msgTitle, msgBody=None):
+    def add_to_func_log(self, msg=None, msgTitle=None, msgBody=None):
         """Add a dict message to the func_log list."""
+        msg = msg or {}
+        title = msg.get("title") or msgTitle
+        body = msg.get("body") if msg.get("body") is not None else msgBody
+        body = body if body is not None else ""
         message = {
-            ResponseKey.TITLE: msgTitle,
-            ResponseKey.BODY: msgBody if msgBody is not None else ""
+            ResponseKey.TITLE: title,
+            ResponseKey.BODY: body
         }
         self.func_log.append(message)
+
 
     def get_func_log(self):
         """Return the current state of func_log."""

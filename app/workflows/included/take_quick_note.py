@@ -7,6 +7,7 @@ def take_quick_note(input, model=None):
     """Takes a quick note and saves it to both JSON database and file."""
     try:
         wf = Workflow()
+
         if input is None or input.strip() == "":
             raise Exception("No input provided for quick note.")
         note = input.strip()
@@ -15,15 +16,16 @@ def take_quick_note(input, model=None):
         }
         file_path = user_data_files_path("quick_notes.md")
         db_file_path = user_data_files_path("databases/quick_notes.json")
-        json_db_add_entry(db_filepath=db_file_path, collection="notes", entry=db_entry)
+
+        save_db_result = json_db_add_entry(db_filepath=db_file_path, collection="notes", entry=db_entry)
+        wf.add_to_func_log(msg=save_db_result["message"])
+
         save_file_result = save_to_file(file_path, note + "\n\n-----\n", prepend=True)
-        wf.add_to_func_log(
-            msgTitle=save_file_result["message"]["title"],
-            msgBody=save_file_result["message"]["body"]
-        )
+        wf.add_to_func_log(msg=save_file_result["message"])
+
         return wf.success_response(
             data=note,
-            msgBody=f"Result saved to {file_path} and also to the database file {db_file_path}."
         )
+    
     except Exception as e:
         return wf.error_response(error=e)
