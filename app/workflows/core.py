@@ -9,8 +9,8 @@ WORKFLOWS_REGISTRY = {}
 # This decorator can be used to annotate functions that should be treated as workflows
 def workflow(**kwargs):
     def decorator(func):
-        func.id = func.__name__
-        func.name = kwargs.get('name', func.__name__.replace('workflow_', '').replace('_', ' '))
+        func.name = func.__name__
+        func.title = kwargs.get('name', func.__name__.replace('workflow_', '').replace('_', ' '))
         func.description = kwargs.get('description', func.__doc__)
         func.model = kwargs.get('model', None)
         func.category = kwargs.get('category', None)
@@ -24,8 +24,9 @@ def workflow(**kwargs):
         )
 
         # Register automatically
-        WORKFLOWS_REGISTRY[func.id] = {
+        WORKFLOWS_REGISTRY[func.name] = {
             'name': func.name,
+            'title': func.title,
             'description': func.description,
             'function': func,
             'model': func.model,

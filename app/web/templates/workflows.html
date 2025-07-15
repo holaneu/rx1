@@ -34,7 +34,7 @@
             <select id="workflowSelect">
                 <option value="" disabled selected>Select workflow ...</option>
                 {% for id, workflow in workflows.items() %}
-                <option value="{{ id }}">{{ workflow.name }}</option>
+                <option value="{{ id }}">{{ workflow.title }}</option>
                 {% endfor %}
             </select>
 

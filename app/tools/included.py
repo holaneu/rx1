@@ -8,8 +8,8 @@ from typing import Dict, Any
 
 from app.tools.core import tool
 from app.configs.ai_config import ai_models
-from app.configs.app_config import APP_SETTINGS
-
+from app.configs.app_config import APP_SETTINGS_OLD
+from app.utils.response_types import ResponseKey, ResponseStatus
 
 @tool()
 def get_model(model_name):
@@ -358,10 +358,10 @@ def save_to_file(filepath, content, prepend=False):
         outfile.write(content + '\n')
     # Return JSON status after successful save
     return {
-      "status": "success",
-      "message": {
-        "title": "File saved",
-        "body": f"File path: {full_path}"
+      ResponseKey.STATUS: ResponseStatus.SUCCESS,
+      ResponseKey.MESSAGE: {
+        ResponseKey.TITLE: "File saved",
+        ResponseKey.BODY: f"File path: {full_path}"
       }
     }
   except (IOError, OSError) as e:
@@ -397,7 +397,13 @@ def save_to_external_file(filename, content, prepend=False, base_path=None):
             write_mode = 'a' if full_path.exists() else 'w'
             with open(full_path, write_mode, encoding='utf-8') as f:
                 f.write(content)
-                
+        return {
+            ResponseKey.STATUS: ResponseStatus.SUCCESS,
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "File saved",
+                ResponseKey.BODY: f"File path: {full_path}"
+            }
+        }        
     except Exception as e:
         print(f"Error saving to external file: {e}")
         raise
@@ -405,17 +411,28 @@ def save_to_external_file(filename, content, prepend=False, base_path=None):
 
 @tool()
 def save_to_json_file(data, output_file):
-  """Saves data to a JSON file with UTF-8 encoding.
-  Args:
-    data: The data to be saved to the JSON file. Can be any JSON-serializable object.
-    output_file (str): The path to the output JSON file.
-  Example:
-    data = {"name": "John", "age": 30}
-    save_to_json_file(data, "output.json")
-  """
-  with open(output_file, 'w', encoding='utf-8') as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
-
+    """Saves data to a JSON file with UTF-8 encoding.
+    Args:
+        data: The data to be saved to the JSON file. Can be any JSON-serializable object.
+        output_file (str): The path to the output JSON file.
+    Example:
+        data = {"name": "John", "age": 30}
+        save_to_json_file(data, "output.json")
+    """
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return {
+            ResponseKey.STATUS: ResponseStatus.SUCCESS,
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "JSON File saved",
+                ResponseKey.BODY: f"File path: {output_file}"
+            }
+        }
+    except Exception as e:
+        print(f"Error: {e}")
+        raise e
+    
 
 @tool()
 def split_and_strip(content):
@@ -473,12 +490,12 @@ def current_datetime_iso():
 
 @tool()
 def user_data_files_path(file_path: str) -> str:
-    return os.path.join(APP_SETTINGS["user_data_files_path"], file_path) 
+    return os.path.join(APP_SETTINGS_OLD["user_data_files_path"], file_path) 
 
 
 @tool()
 def user_data_path(file_path: str) -> str:
-    return os.path.join(APP_SETTINGS["user_data_path"], file_path) 
+    return os.path.join(APP_SETTINGS_OLD["user_data_path"], file_path) 
 
 
 @tool(category='database')
