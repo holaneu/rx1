@@ -1,11 +1,12 @@
 from app.workflows.core import workflow, Workflow
-from app.assistants.included import assistant_assistant_instructions_creator
-from app.tools.included import save_to_file, user_data_files_path
 
 @workflow()
 def create_assistatnt_prompt(input, model=None):
     """Creates a new assistant based on the input."""
     try:
+        from app.assistants.included import assistant_assistant_instructions_creator
+        from app.tools.included import save_to_file, user_data_files_path
+        
         wf = Workflow()
 
         ai_data = wf.get_assistant_output_or_raise(assistant_assistant_instructions_creator(input=input.strip(), model=model))

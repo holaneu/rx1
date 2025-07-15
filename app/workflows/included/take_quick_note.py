@@ -1,11 +1,11 @@
 from app.workflows.core import *
-from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-
 
 @workflow()
 def take_quick_note(input, model=None):
     """Takes a quick note and saves it to both JSON database and file."""
     try:
+        from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
+        
         wf = Workflow()
 
         if input is None or input.strip() == "":
