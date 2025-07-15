@@ -31,15 +31,39 @@ from .core import WORKFLOWS_REGISTRY
 
 # --- Import user custom workflows from user_data ---
 def import_user_custom_workflows():
-    import importlib.util
-    import os
-    user_wf_dir = os.path.join(os.getcwd(), "user_data", "admin", "custom_workflows")
-    if not os.path.isdir(user_wf_dir):
-        return
-    for filename in os.listdir(user_wf_dir):
-        if filename.endswith(".py"):
-            module_name = f"user_custom_workflow_{filename[:-3]}"
-            file_path = os.path.join(user_wf_dir, filename)
-            spec = importlib.util.spec_from_file_location(module_name, file_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
+    try:
+        import importlib.util
+        import os
+        import sys
+        from .core import WORKFLOWS_REGISTRY  
+
+        # Selectively clear registry entries from user-defined workflow modules
+        keys_to_remove = [
+            key for key, value in WORKFLOWS_REGISTRY.items()
+            if isinstance(value, dict) and value.get("module", "").startswith("user_custom_workflow_")
+        ]
+        for key in keys_to_remove:
+            del WORKFLOWS_REGISTRY[key]
+
+        # Clear previously loaded user custom workflow modules
+        for module_name in list(sys.modules):
+            if module_name.startswith("user_custom_workflow_"):
+                del sys.modules[module_name]
+
+        user_wf_dir = os.path.join(os.getcwd(), "user_data", "admin", "custom_workflows")
+        if not os.path.isdir(user_wf_dir):
+            return
+
+        for filename in os.listdir(user_wf_dir):
+            if filename.endswith(".py"):
+                module_name = f"user_custom_workflow_{filename[:-3]}"
+                file_path = os.path.join(user_wf_dir, filename)
+                spec = importlib.util.spec_from_file_location(module_name, file_path)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+    except Exception as e:
+        print(f"Error importing user custom workflows: {e}")
+        raise e
+
+# Import it immediately
+import_user_custom_workflows()

@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 import os
 import time
 
-from app import workflows
 from app.workflows.core import WORKFLOWS_REGISTRY
 from app.utils.shared import all_task_sse_queues
 from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey

@@ -2,15 +2,11 @@
 # playground:
 # ----------------------   
 
-from app.workflows.core import WORKFLOWS_REGISTRY
-from app.assistants.core import ASSISTANTS_REGISTRY
-from app.tools.core import TOOLS_REGISTRY
 from app.tools.included import *
 
-import json
 
 def testing_registries():
-
+    from app.workflows.core import WORKFLOWS_REGISTRY
     print("WORKFLOWS_REGISTRY")
     print(WORKFLOWS_REGISTRY)
 
@@ -22,6 +18,7 @@ def testing_registries():
     print(json.dumps(workflows_without_functions, indent=2))
   
 def testing_modular_workflows():
+    from app.workflows.core import WORKFLOWS_REGISTRY
     """
     print("Testing modular workflows:")
     for name, workflow in WORKFLOWS_REGISTRY2.items():
@@ -49,12 +46,18 @@ def testing1():
 
 
 def testing2():
+  from app.assistants.core import ASSISTANTS_REGISTRY
+  from app.workflows.core import WORKFLOWS_REGISTRY
   save_to_file(content=fetch_llm(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
   print(ASSISTANTS_REGISTRY['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
   WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="interrogate", model="gemini-2.0-flash-exp")
 
 
 def testing_registries():
+  from app.workflows.core import WORKFLOWS_REGISTRY
+  from app.assistants.core import ASSISTANTS_REGISTRY
+  from app.tools.core import TOOLS_REGISTRY
+
   print("ASSISTANTS_REGISTRY")
   print(ASSISTANTS_REGISTRY)
 
@@ -140,6 +143,7 @@ def testing20250326_2():
 
 
 def testing20250326_3():
+  from app.assistants.core import ASSISTANTS_REGISTRY
   source = download_web_readable_content("https://www.menicka.cz/4550-bufacek-na-ruzku.html", "#menicka .content .text")
   jidla = ASSISTANTS_REGISTRY['assistant_universal_no_instructions']['function'](input=f"""{source} Jaka jidla jsou dnes v nabidce?""", model="gpt-4o-mini")
   
@@ -160,6 +164,7 @@ def testing20250328():
 
 
 def testing20250408():
+  from app.tools.core import TOOLS_REGISTRY
   tools_without_functions = {
     name: {k: v for k, v in tool.items() if k != 'function'}
     for name, tool in TOOLS_REGISTRY.items()
@@ -239,6 +244,7 @@ def testing20250409():
 
 def testing20250416():
   """Testing new model gpt-4.1. for deciding which tool to use for a specific task."""
+  from app.tools.core import TOOLS_REGISTRY
   tools_without_functions = {
     name: {k: v for k, v in tool.items() if k != 'function'}
     for name, tool in TOOLS_REGISTRY.items()
@@ -383,6 +389,7 @@ def testingConvertTxtToDb_news():
 
 
 def testingExportToolsRegistry():
+  from app.tools.core import TOOLS_REGISTRY
   tools_without_functions = {
     name: {k: v for k, v in tool.items() if k != 'function'}
     for name, tool in TOOLS_REGISTRY.items()
@@ -391,6 +398,17 @@ def testingExportToolsRegistry():
   save_to_file(content=tools_without_functions, filepath=user_data_files_path(f"tools_registry.json"), prepend=True)
 
 
+def testingImportUserWf():
+    """Testing import of user workflow from custom_workflows directory."""
+    import app.workflows
+    from app.workflows.core import WORKFLOWS_REGISTRY
+
+    print("WORKFLOWS_REGISTRY without functions")
+    workflows_without_functions = {
+        name: {k: v for k, v in workflow.items() if k != 'function'}
+        for name, workflow in WORKFLOWS_REGISTRY.items()
+    }
+    print(json.dumps(workflows_without_functions, indent=2))
 
 
 # ----------------------
@@ -398,5 +416,5 @@ def testingExportToolsRegistry():
 # ---------------------- 
 
 #testingExportToolsRegistry()
-
-testing_registries()
+#testing_registries()
+testingImportUserWf()
