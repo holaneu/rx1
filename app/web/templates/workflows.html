@@ -14,7 +14,7 @@
     <header>
         <h1>Workflows</h1>
 
-        <button id="reload-custom-workflows">Reload Custom Workflows</button>
+        <button id="reload-custom-workflows">Reload custom workflows</button>
         <script>
             document.getElementById('reload-custom-workflows').onclick = function() {
                 fetch('/api/reload_custom_workflows', {method: 'POST'})
@@ -52,7 +52,7 @@
         </div> 
 
         <div id="result-box-responses">
-            <div class="box-header">Responses:</div>
+            <div class="box-header">Workflow response:</div>
             <div id="responses"></div>
         </div>
         

@@ -23,13 +23,13 @@ for subfolder in subfolders:
 
 # Expose directly
 from .core import WORKFLOWS_REGISTRY
-
 #from .core import workflow
 #from .core import Workflow
+
 #__all__ = ["WORKFLOWS_REGISTRY", "workflow", "Workflow"]
 
 
-# --- Import user custom workflows from user_data ---
+# --- Import user's custom workflows from user_data ---
 def import_user_custom_workflows():
     try:
         import importlib.util
@@ -37,7 +37,7 @@ def import_user_custom_workflows():
         import sys
         from .core import WORKFLOWS_REGISTRY  
 
-        # Selectively clear registry entries from user-defined workflow modules
+        # Selectively clear registry entries from user's custom workflow modules
         keys_to_remove = [
             key for key, value in WORKFLOWS_REGISTRY.items()
             if isinstance(value, dict) and value.get("module", "").startswith("user_custom_workflow_")
@@ -45,7 +45,7 @@ def import_user_custom_workflows():
         for key in keys_to_remove:
             del WORKFLOWS_REGISTRY[key]
 
-        # Clear previously loaded user custom workflow modules
+        # Clear previously loaded user's custom workflow modules
         for module_name in list(sys.modules):
             if module_name.startswith("user_custom_workflow_"):
                 del sys.modules[module_name]
