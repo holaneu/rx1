@@ -8,12 +8,12 @@ def take_quick_note(input, model=None):
         
         wf = Workflow()
 
-        if input is None or input.strip() == "":
-            raise Exception("No input provided for quick note.")
         note = input.strip()
+
         db_entry = {
             "content": note
         }
+        
         file_path = user_data_files_path("quick_notes.md")
         db_file_path = user_data_files_path("databases/quick_notes.json")
 
