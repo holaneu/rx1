@@ -298,7 +298,7 @@ def open_file(filepath):
 
 
 @tool()
-def save_to_file(filepath, content, prepend=False):
+def save_to_file(filepath, content, prepend=False, delimiter=None):
   """Saves content to a file with various safety checks and options.
   This function saves the provided content to a file, with options to prepend or append. 
   It includes several safety checks for content validity and file path security.
@@ -344,6 +344,10 @@ def save_to_file(filepath, content, prepend=False):
     if content_size > 10 * 1024 * 1024:
       raise ValueError("Content too large: Exceeds 10MB limit")
     
+    # Add delimiter if it's a valid non-empty string with at least 1 non-whitespace character
+    if isinstance(delimiter, str) and len(delimiter.strip()) >= 1:
+        content += f"\n\n{delimiter}\n"
+
     if prepend:
       # Read existing content if file exists
       existing_content = ''
@@ -372,7 +376,7 @@ def save_to_file(filepath, content, prepend=False):
     print(f"Unexpected error while saving file {filepath}: {e}")
     raise
 
-
+# REMOVE:
 @tool()
 def save_to_external_file(filename, content, prepend=False, base_path=None):
     """Save content to a file in an external location, creating directories if needed."""
@@ -412,11 +416,14 @@ def save_to_external_file(filename, content, prepend=False, base_path=None):
 
 
 @tool()
-def save_to_external_file2(filepath, content, prepend=False, external_root_path=None):
-    """Save content to a file under the given external root path, creating directories if needed."""
+def save_to_external_file2(filepath, content, prepend=False, external_root_path=None, delimiter=None):
+    """Save content to a file under the given external root path, creating directories if needed.
+
+    If `delimiter` is a non-empty string (min 1 char), append "\n\n<delimiter>\n\n" to the content.
+    """
     import os
     from pathlib import Path
-    
+
     if not external_root_path:
         raise ValueError("external_root_path must be provided")
 
@@ -433,6 +440,10 @@ def save_to_external_file2(filepath, content, prepend=False, external_root_path=
         full_path = full_path.resolve()
         if not str(full_path).startswith(str(external_root_path.resolve())):
             raise ValueError("Path must be within the external storage root directory")
+
+        # Add delimiter if it's a valid non-empty string with at least 1 non-whitespace character
+        if isinstance(delimiter, str) and len(delimiter.strip()) >= 1:
+            content += f"\n\n{delimiter}\n\n"
 
         # Create parent directories
         full_path.parent.mkdir(parents=True, exist_ok=True)
@@ -456,7 +467,6 @@ def save_to_external_file2(filepath, content, prepend=False, external_root_path=
     except Exception as e:
         print(f"Error saving to external file: {e}")
         raise
-
 
 
 @tool()

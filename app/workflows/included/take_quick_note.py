@@ -20,7 +20,7 @@ def take_quick_note(input, model=None):
         save_db_result = json_db_add_entry(db_filepath=db_file_path, collection="notes", entry=db_entry)
         wf.add_to_func_log(msg=save_db_result["message"])
 
-        save_file_result = save_to_file(file_path, note + "\n\n-----\n", prepend=True)
+        save_file_result = save_to_file(filepath=file_path, content=note, prepend=True, delimiter="-----")
         wf.add_to_func_log(msg=save_file_result["message"])
 
         return wf.success_response(
