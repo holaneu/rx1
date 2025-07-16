@@ -297,6 +297,7 @@ def open_file(filepath):
       return infile.read()
 
 
+@tool()
 def save_to_file(filepath, content, prepend=False):
   """Saves content to a file with various safety checks and options.
   This function saves the provided content to a file, with options to prepend or append. 
@@ -372,6 +373,7 @@ def save_to_file(filepath, content, prepend=False):
     raise
 
 
+@tool()
 def save_to_external_file(filename, content, prepend=False, base_path=None):
     """Save content to a file in an external location, creating directories if needed."""
     # Use environment variable if set, otherwise use default path
@@ -407,6 +409,54 @@ def save_to_external_file(filename, content, prepend=False, base_path=None):
     except Exception as e:
         print(f"Error saving to external file: {e}")
         raise
+
+
+@tool()
+def save_to_external_file2(filepath, content, prepend=False, external_root_path=None):
+    """Save content to a file under the given external root path, creating directories if needed."""
+    import os
+    from pathlib import Path
+    
+    if not external_root_path:
+        raise ValueError("external_root_path must be provided")
+
+    external_root_path = Path(external_root_path)
+    if not external_root_path.is_absolute():
+        external_root_path = external_root_path.resolve()
+
+    # Normalize filepath to ensure it does not override the root path
+    filepath = Path(filepath.lstrip("/\\"))
+    full_path = external_root_path / filepath
+
+    try:
+        # Validate full_path stays within external_root_path
+        full_path = full_path.resolve()
+        if not str(full_path).startswith(str(external_root_path.resolve())):
+            raise ValueError("Path must be within the external storage root directory")
+
+        # Create parent directories
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if prepend and full_path.exists():
+            existing_content = full_path.read_text(encoding='utf-8')
+            full_path.write_text(content + existing_content, encoding='utf-8')
+        else:
+            write_mode = 'a' if full_path.exists() else 'w'
+            with open(full_path, write_mode, encoding='utf-8') as f:
+                f.write(content)
+
+        return {
+            ResponseKey.STATUS: ResponseStatus.SUCCESS,
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "File saved",
+                ResponseKey.BODY: f"File path: {full_path}"
+            }
+        }
+
+    except Exception as e:
+        print(f"Error saving to external file: {e}")
+        raise
+
 
 
 @tool()
