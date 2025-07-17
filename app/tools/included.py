@@ -802,7 +802,7 @@ def json_db_add_entry(db_filepath: str, collection: str, entry: dict, add_create
             },
             ResponseKey.MESSAGE: {
                 ResponseKey.TITLE: "Entry added to JSON DB",
-                ResponseKey.BODY: f"entry id: {entry_id}, collection: {collection}, db: {db_filepath}, entry data: {entry}"
+                ResponseKey.BODY: f"db file path: {db_filepath}, \ncollection: {collection}, \nentry id: {entry_id}"
             }
         }        
     except Exception as e:

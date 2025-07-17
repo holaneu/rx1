@@ -144,8 +144,9 @@ body {
 .sidebar nav a {
     display: block;
     padding: 10px;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     text-decoration: none;
+    font-weight: bold;
 }
 .sidebar nav a:hover {
     color: var(--accent-hover);

@@ -107,7 +107,7 @@ class Workflow:
             ResponseKey.TIMESTAMP: datetime.now().timestamp(),
             ResponseKey.FUNC_LOG: self.get_func_log(),
             ResponseKey.MESSAGE: {
-                ResponseKey.TITLE: msgTitle or "Workflow failed",
+                ResponseKey.TITLE: msgTitle or "Workflow not completed",
                 ResponseKey.BODY: msgBody or str(error)
             },
             ResponseKey.TASK_ID: self.task_id 
