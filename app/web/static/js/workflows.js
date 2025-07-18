@@ -79,6 +79,72 @@ function processFuncLog(response) {
     }
 }
 
+/**
+ * Handles the submission of a dynamically generated form.
+ * @param {Event} event - The form submission event.
+ */
+function submitInteractionForm(event) {
+    event.preventDefault();
+    const form = event.target;
+    
+    // Disable form to prevent multiple submissions
+    form.querySelector('button[type="submit"]').disabled = true;
+
+    // Collect form data into a plain object
+    const formData = new FormData(form);
+    const userInput = Object.fromEntries(formData.entries());
+
+    // Send the collected data to continue the workflow
+    continueWorkflow(userInput);
+
+    // Visually close the interaction panel
+    form.closest('details').open = false;
+}
+
+/**
+ * Renders an HTML form from a JSON definition.
+ * @param {Array} formElements - The array of form element definitions from the backend.
+ * @returns {string} The HTML string for the form.
+ */
+function renderFormFromJSON(formElements) {
+    // If no elements are defined, fall back to a simple confirmation button
+    if (!formElements || formElements.length === 0) {
+        return `<button onclick="continueWorkflow('confirm'); this.disabled=true;">Confirm</button>`;
+    }
+
+    const formFields = formElements.map(el => {
+        const required = el.required ? 'required' : '';
+        const name = `name="${el.name}"`;
+        const id = `id="${el.name}-${Date.now()}"`; // Unique ID for the label
+        const label = el.label ? `<label for="${id}">${el.label}</label>` : '';
+        let fieldHtml = '';
+
+        switch (el.type) {
+            case 'text':
+                fieldHtml = `<input type="text" ${id} ${name} placeholder="${el.placeholder || ''}" ${required}>`;
+                break;
+            case 'textarea':
+                fieldHtml = `<textarea ${id} ${name} placeholder="${el.placeholder || ''}" ${required}></textarea>`;
+                break;
+            case 'select':
+                const options = el.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+                fieldHtml = `<select ${id} ${name} ${required}>${options}</select>`;
+                break;
+            default:
+                return `<div class="form-group"><p>Unsupported element type: ${el.type}</p></div>`;
+        }
+        return `<div class="form-group">${label}${fieldHtml}</div>`;
+    }).join('');
+
+    // The onsubmit handler calls our new function
+    return `
+        <form onsubmit="submitInteractionForm(event)" class="interaction-form">
+            ${formFields}
+            <button type="submit">Submit</button>
+        </form>
+    `;
+}
+
 function handleMsg(response) {
     if (!response) return;
 
@@ -98,11 +164,16 @@ function handleMsg(response) {
     switch (response.action) {
         case 'interaction_request':
             processFuncLog(response);
+
+            // Generate the form HTML from the backend JSON response
+            const formHtml = renderFormFromJSON(response.message.form_elements);
+
             domInteractions.innerHTML += renderMessageComponent({
                 isOpen: true,
                 title: response.message.title,
                 body: response.message.body,
-                form: `<button onclick="continueWorkflow('yes'); this.disabled=true; this.closest('details').open=false;">Continue</button>`,
+                //form: `<button onclick="continueWorkflow('yes'); this.disabled=true; this.closest('details').open=false;">Continue</button>`,
+                form: formHtml, // Use the dynamically generated form here
                 data: response.data ? JSON.stringify(response.data, null, 2) : null,
                 style: 'color: yellow;'
             });

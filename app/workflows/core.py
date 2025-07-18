@@ -113,7 +113,7 @@ class Workflow:
             ResponseKey.TASK_ID: self.task_id 
         }
 
-    def interaction_request(self, msgTitle=None, msgBody=None, message: dict=None):
+    def interaction_request(self, msgTitle=None, msgBody=None, message: dict=None, form_elements: list=None):
         """Helper to format an interaction request response."""
         from datetime import datetime
         return {
@@ -123,8 +123,9 @@ class Workflow:
             ResponseKey.FUNC_LOG: self.get_and_clear_func_log(),
             ResponseKey.MESSAGE: {
                 ResponseKey.TITLE: msgTitle or "User Interaction Required",
-                ResponseKey.BODY: msgBody
-            },
+                ResponseKey.BODY: msgBody,
+                ResponseKey.FORM_ELEMENTS: form_elements or []
+            },            
             ResponseKey.TASK_ID: self.task_id 
         }
 
