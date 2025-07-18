@@ -1,5 +1,9 @@
 import inspect
+from datetime import datetime
+import json
+import os
 from app.utils.response_types import ResponseKey, ResponseAction, ResponseStatus
+from app.tools.included import save_to_file, user_data_files_path
 
 # Define a registry to hold all workflows
 # This allows for dynamic discovery and management of workflows
@@ -41,15 +45,21 @@ def workflow(**kwargs):
 
 # Workflow class to manage workflow execution and logging
 class Workflow:
+    
+
     def __init__(self, task_id=None):
+        import sys
         self.func_log = []
+        self.wf_log = []
         self.task_id = task_id  # Store task_id for usage within the instance
+        frame = sys._getframe(1)
+        self.called_from = frame.f_code.co_name
 
     def set_task_id(self, task_id):
         """Set the task_id for this workflow instance."""
         self.task_id = task_id
 
-    def add_to_func_log(self, msg=None, msgTitle=None, msgBody=None):
+    def add_msg_to_log(self, msg=None, msgTitle=None, msgBody=None):
         """Add a dict message to the func_log list."""
         msg = msg or {}
         title = msg.get("title") or msgTitle
@@ -60,8 +70,12 @@ class Workflow:
             ResponseKey.BODY: body
         }
         self.func_log.append(message)
+        self.wf_log.append(message)
 
-
+    def get_wf_log(self):
+        """Return the current state of wf_log."""
+        return self.wf_log.copy()
+    
     def get_func_log(self):
         """Return the current state of func_log."""
         return self.func_log.copy()
@@ -81,11 +95,31 @@ class Workflow:
             raise Exception("Message does not contain content.")        
         return message['content'].strip()
     
+    def _save_log_file(self):
+        try:
+            timestamp = datetime.now()
+            formatted_time = timestamp.strftime('%Y%m%d_%H%M%S')
+            task_id_part = self.task_id or 'unknown'
+            log_filepath = user_data_files_path(f"logs/workflow_{formatted_time}_{task_id_part}.log")
+
+            log_data = {
+                "name": self.called_from,
+                "task_id": task_id_part,
+                "timestamp": timestamp.isoformat(),
+                "log": self.get_wf_log()
+            }
+
+            log_content = json.dumps(log_data, ensure_ascii=False, indent=2)
+            save_to_file(content=log_content, filepath=log_filepath)
+
+        except Exception as e:
+            print(f"*** Error{e}") # Optional: print or log this error elsewhere if needed
+            #pass  # Silently ignore to keep execution flow intact
+
+
     def success_response(self, data, msgTitle=None, msgBody=None):
-        """Format a successful workflow response."""
-        from datetime import datetime
-        return {
-            ResponseKey.STATUS: ResponseStatus.SUCCESS,            
+        response = {
+            ResponseKey.STATUS: ResponseStatus.SUCCESS,
             ResponseKey.ACTION: ResponseAction.WORKFLOW_FINISHED,
             ResponseKey.DATA: data,
             ResponseKey.TIMESTAMP: datetime.now().timestamp(),
@@ -96,11 +130,12 @@ class Workflow:
             },
             ResponseKey.TASK_ID: self.task_id
         }
-    
+        self.wf_log.append(response.get(ResponseKey.MESSAGE))
+        self._save_log_file()
+        return response
+
     def error_response(self, error, msgTitle=None, msgBody=None):
-        """Format an error workflow response."""
-        from datetime import datetime
-        return {
+        response = {
             ResponseKey.STATUS: ResponseStatus.ERROR,
             ResponseKey.ACTION: ResponseAction.WORKFLOW_FAILED,
             ResponseKey.ERROR: str(error),
@@ -110,13 +145,15 @@ class Workflow:
                 ResponseKey.TITLE: msgTitle or "Workflow not completed",
                 ResponseKey.BODY: msgBody or str(error)
             },
-            ResponseKey.TASK_ID: self.task_id 
+            ResponseKey.TASK_ID: self.task_id
         }
+        self.wf_log.append(response.get(ResponseKey.MESSAGE))
+        self._save_log_file()
+        return response
 
     def interaction_request(self, msgTitle=None, msgBody=None, message: dict=None, form_elements: list=None):
-        """Helper to format an interaction request response."""
         from datetime import datetime
-        return {
+        response = {
             ResponseKey.STATUS: ResponseStatus.PENDING,
             ResponseKey.ACTION: ResponseAction.INTERACTION_REQUEST,
             ResponseKey.TIMESTAMP: datetime.now().timestamp(),
@@ -125,7 +162,10 @@ class Workflow:
                 ResponseKey.TITLE: msgTitle or "User Interaction Required",
                 ResponseKey.BODY: msgBody,
                 ResponseKey.FORM_ELEMENTS: form_elements or []
-            },            
-            ResponseKey.TASK_ID: self.task_id 
+            },
+            ResponseKey.TASK_ID: self.task_id
         }
+        self.wf_log.append(response.get(ResponseKey.MESSAGE))
 
+        return response
+    

@@ -20,11 +20,11 @@ def exctract_theses(input, model=None):
         - [teze 3]
         """
         theses = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions_theses, model="gpt-4o"))
-        wf.add_to_func_log(msgTitle="Theses extracted by LLM", msgBody=theses)
+        wf.add_msg_to_log(msgTitle="Theses extracted by LLM", msgBody=theses)
 
         file_path = user_data_files_path("theses.txt")
         save_file_result = save_to_file(file_path, theses + "\n\n-----\n", prepend=True)
-        wf.add_to_func_log(msg=save_file_result["message"])
+        wf.add_msg_to_log(msg=save_file_result["message"])
 
         return wf.success_response(
             data=theses,
