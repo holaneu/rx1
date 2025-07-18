@@ -752,61 +752,64 @@ def json_db_add_entry(db_filepath: str, collection: str, entry: dict, add_create
     Returns:
         dict: Response object with success status and message
         Example:
-        {"success": True, "message": "Entry added successfully.", "data": {"entry_id": "abc123"}}
-        {"success": False, "message": "Database file not found."}
-        {"success": False, "message": "Collection name is required."}
-        {"success": False, "message": "Entry data is required."}
+        {
+            "success": True,
+            "message": "Entry added successfully.",
+            "data": {"entry_id": "abc123"}
+        }
+    Raises:
+        Exception: With specific message if validation fails.
     """
-    try:
-        db_data = json_db_load(db_filepath)
-        if not db_data:
-            return {"success": False, "message": "Database file not found."}
-        if not collection:
-            return {"success": False, "message": "Collection name (str) is required."}
-        if not entry:
-            return {"success": False, "message": "Entry (dict) is required."}
-        if "collections" not in db_data:
-            db_data["collections"] = {}        
-        if collection not in db_data["collections"]:
-            db_data["collections"][collection] = []
+    db_data = json_db_load(db_filepath)
+    if not db_data:
+        raise Exception("Database file not found.")
+    if not collection:
+        raise Exception("Collection name (str) is required.")
+    if not entry:
+        raise Exception("Entry (dict) is required.")
 
-        entry_datetime = current_datetime_iso()     
+    if "collections" not in db_data:
+        db_data["collections"] = {}
+    if collection not in db_data["collections"]:
+        db_data["collections"][collection] = []
 
-        # Check schema for required timestamps
-        if "db_json_schema" in db_data:
-            schema = db_data["db_json_schema"]
-            if "collections" in schema.get("properties", {}):
-                collection_schema = schema["properties"]["collections"]["properties"].get(collection, {})
-                if "items" in collection_schema:
-                    required_fields = collection_schema["items"].get("required", [])        
-                    if "created_at" in required_fields and "created_at" not in entry:
-                        entry["created_at"] = entry_datetime          
-                    if "updated_at" in required_fields and "updated_at" not in entry:
-                        entry["updated_at"] = entry_datetime
+    entry_datetime = current_datetime_iso()
 
-        entry_id = entry.get("id", generate_id())
-        entry["id"] = entry_id    
-        if add_createdat and "created_at" not in entry:
-            entry["created_at"] = entry_datetime
-        if add_updatedat and "updated_at" not in entry:
-            entry["updated_at"] = entry_datetime
-        db_data["collections"][collection].insert(0, entry)
+    # Check schema for required timestamps
+    if "db_json_schema" in db_data:
+        schema = db_data["db_json_schema"]
+        if "collections" in schema.get("properties", {}):
+            collection_schema = schema["properties"]["collections"]["properties"].get(collection, {})
+            if "items" in collection_schema:
+                required_fields = collection_schema["items"].get("required", [])
+                if "created_at" in required_fields and "created_at" not in entry:
+                    entry["created_at"] = entry_datetime
+                if "updated_at" in required_fields and "updated_at" not in entry:
+                    entry["updated_at"] = entry_datetime
 
-        if "db_info" in db_data:
-            db_data["db_info"]["updated_at"] = entry_datetime
-        json_db_save(db_filepath, db_data)    
-        return {
-            ResponseKey.STATUS: ResponseStatus.SUCCESS,
-            ResponseKey.DATA: {
-                "entry_id": entry_id
-            },
-            ResponseKey.MESSAGE: {
-                ResponseKey.TITLE: "Entry added to JSON DB",
-                ResponseKey.BODY: f"db file path: {db_filepath}, \ncollection: {collection}, \nentry id: {entry_id}"
-            }
-        }        
-    except Exception as e:
-        raise e
+    entry_id = entry.get("id", generate_id())
+    entry["id"] = entry_id
+    if add_createdat and "created_at" not in entry:
+        entry["created_at"] = entry_datetime
+    if add_updatedat and "updated_at" not in entry:
+        entry["updated_at"] = entry_datetime
+
+    db_data["collections"][collection].insert(0, entry)
+
+    if "db_info" in db_data:
+        db_data["db_info"]["updated_at"] = entry_datetime
+
+    json_db_save(db_filepath, db_data)
+
+    return {
+        ResponseKey.STATUS: ResponseStatus.SUCCESS,
+        ResponseKey.DATA: {"entry_id": entry_id},
+        ResponseKey.MESSAGE: {
+            ResponseKey.TITLE: "Entry added to JSON DB",
+            ResponseKey.BODY: f"db file path: {db_filepath}, \ncollection: {collection}, \nentry id: {entry_id}"
+        }
+    }
+
 
 @tool(category='database')
 def json_db_update_entry(db_filepath: str, collection: str, entry_id: str, updates: dict) -> bool:
@@ -902,31 +905,26 @@ def brave_search(query: str, count: int = 5) -> Dict[str, Any]:
         "text_decorations": False,
         "search_lang": "en"
     }    
-    try:
-        response = requests.get(base_url, headers=headers, params=params)
-        response.raise_for_status()
-        data = response.json()
+    response = requests.get(base_url, headers=headers, params=params)
+    response.raise_for_status()
+    data = response.json()
+    
+    # Extract and format relevant information
+    results = []
+    if "web" in data and "results" in data["web"]:
+        for result in data["web"]["results"]:
+            results.append({
+                "title": result.get("title", ""),
+                "description": result.get("description", ""),
+                "url": result.get("url", "")
+            })
+    
+    return {
+        "success": True,
+        "results": results
+    }
         
-        # Extract and format relevant information
-        results = []
-        if "web" in data and "results" in data["web"]:
-            for result in data["web"]["results"]:
-                results.append({
-                    "title": result.get("title", ""),
-                    "description": result.get("description", ""),
-                    "url": result.get("url", "")
-                })
-        
-        return {
-            "success": True,
-            "results": results
-        }
-        
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    
 
 
 @tool()
@@ -938,12 +936,9 @@ def download_web_sourcecode(url: str) -> str:
     Returns:
         str: The content of the web page
     """
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.text
-    except Exception as e:
-        return str(e)
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.text
 
 
 @tool()
@@ -956,33 +951,30 @@ def download_web_readable_content(url: str, css_selector: str = None) -> str:
     Returns:
         str: The extracted text content of the web page
     """
-    try:
-        from bs4 import BeautifulSoup
+    from bs4 import BeautifulSoup
+    
+    response = requests.get(url)
+    response.raise_for_status()
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # Remove script and style elements
+    for element in soup.find_all(['script', 'style']):
+        element.decompose()
         
-        response = requests.get(url)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Remove script and style elements
-        for element in soup.find_all(['script', 'style']):
-            element.decompose()
-            
-        if css_selector:
-            # Extract content from specified elements
-            elements = soup.select(css_selector)
-            if elements:
-                # Join text from all matching elements
-                return '\n\n'.join(element.get_text(separator=' ', strip=True) 
-                              for element in elements)
-            else:
-                return f"No elements found matching selector: {css_selector}"
+    if css_selector:
+        # Extract content from specified elements
+        elements = soup.select(css_selector)
+        if elements:
+            # Join text from all matching elements
+            return '\n\n'.join(element.get_text(separator=' ', strip=True) 
+                        for element in elements)
         else:
-            # Return all text if no selector specified
-            return soup.get_text(separator=' ', strip=True)
+            return f"No elements found matching selector: {css_selector}"
+    else:
+        # Return all text if no selector specified
+        return soup.get_text(separator=' ', strip=True)
             
-    except Exception as e:
-        return str(e)
 
 
 @tool()

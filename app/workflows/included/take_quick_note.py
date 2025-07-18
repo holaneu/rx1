@@ -1,12 +1,12 @@
 from app.workflows.core import *
 
 @workflow()
-def take_quick_note(input, model=None):
+def take_quick_note(input, task_id, model=None):
     """Takes a quick note and saves it to both JSON database and file."""
     try:
         from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
         
-        wf = Workflow()
+        wf = Workflow(task_id=task_id)
 
         note = input.strip()
 

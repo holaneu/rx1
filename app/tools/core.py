@@ -2,32 +2,38 @@ import inspect
 
 TOOLS_REGISTRY = {}
 
+import inspect
+import functools
+
+TOOLS_REGISTRY = {}  # Presumably already defined somewhere
+
 def tool(**kwargs):
     def decorator(func):
-        func.name = func.__name__
-        func.title = kwargs.get('name', func.__name__.replace('tool_', '').replace('_', ' '))
-        func.description = kwargs.get('description', func.__doc__)
-        func.category = kwargs.get('category', None)
-        func.__module__ = func.__module__
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs_inner):
+            try:
+                return func(*args, **kwargs_inner)
+            except Exception as e:
+                raise Exception(f"[{func.__name__}] Error: {e}") from e
 
-        
-        """
-        # Detect if input is required (by name and default absence)
-        func.input_required = any(
-            param.name == 'input' and param.default == param.empty
-            for param in inspect.signature(func).parameters.values()
-        )
-        """
+        # Metadata
+        wrapper.name = func.__name__
+        wrapper.title = kwargs.get('name', func.__name__.replace('tool_', '').replace('_', ' '))
+        wrapper.description = kwargs.get('description', func.__doc__)
+        wrapper.category = kwargs.get('category', None)
+        wrapper.__module__ = func.__module__
 
         # Register automatically
-        TOOLS_REGISTRY[func.name] = {
-            'name': func.name,
-            'title': func.title,
-            'description': func.description,
-            'function': func,
-            'category': func.category,
+        TOOLS_REGISTRY[wrapper.name] = {
+            'name': wrapper.name,
+            'title': wrapper.title,
+            'description': wrapper.description,
+            'function': wrapper,
+            'category': wrapper.category,
             'type': "tool",
-            'module': func.__module__
+            'module': wrapper.__module__
         }
-        return func
+
+        return wrapper
     return decorator
+
