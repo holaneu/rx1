@@ -6,6 +6,13 @@ load_dotenv()
 # Model Configurations 
 ai_models = [
   {
+    "name": "openai/gpt-4.1",
+    "base_url": "https://openrouter.ai/api/v1/chat/completions",
+    "api_key": os.getenv('OPENROUTER_API_KEY'),
+    "api_type": "openai",
+    "provider": "openrouter"
+  },
+  {
     "name": "gpt-4.1",
     "base_url": "https://api.openai.com/v1/chat/completions",
     "api_key": os.getenv('OPENAI_API_KEY'),

@@ -169,6 +169,7 @@ def start_task():
                 })), 400            
         workflow_func_params = inspect.signature(workflow['function']).parameters
         # Build kwargs based on required parameters
+        print('**** workflow_func_params:', workflow_func_params)
         kwargs = {}
         if 'input' in workflow_func_params:
             user_input = data.get('user_input')
@@ -178,11 +179,16 @@ def start_task():
                     ResponseKey.TASK_ID: task_id
                     })), 400
             kwargs['input'] = user_input
+        """
         if 'model' in workflow_func_params:
             kwargs['model'] = workflow['model']
+        """
+        """
         if 'task_id' in workflow_func_params:
             kwargs['task_id'] = task_id
-
+        """
+        kwargs['task_id'] = task_id
+        print('**** kwargs:', kwargs)
         
         generator_func = workflow['function'](**kwargs)
         generators[task_id] = generator_func
