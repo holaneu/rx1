@@ -7,24 +7,41 @@ from pathlib import Path
 from typing import Dict, Any
 
 from app.tools.core import tool
-from app.configs.ai_config import ai_models
+from app.configs.ai_config import llm_models, llm_providers
 from app.configs.app_config import APP_SETTINGS
 from app.utils.response_types import ResponseKey, ResponseStatus
 
+
 @tool()
-def get_model(model_name):
-  """
-  Retrieves an AI model configuration from a list of available models by its name.
-  Args:
-    model_name (str): The name of the AI model to search for.
-  Returns:
-    dict or None: The model configuration dictionary if found, None otherwise. 
-    The model dictionary contains model parameters and settings.
-  """
-  for model in ai_models:
-    if model['name'] == model_name:
-      return model
-  return None
+def get_llm_model_info(model_name):
+    """
+    Retrieves an AI model configuration from a list of available models by its name.
+    Args:
+        model_name (str): The name of the AI model to search for.
+    Returns:
+        dict or None: The model configuration dictionary if found, None otherwise. 
+        The model dictionary contains model parameters and settings.
+    """
+    for model in llm_models:
+        if model['name'] == model_name:
+            return model
+    return None
+
+
+@tool()
+def get_llm_provider_info(provider_name):
+    """
+    Retrieve information about a specific LLM provider by name.
+    Args:
+        provider_name (str): The name of the LLM provider to search for.
+    Returns:
+        dict or None: The provider's information as a dictionary if found, otherwise None.
+    """
+
+    for provider in llm_providers:
+        if provider['name'] == provider_name:
+            return provider
+    return None
 
 
 @tool()
@@ -35,88 +52,52 @@ def format_str_as_message_obj(input):
 
 
 @tool()
-def fetch_llm(model, input, structured_output=None, response_format=None):
-  """
-  Fetches AI response using specified model and input.
-  This function processes the input through different AI models based on their API type.
-  Currently supports OpenAI and Anthropic API types.
-  Args:
-    model (str or dict): The AI model identifier or configuration dictionary
-    input (str): The input text/prompt to be processed by the AI model
-  Returns:
-    str or None: The AI model's response if successful, None if the model is not found
-    or if the API type is not supported
-  Example:
-    >>> response = fetch_ai("gpt-4", "What is the capital of France?")
-    >>> print(response)
-    "The capital of France is Paris."
-  """
-  model = get_model(model)
-  if model is None:
-    return None
-  if model['api_type'] == 'openai':
-    return call_api_of_type_openai_v3(model, input, structured_output=structured_output, response_format=response_format)
-    #return call_api_of_type_openai_v2(model, input)
-    #return call_api_of_type_openai_official(model, input)
-  if model['api_type'] == 'anthropic':
-    return call_api_of_type_anthropic(model, input, structured_output=structured_output, response_format=response_format)
-  return None
+def fetch_llm(model_name, input, structured_output=None, response_format=None, temperature=0.7):
+    """
+    Fetches AI response using specified model and input.
+    This function processes the input through different AI models based on their API type.
+    Currently supports OpenAI and Anthropic API types.
+    Args:
+        model (str or dict): The AI model identifier or configuration dictionary
+        input (str): The input text/prompt to be processed by the AI model
+    Returns:
+        str or None: The AI model's response if successful, None if the model is not found
+        or if the API type is not supported
+    Example:
+        >>> response = fetch_ai("gpt-4", "What is the capital of France?")
+        >>> print(response)
+        "The capital of France is Paris."
+    """
+    model_info = get_llm_model_info(model_name)
+    if model_info is None:
+        raise Exception(f"Model not found in configuration")
+    
+    provider_info = get_llm_provider_info(provider_name=model_info['provider'])
+    if provider_info is None:
+        raise Exception(f"Provider not found in configuration")
+    
+    provider_api_key = provider_info.get('api_key')
+    provider_base_url = provider_info.get('base_url')
+    provider_api_type = provider_info.get('api_type')
 
-
-@tool()
-def call_api_of_type_openai_official(model, input):
-  from openai import OpenAI
-  client = OpenAI()
-  try:
-    completion = client.chat.completions.create(
-      model=model['name'],
-      messages=format_str_as_message_obj(input)
-    )
-    log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_filepath = user_data_files_path(f"logs/ai_response_{log_timestamp}.log")
-    # Convert completion object to dictionary for JSON serialization
-    completion_dict = {
-      "model": completion.model,
-      "choices": [{
-        "message": {
-          "content": completion.choices[0].message.content,
-          "role": completion.choices[0].message.role
-        }
-      }],
-      "usage": {
-        "prompt_tokens": completion.usage.prompt_tokens,
-        "completion_tokens": completion.usage.completion_tokens,
-        "total_tokens": completion.usage.total_tokens
-      }
-    }    
-    log_content = {
-      "input": format_str_as_message_obj(input),
-      "output": completion_dict
-    }
-    log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
-    save_to_file(content=log_content, filepath=log_filepath)
-    output = {
-        "status": "call_api_of_type_openai_official: Success",
-        "message": {
-          "content": completion.choices[0].message.content,
-          "role": completion.choices[0].message.role,
-        },        
-        "info": {
-          "model": completion.model,
-          "prompt_tokens": completion.usage.prompt_tokens,
-          "completion_tokens": completion.usage.completion_tokens,
-          "total_tokens": completion.usage.total_tokens
-        }
-      }
-    return output
-  except Exception as e:
-    print(f"Error calling OpenAI: {e}")
+    if not provider_api_key:
+        raise Exception("provider_api_key environment variable is not set")
+    
+    if provider_api_type == 'openai':
+        return call_api_of_type_openai_v3(
+            model_name=model_info['name'],
+            api_key=provider_api_key,
+            base_url=provider_base_url,
+            input=input,
+            structured_output=structured_output,
+            response_format=response_format,
+            temperature=temperature #temperature if temperature is not None else 0.7
+            )
     return None
 
 
-# TESTING: call_api_of_type_openai_v3
 @tool()
-def call_api_of_type_openai_v3(model, input, structured_output=None, response_format=None, temperature=None):
+def call_api_of_type_openai_v3(model_name, api_key, base_url, input, structured_output=None, response_format=None, temperature=None):
   """
   Calls OpenAI API with the given model and input.
   This function sends a request to OpenAI's API, handles the response, logs the interaction,
@@ -149,20 +130,17 @@ def call_api_of_type_openai_v3(model, input, structured_output=None, response_fo
     - Supports JSON mode for structured outputs
     - Uses a default temperature of 0.7 for generation
   """
-  model_data = get_model(model['name'])
-  if model_data is None:
-    print("no model data")
-    return None
+  #model_info = get_llm_model_info(model_name['name'])
   
   headers = {
-    "Authorization": f"Bearer {model_data['api_key']}",
+    "Authorization": f"Bearer {api_key}",
     "Content-Type": "application/json"
   }
 
   payload = {
-    "model": model_data['name'],
+    "model": model_name,
     "messages": format_str_as_message_obj(input),
-    "temperature": temperature if temperature is not None else 0.7
+    "temperature": temperature
   }
   # turn on JSON mode
   if structured_output == True:
@@ -170,7 +148,7 @@ def call_api_of_type_openai_v3(model, input, structured_output=None, response_fo
       payload["response_format"] = { "type": "json_object" }
 
   try:
-    response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
+    response = requests.post(base_url, headers=headers, data=json.dumps(payload))
     if response.status_code == 200:
       import inspect
       result = response.json()
@@ -184,7 +162,6 @@ def call_api_of_type_openai_v3(model, input, structured_output=None, response_fo
       save_to_file(content=log_content, filepath=log_filepath)
       output = {
         "success": True,
-        "origin": inspect.currentframe().f_code.co_name,
         "message": {
           "content": result["choices"][0]["message"]["content"],
           "role": result["choices"][0]["message"]["role"]
@@ -196,50 +173,16 @@ def call_api_of_type_openai_v3(model, input, structured_output=None, response_fo
           "total_tokens": result["usage"]["total_tokens"]  
         }
       }
-      #return result["choices"][0]["message"]["content"]
       return output
     else:
-      print(f"Error: {response.status_code}")
-      print(response.text)
-      return None
+      raise Exception(f"Error returned by LLM provider: {response.status_code} - {response.text}")
+      #print(f"Error: {response.status_code}")
+      #print(response.text)
+      #return None
   except Exception as e:
-    print(f"Error calling model: {e}")
-    return None
-
-
-@tool()
-def call_api_of_type_anthropic(model, messages):
-  model_data = get_model(model['name'])
-  if model_data is None:
-    print("no model data")
-    return None
-
-  messages = format_str_as_message_obj(messages)
-  
-  headers = {
-    "x-api-key": model_data['api_key'],
-    "anthropic-version": "2023-06-01",
-    "Content-Type": "application/json"
-  }
-
-  payload = {
-    "model": model_data['name'],
-    "messages": messages,
-    "max_tokens": 1024
-  }
-
-  try:
-    response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
-    if response.status_code == 200:
-      result = response.json()
-      return result["content"][0]["text"]
-    else:
-      print(f"Error: {response.status_code}")
-      print(response.text)
-      return None
-  except Exception as e:
-    print(f"Error calling model: {e}")
-    return None
+    raise Exception(f"Error calling LLM model: {e}")
+    #print(f"Error calling model: {e}")
+    #return None
 
 
 @tool()

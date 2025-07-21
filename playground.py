@@ -48,7 +48,7 @@ def testing1():
 def testing2():
   from app.assistants.core import ASSISTANTS_REGISTRY
   from app.workflows.core import WORKFLOWS_REGISTRY
-  save_to_file(content=fetch_llm(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
+  save_to_file(content=fetch_llm(input="what is the capital of Czechia? Write only the name and nothing else", model_info="mistral-small-latest"), filepath="test/test.txt")
   print(ASSISTANTS_REGISTRY['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
   WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="interrogate", model="gemini-2.0-flash-exp")
 
@@ -198,7 +198,7 @@ def testing20250409():
     {search_results}    
     """
   # step 2: choose the most suitable search result
-  selected_search_result = fetch_llm(model="gemini-2.0-flash", input=instructions, structured_output=True)
+  selected_search_result = fetch_llm(model_info="gemini-2.0-flash", input=instructions, structured_output=True)
   print(json.dumps(selected_search_result, indent=2), end="\n\n")
   if not selected_search_result['success']:
     return "somthing went wrong"  
@@ -224,7 +224,7 @@ def testing20250409():
     Use json format for output and include the following fields: food, restaurant.
     Text: {source_shorten}
     """
-  extracted_foods = fetch_llm(model="gemini-2.0-flash", input=instructions2, structured_output=True)
+  extracted_foods = fetch_llm(model_info="gemini-2.0-flash", input=instructions2, structured_output=True)
   print(f"extracted foods: {json.dumps(extracted_foods.get('message', {}).get('content', ''), indent=2)}", end="\n\n")
   # step 6: clean the extracted foods data and print results
   try:
@@ -256,7 +256,7 @@ def testing20250416():
     Your task is to choose the most suitable tool for the task: {task}.
     Use json format for output and include the following fields: tool, reason.
     """
-    ai_response = fetch_llm(model="gpt-4.1", input=instructions, structured_output=True)
+    ai_response = fetch_llm(model_info="gpt-4.1", input=instructions, structured_output=True)
     return ai_response
   
   task1 = "Extract the event information from the text. Use json format for output and include the following fields: event, date, time, location."
@@ -413,6 +413,23 @@ def testingImportUserWf():
     print(json.dumps(workflows_without_functions, indent=2))
 
 
+def testingLlmConfigs():
+    """Testing AI model configurations."""
+    from enum import Enum
+    from dataclasses import dataclass
+
+    @dataclass(frozen=True)
+    class LLMModel:
+        name: str
+        provider: str
+
+    class OrLlmModels(Enum):
+        OPENAI_GPT_4_1 = LLMModel(name="gpt-4.1", provider="openai")
+        GPT_3_5 = LLMModel(name="gpt-3.5", provider="openai")    
+    
+    print(OrLlmModels.GPT_3_5.value.name)
+    print(OrLlmModels.OPENAI_GPT_4_1.value.provider)
+
 # ----------------------
 # run test function(s):
 # ---------------------- 
@@ -420,4 +437,5 @@ def testingImportUserWf():
 #testingExportToolsRegistry()
 #testing_registries()
 #testingImportUserWf()
-testingExportToolsRegistry()
+#testingExportToolsRegistry()
+testingLlmConfigs()
