@@ -5,7 +5,7 @@ from app.assistants.core import assistant
 # Assistant functions
 
 @assistant()
-def assistant_translator_cs_en_json(input, model=None, structured_output=None, response_format=None):
+def assistant_translator_cs_en_json(input, model=None, structured_output=True, response_format=None):
     """Translates inputs from CS to EN or from EN to CS and outputs in JSON format."""
     if not input:
         return "No input provided."
@@ -442,7 +442,7 @@ def assistant_universal_no_instructions(input, model=None, structured_output=Non
 
 
 @assistant()
-def assistant_writer(input, model=None):
+def assistant_writer(input, model=None, structured_output=True, response_format=None):
   """Generates short feel-good stories based on simple prompts."""
   config = {
       "default_model": "gpt-4o",
@@ -459,13 +459,16 @@ def assistant_writer(input, model=None):
   - tón: milý a laskavý, optimistický, s veselou atmosférou, občas humorný
   - dialogy: použij neformální, uvolněný až hovorový tón
   - délka: maximálně 400 slov
-  - titulek: na začátek příběhu vlož titulek "# Story: [název příběhu]"
+  - titulek: název příběhu"
+  Vytvoř výstup ve strukturovaném JSON formátu se těmito klíčovými poli:
+    - "title": titulek.
+    - "content": příběh.
   """
   messages = [
       {"role": "system", "content": instructions},
       {"role": "user", "content": input}
   ]
-  response = fetch_llm(model, messages)
+  response = fetch_llm(model, messages, structured_output=structured_output, response_format=response_format)
   if config['verbose']:
       print(f"\n{__name__}:\n{response}\n")
   return response

@@ -127,7 +127,11 @@ function renderFormFromJSON(formElements) {
                 fieldHtml = `<textarea ${id} ${name} placeholder="${el.placeholder || ''}" ${required}></textarea>`;
                 break;
             case 'select':
-                const options = el.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+                // Add a disabled default option
+                const options = [
+                    `<option value="" disabled selected>-- select option --</option>`,
+                    ...(el.options.map(opt => `<option value="${opt}">${opt}</option>`))
+                ].join('');
                 fieldHtml = `<select ${id} ${name} ${required}>${options}</select>`;
                 break;
             default:
