@@ -31,6 +31,10 @@ llm_providers = [
 ]
 
 # Model Configurations 
+# x-ai/grok-3-mini
+#
+#
+#
 llm_models = [
     {
         "name": "openai/gpt-4.1",
@@ -41,43 +45,67 @@ llm_models = [
         "provider": "openrouter"
     },
     {
-        "name": "openai/gpt-4.1-nano",
+        "name": "openai/gpt-4.1-nano", 
         "provider": "openrouter"
     },
     {
-        "name": "gpt-4.1",
-        "provider": "openai"
+        "name": "google/gemini-2.5-pro", 
+        "provider": "openrouter"
     },
     {
-        "name": "gpt-4.1-mini",
-        "provider": "openai"
-    },  
-    {
-        "name": "gpt-4o",
-        "provider": "openai"
+        "name": "google/gemini-2.5-flash", 
+        "provider": "openrouter"
     },
     {
-        "name": "gpt-4o-mini",
-        "provider": "openai"
+        "name": "google/gemini-2.5-flash-lite", 
+        "provider": "openrouter"
     },
     {
-        "name": "o3-mini",
-        "provider": "openai"
+        "name": "mistralai/mistral-small-3.2-24b-instruct:free", 
+        "provider": "openrouter"
     },
     {
-        "name": "mistral-small-latest",
-        "provider": "mistral"
+        "name": "mistralai/mistral-large-2411", 
+        "provider": "openrouter"
     },
     {
-        "name": "mistral-large-latest",
-        "provider": "mistral"
+        "name": "mistralai/devstral-medium", 
+        "provider": "openrouter"
     },
     {
-        "name": "gemini-2.5-flash",
-        "provider": "google"
+        "name": "mistralai/devstral-small-2505:free", 
+        "provider": "openrouter"
     },
     {
-        "name": "gemini-2.0-flash-lite",
-        "provider": "google"
+        "name": "mistralai/mistral-nemo:free", 
+        "provider": "openrouter"
+    },
+    {
+        "name": "anthropic/claude-sonnet-4", 
+        "provider": "openrouter"
+    },
+    {
+        "name": "anthropic/claude-3.7-sonnet:beta", 
+        "provider": "openrouter"
+    },
+    {
+        "name": "deepseek/deepseek-r1-0528-qwen3-8b:free", 
+        "provider": "openrouter"
+    },
+    {
+        "name": "qwen/qwen2.5-vl-32b-instruct:free", 
+        "provider": "openrouter"
+    },
+    {
+        "name": "meta-llama/llama-3.3-70b-instruct", 
+        "provider": "openrouter"
+    },
+    {
+        "name": "nvidia/llama-3.1-nemotron-ultra-253b-v1:free", 
+        "provider": "openrouter"
+    },
+    {
+        "name": "microsoft/phi-4", 
+        "provider": "openrouter"
     }
 ]

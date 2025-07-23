@@ -62,7 +62,7 @@ def translator_cs_en_json(input, model="openai/gpt-4.1", structured_output=True,
             {"role": "system", "content": instructions},
             {"role": "user", "content": input}
         ]
-        response = fetch_llm(model_name=model, messages=messages, structured_output=structured_output, response_format=response_format)
+        response = fetch_llm(model_name=model, input=messages, structured_output=structured_output, response_format=response_format)
         return response
     except Exception as e:
         error_msg = f"Error in [{__name__}]: {e}"
@@ -115,7 +115,7 @@ def translator_cs_en(input, model="openai/gpt-4o-mini"):
             {"role": "system", "content": instructions},
             {"role": "user", "content": input}
         ]
-        response = fetch_llm(model, messages)
+        response = fetch_llm(model_name=model, input=messages)
         return response
     except Exception as e:
         error_msg = f"Error in [{__name__}]: {e}"
@@ -124,7 +124,7 @@ def translator_cs_en(input, model="openai/gpt-4o-mini"):
 
 
 @assistant()
-def assistant_summarize_text(input, model="gemini-2.5-flash"):
+def summarize_text_key_takeaways(input, model="gemini-2.5-flash"):
     """Summarizes the input text."""
     try:
         instructions = """Your task is to generate a concise summary of the key takeaways from the provided text. 

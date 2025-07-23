@@ -169,3 +169,19 @@ class Workflow:
 
         return response
     
+    def warning_response(self, data, msgTitle=None, msgBody=None):
+        response = {
+            ResponseKey.STATUS: ResponseStatus.WARNING,
+            ResponseKey.ACTION: ResponseAction.WORKFLOW_FINISHED_PARTIALLY,
+            ResponseKey.DATA: data,
+            ResponseKey.TIMESTAMP: datetime.now().timestamp(),
+            ResponseKey.FUNC_LOG: self.get_func_log(),
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: msgTitle or "Workflow completed partially",
+                ResponseKey.BODY: msgBody or ""
+            },
+            ResponseKey.TASK_ID: self.task_id
+        }
+        self.wf_log.append(response.get(ResponseKey.MESSAGE))
+        self._save_log_file()
+        return response

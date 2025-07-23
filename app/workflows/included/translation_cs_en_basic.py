@@ -7,7 +7,7 @@ def translation_cs_en_basic(task_id, input, model="openai/gpt-4.1"):
         from app.tools.included import save_to_file, user_data_files_path
         from app.assistants.included import translator_cs_en
         
-        wf = Workflow()
+        wf = Workflow(task_id=task_id)
 
         wf.add_msg_to_log(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Input: {input}, Model: {model}")
 

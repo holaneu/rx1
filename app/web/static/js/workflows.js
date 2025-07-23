@@ -4,6 +4,7 @@ let taskId, es;
 
 const domTextareaInput = document.getElementById('textareaInput');
 const domWorkflowSelect = document.getElementById('workflowSelect');
+const domModelSelect = document.getElementById('modelSelect');
 const domStartWorkflowButton = document.getElementById('startWorkflowButton');
 
 const domInteractions = document.getElementById('interactions');
@@ -18,14 +19,24 @@ async function startWorkflow() {
     domLogs.innerHTML = "";
     domResponses.innerHTML = "";
     domInteractions.innerHTML = "";
-
+    // Update UI state
     domRunningWorkflowMsg.classList.remove('hidden');
-
+    domStartWorkflowButton.disabled=true;
+    domStartWorkflowButton.innerHTML="working...";
+    // Prepare payload
+    let payload = {
+        workflow_id: domWorkflowSelect.value,
+        user_input: domTextareaInput.value
+    };
+    if (domModelSelect.value) {
+        payload.model = domModelSelect.value;
+    }
+    console.log('startWorkflow - payload:', payload);
     // 1) Start the workflow (runs until first yield)
     const res = await fetch('/api/start_task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workflow_id: domWorkflowSelect.value, user_input: domTextareaInput.value })
+        body: JSON.stringify(payload)
     });
     const data = await res.json();
     taskId = data.task_id;
@@ -158,15 +169,19 @@ function handleMsg(response) {
 
     // Handle errors
     if (response.status === 'error') {
-        processFuncLog(response);
-        domResponses.innerHTML += renderMessageComponent({
-            title: 'Error',
-            body: response.message.body,
-            isOpen: true,
-            style: 'color: #f45b5b;'
-        });
-        domRunningWorkflowMsg.classList.add('hidden');
-        return;
+            processFuncLog(response);
+            domResponses.innerHTML += renderMessageComponent({
+                isOpen: true,
+                title: response.message.title,
+                body: response.message.body,
+                style: 'color: #f45b5b;'
+            });            
+            if (es) es.close(); // realy use it for status = error??
+            // update UI state
+            domStartWorkflowButton.disabled=false;
+            domStartWorkflowButton.innerHTML="Run Workflow";
+            domRunningWorkflowMsg.classList.add('hidden');            
+            return;        
     }
 
     // Handle different actions
@@ -199,6 +214,24 @@ function handleMsg(response) {
                 style: 'color: green;'
             });            
             if (es) es.close();
+            // update UI state
+            domStartWorkflowButton.disabled=false;
+            domStartWorkflowButton.innerHTML="Run Workflow";
+            domRunningWorkflowMsg.classList.add('hidden');
+            break;        
+        
+        case 'workflow_finished_partially':
+            processFuncLog(response);
+            domResponses.innerHTML += renderMessageComponent({
+                isOpen: true,
+                title: response.message.title,
+                body: response.message.body,
+                data: response.data ? JSON.stringify(response.data, null, 2) : null,
+                style: 'color: #f4a142;'
+            });
+            // update UI state
+            domStartWorkflowButton.disabled=false;
+            domStartWorkflowButton.innerHTML="Run Workflow";
             domRunningWorkflowMsg.classList.add('hidden');
             break;
 
@@ -219,6 +252,10 @@ function handleMsg(response) {
                 body: response.message?.body,
                 data: response.data ? JSON.stringify(response.data, null, 2) : null
             });
+            // update UI state
+            domStartWorkflowButton.disabled=false;
+            domStartWorkflowButton.innerHTML="Run Workflow";
+            domRunningWorkflowMsg.classList.add('hidden');
     }
 }
 

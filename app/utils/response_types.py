@@ -11,6 +11,7 @@ class ResponseStatus(str, Enum):
 
 class ResponseAction(str, Enum):
     WORKFLOW_FINISHED = "workflow_finished"
+    WORKFLOW_FINISHED_PARTIALLY = "workflow_finished_partially"
     WORKFLOW_FAILED = "workflow_failed"
     INTERACTION_REQUEST = "interaction_request"
     DATA_UPDATED = "data_updated"
