@@ -4,10 +4,12 @@ let taskId, es;
 
 const domTextareaInput = document.getElementById('textareaInput');
 const domWorkflowSelect = document.getElementById('workflowSelect');
+const domStartWorkflowButton = document.getElementById('startWorkflowButton');
 
 const domInteractions = document.getElementById('interactions');
 const domResponses = document.getElementById('responses');
 const domLogs = document.getElementById('logs');
+const domRunningWorkflowMsg = document.getElementById('running-workflow-msg');
 
 // Functions
 
@@ -16,6 +18,8 @@ async function startWorkflow() {
     domLogs.innerHTML = "";
     domResponses.innerHTML = "";
     domInteractions.innerHTML = "";
+
+    domRunningWorkflowMsg.classList.remove('hidden');
 
     // 1) Start the workflow (runs until first yield)
     const res = await fetch('/api/start_task', {
@@ -161,6 +165,7 @@ function handleMsg(response) {
             isOpen: true,
             style: 'color: #f45b5b;'
         });
+        domRunningWorkflowMsg.classList.add('hidden');
         return;
     }
 
@@ -194,6 +199,7 @@ function handleMsg(response) {
                 style: 'color: green;'
             });            
             if (es) es.close();
+            domRunningWorkflowMsg.classList.add('hidden');
             break;
 
         case 'status_message':
@@ -219,6 +225,12 @@ function handleMsg(response) {
 
 // Event listeners
 
-document.getElementById('startBtn').onclick = () => {
+domStartWorkflowButton.onclick = () => {
     startWorkflow();
+};
+
+document.getElementById('reload-custom-workflows').onclick = function() {
+    fetch('/api/reload_custom_workflows', {method: 'POST'})
+        .then(response => response.json())
+        .then(data => alert(data.message || data.error));
 };

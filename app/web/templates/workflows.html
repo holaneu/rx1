@@ -12,20 +12,14 @@
 
   <div class="container">
     <header>
-        <h1>Workflows</h1>
-
-        <button id="reload-custom-workflows">Reload custom workflows</button>
-        <script>
-            document.getElementById('reload-custom-workflows').onclick = function() {
-                fetch('/api/reload_custom_workflows', {method: 'POST'})
-                    .then(response => response.json())
-                    .then(data => alert(data.message || data.error));
-            };
-        </script>
+        <h1>Workflows</h1>       
     </header> 
     
     <main>
-        
+        <div class="form-row">
+            <button id="reload-custom-workflows" class="btn-medium outline">Reload custom workflows</button>
+        </div>
+
         <div class="form-row">            
             <textarea id="textareaInput" placeholder="Enter your text input here ..."></textarea>
         </div>
@@ -37,8 +31,20 @@
                 <option value="{{ id }}">{{ workflow.title }}</option>
                 {% endfor %}
             </select>
+            
+            <select id="modelSelect">
+                <option value="" disabled selected>Keep default model</option>
+                {% for model in llm_models %}
+                <option value="{{ model.name }}">{{ model.name }}</option>
+                {% endfor %}
+            </select>
 
-            <button id="startBtn">Start Workflow</button>
+            <button id="startWorkflowButton">Run workflow</button>
+        </div>
+
+        <div id="running-workflow-msg" class="spinner-box hidden">
+            <div class="spinner"></div>
+            <span>working ...</span>
         </div>
 
         <div id="result-box-logs">

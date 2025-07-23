@@ -5,13 +5,13 @@ def translation_cs_en_basic(task_id, input, model="openai/gpt-4.1"):
     """Translates text between Czech and English v2."""
     try:
         from app.tools.included import save_to_file, user_data_files_path
-        from app.assistants.included import assistant_translator_cs_en
+        from app.assistants.included import translator_cs_en
         
         wf = Workflow()
 
         wf.add_msg_to_log(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Input: {input}, Model: {model}")
 
-        translated_text = wf.get_assistant_output_or_raise(assistant_translator_cs_en(input=input, model=model))
+        translated_text = wf.get_assistant_output_or_raise(translator_cs_en(input=input, model=model))
         
         wf.add_msg_to_log(msgTitle="LLM: Translated text", msgBody=translated_text)
         

@@ -1,15 +1,18 @@
 # RX1 
 
+RX1 is a lightweight, fully independent workflow automation app designed to run locally or on your own hosting—no reliance on Big Tech or hyperscalers. Everything you need is built in or easily extensible by adding your own code (functions, prompts), including its own private file storage system, so your ideas, tasks, and data remain completely under your control. While RX1 can connect to third-party tools, databases, AI providers, etc., it also works 100% offline for maximum privacy. At its core, RX1 embraces simplicity by returning to the roots: plain text files. Store your knowledge, code, questions, and even entire personal databases (using the JSON-based PerDB) in plain text. With extensible workflows, built-in tools, and optional AI assistants, RX1 brings together automation, creativity, and independence—all in one place.
+
+
 ## 🚀 Looking for Contributors!
 
-I am seeking collaborators to help bring RX1 oper-source project to a production-ready release! If you're passionate about workflow automation, AI integration, or building extensible Python applications, we'd love to have you on board.
+I’m seeking collaborators to help bring the RX1 open-source project to a production-ready release! If you’re passionate about workflow automation, AI integration, or building extensible Python applications, I’d love to hear from you.
 
-Whether you're interested in coding, testing, documentation, UI/UX, or just sharing ideas, your help is welcome. Please read the Goals and let us know if you'd like to join or contribute!
+Whether you’re interested in coding, testing, documentation, UI/UX, sharing ideas, or managing GitHub projects, your help is welcome. Please review the Goals section and let us know if you’d like to join or contribute!
 
 
 ## Overview
 The main concept of the app and its logic includes:  
-- **Tools**, **AI assistants**, and **memory** combined together within **workflows** to automate tasks efficiently. Usage of AI is not necessary, AI is just one type of available actions (workflow steps) which user can utilize.  
+- **Tools**, **AI assistants**, and **memory** combined together within **workflows** to automate tasks simply. Usage of AI is not necessary, AI is just one type of available actions (workflow steps) which user can utilize.  
 
 - **Workflows** are the core pillar of the application. They define how sequences of actions are organized to complete a task automatically. A workflow consists of simply linear (sequential) steps, where Task A leads to Task B in a defined order. Workflows generally proceed from start to finish, but they can also include points where the user is prompted to make decisions — for example, to confirm and continue, stop the workflow, or retry a specific step.
 

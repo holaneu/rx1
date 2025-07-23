@@ -25,6 +25,10 @@ body {
     overflow-x: hidden;
 }
 
+.hidden {
+    display: none !important;
+}
+
 /* initially, no transitions on load */
 .sidebar,
 .full-width-content,

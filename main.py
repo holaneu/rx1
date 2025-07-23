@@ -12,6 +12,7 @@ from app.utils.shared import all_task_sse_queues
 from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
 from app.storage.manager import FileStorageManager
 from app.configs.app_config import APP_SETTINGS
+from app.configs.ai_config import llm_models
 # ----------------------
 # Flask app setup
 
@@ -47,7 +48,7 @@ def page_index():
 
 @app.route('/workflows')
 def page_workflows():
-    return render_template('workflows.html', workflows=wf_registry)
+    return render_template('workflows.html', workflows=wf_registry, llm_models=llm_models)
 
 @app.route('/test')
 def page_test():

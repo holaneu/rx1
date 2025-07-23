@@ -37,8 +37,18 @@ textarea:focus {
 }
 */
 
+.form-row {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    /*
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    */
+}
+
 select {
-  width: 60%;
+  /*width: 60%;*/
   padding: 0.75rem;
   background-color: var(--bg-secondary);
   border: 1px solid #404040;
@@ -73,4 +83,44 @@ button:disabled {
 
 button:disabled:hover {
   background-color: #666;
+}
+
+button.outline {
+  border: 1px solid var(--accent);
+  background-color: transparent;
+  color: var(--accent);
+}
+
+button.btn-medium {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.spinner-box {
+    display: flex;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    justify-content: center;
+    /*
+    text-align: center;
+    padding: 15px;
+    font-style: italic;
+    */
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #ccc;       /* Light gray border */
+    border-top: 4px solid #3498db; /* Blue border on top */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px; /* Spacing before text */
+}
+
+/* Keyframes for spinning animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
