@@ -113,7 +113,7 @@ function submitInteractionForm(event) {
 function renderFormFromJSON(formElements) {
     // If no elements are defined, fall back to a simple confirmation button
     if (!formElements || formElements.length === 0) {
-        return `<button onclick="continueWorkflow('confirm'); this.disabled=true;">Confirm</button>`;
+        return `<button onclick="continueWorkflow('confirm'); this.disabled=true; this.closest('details').open = false;">Confirm</button>`;
     }
 
     const formFields = formElements.map(el => {
