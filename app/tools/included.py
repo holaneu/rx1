@@ -437,25 +437,38 @@ def save_to_json_file(data, output_file):
         raise e
     
 
+import re
+
 @tool()
-def split_and_strip(content):
-  """
-  Splits a string by a delimiter of 5 or more hyphens and strips whitespace from each part.
-  Args:
-    content (str): The input string to be split and stripped.
-  Returns:
-    list[str]: A list of strings where:
-      - Each string is a part of the original content split by 5 or more hyphens
-      - Leading and trailing whitespace is removed from each part
-      - Empty strings are preserved
-  Example:
-    >>> text = "Hello\\n-----\\nWorld"
-    >>> split_and_strip(text)
-    ['Hello', 'World']
-  """
-  parts = re.split(r'-{5,}', content.strip())
-  stripped_parts = [part.strip() for part in parts]
-  return stripped_parts
+def split_clean(content, delimiter='-----'):
+    """
+    Splits a string by a delimiter and strips whitespace from each part.
+    Removes empty strings from the result.
+
+    Args:
+        content (str): The input string to be split and cleaned.
+        delimiter (str, optional): The delimiter string to split by. Defaults to '-----'.
+            The delimiter is treated as a regex pattern and split occurs on one or more consecutive occurrences.
+
+    Returns:
+        list[str]: A list of non-empty strings where:
+            - Each string is a part of the original content split by the delimiter
+            - Leading and trailing whitespace is removed from each part
+            - Empty strings are removed
+
+    Example:
+        >>> text = "Hello\\n-----\\nWorld"
+        >>> split_clean(text)
+        ['Hello', 'World']
+
+        >>> text = "a\\n---\\nb\\n---\\n"
+        >>> split_clean(text, delimiter='---')
+        ['a', 'b']
+    """
+    delimiter_pattern = re.escape(delimiter)
+    parts = re.split(rf'{delimiter_pattern}+', content.strip())
+    cleaned_parts = [part.strip() for part in parts if part.strip()]
+    return cleaned_parts
 
 
 @tool()
