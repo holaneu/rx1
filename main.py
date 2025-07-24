@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, jsonify, Response, abort, redirect, url_for
+from flask_cors import CORS
+
 import uuid
 import json
 import queue
-from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 import time
@@ -13,6 +14,7 @@ from app.utils.response_types import response_output_error, response_output_succ
 from app.storage.manager import FileStorageManager
 from app.configs.app_config import APP_SETTINGS
 from app.configs.ai_config import llm_models
+
 # ----------------------
 # Flask app setup
 
@@ -170,7 +172,6 @@ def start_task():
                 })), 400            
         workflow_func_params = inspect.signature(workflow['function']).parameters
         # Build kwargs based on required parameters
-        print('**** workflow_func_params:', workflow_func_params)
         kwargs = {}
         if 'input' in workflow_func_params:
             user_input = data.get('user_input')
@@ -180,17 +181,12 @@ def start_task():
                     ResponseKey.TASK_ID: task_id
                     })), 400
             kwargs['input'] = user_input
-        """
-        if 'model' in workflow_func_params:
-            kwargs['model'] = workflow['model']
-        """
-        """
-        if 'task_id' in workflow_func_params:
-            kwargs['task_id'] = task_id
-        """
-        kwargs['task_id'] = task_id
-        print('**** kwargs:', kwargs)
         
+        if 'model' in data and 'model' in workflow_func_params:
+            kwargs['model'] = data.get('model')
+        # Always include task_id
+        kwargs['task_id'] = task_id
+                
         generator_func = workflow['function'](**kwargs)
         generators[task_id] = generator_func
         

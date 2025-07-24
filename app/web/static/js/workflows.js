@@ -88,7 +88,7 @@ function processFuncLog(response) {
                 title: status.title,
                 body: status.body,
                 data: status.data ? JSON.stringify(status.data, null, 2) : null,
-                style: 'color: #22b3e4;'
+                style: 'color: #a1a1a1;'
             });
         });
     }
@@ -227,7 +227,7 @@ function handleMsg(response) {
                 title: response.message.title,
                 body: response.message.body,
                 data: response.data ? JSON.stringify(response.data, null, 2) : null,
-                style: 'color: #f4a142;'
+                style: 'color: #22b3e4;'
             });
             // update UI state
             domStartWorkflowButton.disabled=false;
@@ -241,7 +241,7 @@ function handleMsg(response) {
                 title: response.message.title,
                 body: response.message.body,
                 data: JSON.stringify(response, null, 2),
-                style: 'color: #22b3e4;'
+                style: 'color: #a1a1a1;'
             });
             break;
 

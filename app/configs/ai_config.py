@@ -31,10 +31,7 @@ llm_providers = [
 ]
 
 # Model Configurations 
-# x-ai/grok-3-mini
-#
-#
-#
+
 llm_models = [
     {
         "name": "openai/gpt-4.1",
@@ -98,10 +95,6 @@ llm_models = [
     },
     {
         "name": "meta-llama/llama-3.3-70b-instruct", 
-        "provider": "openrouter"
-    },
-    {
-        "name": "nvidia/llama-3.1-nemotron-ultra-253b-v1:free", 
         "provider": "openrouter"
     },
     {
