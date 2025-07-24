@@ -1,4 +1,5 @@
-let taskId, es;
+let taskId;
+let SSE; // SSE for Server-Sent Events
 
 // DOM elements
 
@@ -42,15 +43,18 @@ async function startWorkflow() {
     taskId = data.task_id;
     console.log('startWorkflow - response:', data);
 
+    
+    /* temporary disabled SSE
     // 2) Open SSE stream for status updates
-    es = new EventSource(`/msg/stream?task_id=${taskId}`);
-    es.onmessage = e => {
+    SSE = new EventSource(`/msg/stream?task_id=${taskId}`);
+    SSE.onmessage = e => {
         const msg = JSON.parse(e.data);
         console.log('SSE message:', msg);
         handleMsg(msg);
     };
-    es.onerror = (error) => console.error('SSE error', error);    
-    
+    SSE.onerror = (error) => console.error('SSE error', error);    
+    */
+
     // 3) Handle the initial response
     handleMsg(data);
 };
@@ -176,7 +180,7 @@ function handleMsg(response) {
                 body: response.message.body,
                 style: 'color: #f45b5b;'
             });            
-            if (es) es.close(); // realy use it for status = error??
+            if (SSE) SSE.close(); // realy use it for status = error??
             // update UI state
             domStartWorkflowButton.disabled=false;
             domStartWorkflowButton.innerHTML="Run Workflow";
@@ -213,7 +217,7 @@ function handleMsg(response) {
                 data: response.data ? JSON.stringify(response.data, null, 2) : null,
                 style: 'color: green;'
             });            
-            if (es) es.close();
+            if (SSE) SSE.close();
             // update UI state
             domStartWorkflowButton.disabled=false;
             domStartWorkflowButton.innerHTML="Run Workflow";

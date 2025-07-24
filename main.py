@@ -10,7 +10,7 @@ import time
 
 from app.workflows.core import WORKFLOWS_REGISTRY
 from app.utils.shared import all_task_sse_queues
-from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey
+from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey, ResponseStatus
 from app.storage.manager import FileStorageManager
 from app.configs.app_config import APP_SETTINGS
 from app.configs.ai_config import llm_models
@@ -160,14 +160,14 @@ def start_task():
         data = request.json
         if not data or 'workflow_id' not in data:
             return jsonify(response_output_error({
-                ResponseKey.ERROR: "workflow_id is required",
+                ResponseKey.ERROR: "[start_task()]: workflow_id is required. Probably you forgot to select workflow.",
                 ResponseKey.TASK_ID: task_id
                 })), 400
         workflow_id = data.get('workflow_id')
         workflow = wf_registry.get(workflow_id)
         if not workflow:
             return jsonify(response_output_error({
-                ResponseKey.ERROR: "Invalid workflow",
+                ResponseKey.ERROR: "[start_task()]: Invalid workflow. Workflow not found in workflows registry.",
                 ResponseKey.TASK_ID: task_id
                 })), 400            
         workflow_func_params = inspect.signature(workflow['function']).parameters
@@ -177,7 +177,7 @@ def start_task():
             user_input = data.get('user_input')
             if user_input is None or user_input.strip() == "":
                 return jsonify(response_output_error({
-                    ResponseKey.ERROR: "Missing required input",
+                    ResponseKey.ERROR: "[start_task()]: Missing required input. Selected workflow requires 'input' to be provided.",
                     ResponseKey.TASK_ID: task_id
                     })), 400
             kwargs['input'] = user_input
@@ -210,7 +210,7 @@ def continue_task():
     task_id = data.get("task_id")
     generator_func = generators.get(task_id)
     if not generator_func:
-        return jsonify(response_output_error({ResponseKey.ERROR: "unknown task_id"})), 400
+        return jsonify(response_output_error({ResponseKey.ERROR: "[continue_task()]: unknown task_id. Probably the workflow func incorrectly works with task_id"})), 400
     try:
         continue_generator = generator_func.send(data.get("user_input")) # .send() will resume the generator
         return jsonify(continue_generator)
@@ -227,10 +227,32 @@ def test():
         data = request.json
         input_message = data.get("message", "")
         if not input_message:
-            return jsonify(response_output_error({ResponseKey.DATA: "No input"}))
-        return jsonify(response_output_success({ResponseKey.DATA: input_message + " - from test endpoint"}))
+            return jsonify({
+                ResponseKey.STATUS: ResponseStatus.ERROR, 
+                ResponseKey.ERROR: "No input",
+                ResponseKey.DATA: "No input",
+                ResponseKey.MESSAGE: {
+                    ResponseKey.TITLE: ResponseStatus.ERROR,
+                    ResponseKey.BODY: f"No input"
+                } 
+            }), 400
+        return jsonify({
+            ResponseKey.STATUS: ResponseStatus.SUCCESS, 
+            ResponseKey.DATA: input_message + " - from test endpoint",
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: ResponseStatus.SUCCESS,
+                ResponseKey.BODY: f"Message processed"
+            } 
+        }), 200
     except Exception as e:
-        return jsonify(response_output_error({ResponseKey.ERROR: str(e)})), 500
+        return jsonify({
+            ResponseKey.STATUS: ResponseStatus.ERROR, 
+            ResponseKey.ERROR: str(e),
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: ResponseStatus.ERROR,
+                ResponseKey.BODY: f"Error: {str(e)}"
+            } 
+        }), 500
 
     
 @app.route('/api/reload_custom_workflows', methods=['POST'])
@@ -238,9 +260,22 @@ def reload_custom_workflows():
     try:
         from app.workflows import import_user_custom_workflows
         import_user_custom_workflows()
-        return jsonify({"success": True, "message": "Custom workflows reloaded."})
+        return jsonify({
+            ResponseKey.STATUS: ResponseStatus.SUCCESS, 
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "Custom workflows reloaded",
+                ResponseKey.BODY: "Custom workflows stored in user_data have been successfully reloaded."
+            } 
+        })
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({
+            ResponseKey.STATUS: ResponseStatus.ERROR, 
+            ResponseKey.ERROR: str(e),
+            ResponseKey.MESSAGE: {
+                ResponseKey.TITLE: "Error: custom workflows not reloaded",
+                ResponseKey.BODY: f"Error: {str(e)}"
+            } 
+        }), 500
 
 
 # --- Main entry point ---
