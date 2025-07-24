@@ -1,33 +1,42 @@
 import inspect
+import functools
 
 ASSISTANTS_REGISTRY = {}
 
 def assistant(**kwargs):
     def decorator(func):
-        func.name = func.__name__
-        func.title = kwargs.get('name', func.__name__.replace('assistant_', '').replace('_', ' '))
-        func.description = kwargs.get('description', func.__doc__)
-        func.model = kwargs.get('model', None)
-        func.category = kwargs.get('category', None)
-        func.__module__ = func.__module__
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs_inner):
+            try:
+                return func(*args, **kwargs_inner)
+            except Exception as e:
+                raise Exception(f"[{func.__name__}]: {str(e)}.") from e
+
+        # Metadata        
+        wrapper.name = func.__name__
+        wrapper.title = kwargs.get('name', func.__name__.replace('assistant_', '').replace('_', ' '))
+        wrapper.description = kwargs.get('description', func.__doc__)
+        wrapper.model = kwargs.get('model', None)
+        wrapper.category = kwargs.get('category', None)
+        wrapper.__module__ = func.__module__
 
         # Detect if input is required (by name and default absence)
-        func.input_required = any(
+        wrapper.input_required = any(
             param.name == 'input' and param.default == param.empty
-            for param in inspect.signature(func).parameters.values()
+            for param in inspect.signature(wrapper).parameters.values()
         )
 
         # Register automatically
-        ASSISTANTS_REGISTRY[func.name] = {
-            'name': func.name,
-            'title': func.title,
-            'description': func.description,
-            'function': func,
-            'model': func.model,
-            'category': func.category,
+        ASSISTANTS_REGISTRY[wrapper.name] = {
+            'name': wrapper.name,
+            'title': wrapper.title,
+            'description': wrapper.description,
+            'function': wrapper,
+            'model': wrapper.model,
+            'category': wrapper.category,
             'type': "assistant",
-            'input_required': func.input_required,        
-            'module': func.__module__
+            'input_required': wrapper.input_required,        
+            'module': wrapper.__module__
         }
-        return func
+        return wrapper
     return decorator

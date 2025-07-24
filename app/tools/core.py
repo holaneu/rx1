@@ -14,7 +14,7 @@ def tool(**kwargs):
             try:
                 return func(*args, **kwargs_inner)
             except Exception as e:
-                raise Exception(f"[{func.__name__}] Error: {e}") from e
+                raise Exception(f"[{func.__name__}]: {str(e)}.") from e
 
         # Metadata
         wrapper.name = func.__name__
