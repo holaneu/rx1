@@ -1,6 +1,6 @@
 from app.workflows.core import workflow, Workflow
 from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-from app.assistants.included import assistant_writer, assistant_universal_no_instructions
+from app.assistants.included import writer, universal_no_instructions
 
 @workflow()
 def write_story_reviewed(input, task_id, model="openai/gpt-4.1"):
@@ -8,9 +8,9 @@ def write_story_reviewed(input, task_id, model="openai/gpt-4.1"):
     try:
         wf = Workflow(task_id=task_id)
         # step 1: Generate the story
-        story = wf.get_assistant_output_or_raise(assistant_writer(input=input.strip(), model=model))
+        story = wf.get_assistant_output_or_raise(writer(input=input.strip(), model=model))
 
-        wf.add_msg_to_log(msgTitle="LLM: Story generated", msgBody=story)
+        wf.log_msg(msgTitle="LLM: Story generated", msgBody=str(story))
 
         # step 2: Get feedback from the editor
         instructions_editor = f"""Jseš profesionální editor povídek, který posuzuje povídky a poskytuje zpětnou vazbu k jejich úpravě a zlepšení. Analyzuj vstupní text povídky a její slabé stránky a napiš jasné a stručné doporučení jak text upravit tak aby se odstranily tyto slabé stránky. Doporučení piš formou odrážek v neformátovaném plain text formátu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
@@ -19,9 +19,9 @@ def write_story_reviewed(input, task_id, model="openai/gpt-4.1"):
         {story}
         """
 
-        editor_feedback = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions_editor, model=model))
+        editor_feedback = wf.get_assistant_output_or_raise(universal_no_instructions(input=instructions_editor, model=model))
 
-        wf.add_msg_to_log(msgTitle="LLM: Editor feedback generated", msgBody=editor_feedback)
+        wf.log_msg(msgTitle="LLM: Editor feedback generated", msgBody=editor_feedback)
         
         # step 3: Edit the story based on the feedback
         instructions_edit_story = f"""
@@ -33,8 +33,8 @@ def write_story_reviewed(input, task_id, model="openai/gpt-4.1"):
         Instrukce k úpravě textu:
         {editor_feedback}
         """
-        writer_edited_story = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions_edit_story, model=model))
-        wf.add_msg_to_log(msgTitle="LLM: Edited story generated", msgBody=writer_edited_story)
+        writer_edited_story = wf.get_assistant_output_or_raise(universal_no_instructions(input=instructions_edit_story, model=model))
+        wf.log_msg(msgTitle="LLM: Edited story generated", msgBody=writer_edited_story)
 
         # step 4: Save the story and feedback to file and database
         db_entry = {
@@ -62,7 +62,7 @@ def write_story_reviewed(input, task_id, model="openai/gpt-4.1"):
 
         # Save to file
         save_file_result = save_to_file(filepath=user_data_files_path("stories_reviewed.md"), content=db_entry, delimiter="-----", prepend=True)
-        wf.add_msg_to_log(msg=save_file_result["message"])
+        wf.log_msg(msg=save_file_result["message"])
 
         #save_db_result = json_db_add_entry(db_filepath=user_data_files_path("databases/stories.json"), collection="entries", entry=db_entry, add_createdat=True)
         #wf.add_msg_to_log(msg=save_db_result["message"])

@@ -4,17 +4,16 @@ from app.tools.included import tool
 @tool()
 def call_api_of_type_openai_official(model_name, input):
   from openai import OpenAI
-  from app.tools.included import save_to_file, user_data_files_path, format_str_as_message_obj  
-  import datetime
+  from app.tools.included import save_to_file, user_data_files_path, format_str_as_llm_message_obj, formatted_datetime
   import json
     
   client = OpenAI()
   try:
     completion = client.chat.completions.create(
       model=model_name,
-      messages=format_str_as_message_obj(input)
+      messages=format_str_as_llm_message_obj(input)
     )
-    log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_timestamp = formatted_datetime("%Y%m%d_%H%M%S") # datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     log_filepath = user_data_files_path(f"logs/ai_response_{log_timestamp}.log")
     # Convert completion object to dictionary for JSON serialization
     completion_dict = {
@@ -32,7 +31,7 @@ def call_api_of_type_openai_official(model_name, input):
       }
     }    
     log_content = {
-      "input": format_str_as_message_obj(input),
+      "input": format_str_as_llm_message_obj(input),
       "output": completion_dict
     }
     log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
@@ -60,14 +59,14 @@ def call_api_of_type_openai_official(model_name, input):
 def call_api_of_type_anthropic(model, messages):
   import requests
   import json
-  from app.tools.included import get_llm_model_info, format_str_as_message_obj
+  from app.tools.included import get_llm_model_info, format_str_as_llm_message_obj
 
   model_data = get_llm_model_info(model['name'])
   if model_data is None:
     print("no model data")
     return None
 
-  messages = format_str_as_message_obj(messages)
+  messages = format_str_as_llm_message_obj(messages)
   
   headers = {
     "x-api-key": model_data['api_key'],

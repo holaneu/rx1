@@ -2,7 +2,6 @@ import os
 import requests
 import json
 import re
-import datetime
 from pathlib import Path
 from typing import Dict, Any
 
@@ -12,7 +11,23 @@ from app.configs.app_config import APP_SETTINGS
 from app.utils.response_types import ResponseKey, ResponseStatus
 
 
-@tool()
+@tool(category='date_time')
+def formatted_datetime(format: str = "%Y%m%d_%H%M%S") -> str:
+    """
+    Returns the current date and time formatted as specified.
+    Args:
+        format (str): The format string for datetime, defaults to "%Y-%m-%d %H:%M:%S"
+    Returns:
+        str: Current date and time formatted according to the provided format string
+    Example:
+        >>> formatted_datetime()
+        '2025-03-05 11:00:29'
+    """
+    import datetime
+    return datetime.datetime.now().strftime(format)
+
+
+@tool(category='llm')
 def get_llm_model_info(model_name):
     """
     Retrieves an AI model configuration from a list of available models by its name.
@@ -28,7 +43,7 @@ def get_llm_model_info(model_name):
     return None
 
 
-@tool()
+@tool(category='llm')
 def get_llm_provider_info(provider_name):
     """
     Retrieve information about a specific LLM provider by name.
@@ -44,8 +59,8 @@ def get_llm_provider_info(provider_name):
     return None
 
 
-@tool()
-def format_str_as_message_obj(input):
+@tool(category='llm')
+def format_str_as_llm_message_obj(input):
     if isinstance(input, str):
         return [{"role": "user", "content": input}]
     return input
@@ -130,6 +145,7 @@ def call_api_of_type_openai_v3(model_name, api_key, base_url, input, structured_
     - Supports JSON mode for structured outputs
     - Uses a default temperature of 0.7 for generation
   """
+  import datetime
   #model_info = get_llm_model_info(model_name['name'])
   
   headers = {
@@ -139,7 +155,7 @@ def call_api_of_type_openai_v3(model_name, api_key, base_url, input, structured_
 
   payload = {
     "model": model_name,
-    "messages": format_str_as_message_obj(input),
+    "messages": format_str_as_llm_message_obj(input),
     "temperature": temperature
   }
   # turn on JSON mode
@@ -150,12 +166,11 @@ def call_api_of_type_openai_v3(model_name, api_key, base_url, input, structured_
   try:
     response = requests.post(base_url, headers=headers, data=json.dumps(payload))
     if response.status_code == 200:
-      import inspect
       result = response.json()
-      log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+      log_timestamp = formatted_datetime("%Y%m%d_%H%M%S") #datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
       log_filepath = user_data_files_path(f"logs/ai_response_{log_timestamp}.log")
       log_content = {
-        "input": format_str_as_message_obj(input),
+        "input": format_str_as_llm_message_obj(input),
         "output": result
       }
       log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
@@ -186,12 +201,24 @@ def call_api_of_type_openai_v3(model_name, api_key, base_url, input, structured_
 
 
 @tool()
+def assistant_output_formatted(assistant_output):
+    """Extracts the message content from an assistant output or raises an error if not found."""
+    if not assistant_output or 'message' not in assistant_output:
+        raise Exception("Assistant output is empty or does not contain a message.")        
+    message = assistant_output['message']
+    if 'content' not in message:
+        raise Exception("Message does not contain content.")        
+    return message['content'].strip()
+
+
+@tool()
 def download_news_newsapi(query=None, lastDays=None, domains=None):
   """
   Fetches news articles from NewsAPI based on configured settings.
   Returns:
     dict: News articles data or None if request fails
   """
+  import datetime
   base_url = "https://newsapi.org/v2/everything"
   today = datetime.datetime.now()
   start_date = today - datetime.timedelta(days=lastDays)
@@ -501,6 +528,7 @@ def current_datetime_iso():
         >>> current_datetime_iso()
         '2025-03-05T11:00:29.307714+00:00'
     """
+    import datetime
     return datetime.datetime.now(datetime.timezone.utc).isoformat()   
 
 

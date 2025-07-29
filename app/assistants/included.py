@@ -66,7 +66,7 @@ def translator_cs_en_json(input, model="openai/gpt-4.1", structured_output=True,
 
 
 @assistant()
-def assistant_translator_cs_en_yaml(input, model="openai/gpt-4o-mini"):
+def translator_cs_en_yaml(input, model="openai/gpt-4o-mini"):
     """Translates inputs from CS to EN or from EN to CS and outputs in YAML format."""
     instructions = """
     <role_persona>
@@ -123,7 +123,7 @@ def summarize_text_key_takeaways(input, model="gemini-2.5-flash"):
 
 
 @assistant()
-def assistant_analyze_situation(input, model="openai/gpt-4.1"):
+def analyze_situation(input, model="openai/gpt-4.1"):
     """Analyzuje popsanou situaci a vytváří strukturovaný přehled."""
     instructions = """<role_persona>
     Jseš expert na analýzu situací a jejich rozbor.
@@ -163,7 +163,7 @@ def assistant_analyze_situation(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_summarize_video_transcript(input, model="openai/gpt-4.1"):
+def summarize_video_transcript(input, model="openai/gpt-4.1"):
     """Creates chapter-based summary of video transcription."""
     instructions = """Analyze the video transcript and create a structured summary following these steps:
     1. Identify natural chapter breaks based on content shifts
@@ -187,7 +187,7 @@ def assistant_summarize_video_transcript(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_explain_simply_lexicon(input, model="openai/gpt-4.1"):
+def explain_simply_lexicon(input, model="openai/gpt-4.1"):
     """Vysvětluje pojmy jednoduchým jazykem pro děti."""
     instructions = """Vysvětli pojem tak, aby to pochopilo dítě 4. třídy základní školy.
 
@@ -211,7 +211,7 @@ def assistant_explain_simply_lexicon(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_assistant_instructions_creator(input, model="openai/gpt-4.1"):
+def assistant_instructions_creator(input, model="openai/gpt-4.1"):
     """Generates detailed instructions for different types of assistants."""
     instructions = """**Meta Prompt Text**:
     "Based on the provided description, create a role and detailed instructions for an assistant that will perform specific tasks as needed by the user. The resulting text should include the following sections:
@@ -249,7 +249,7 @@ def assistant_assistant_instructions_creator(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_generate_random_poem(model="openai/gpt-4.1"):
+def generate_random_poem(model="openai/gpt-4.1"):
     """Generates a random poem."""
     instructions = """Create a poem, choose any theme you want. The poem should be original, creative, and evoke emotions related to the theme. 
     Use descriptive language, metaphors, and imagery to convey the essence of the theme effectively. 
@@ -263,7 +263,7 @@ def assistant_generate_random_poem(model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_generate_short_story(input, model="openai/gpt-4.1"):
+def generate_short_story(input, model="openai/gpt-4.1"):
     """Generates a short story based on the input theme."""
     instructions = """Create a short story based on the provided theme. The story should be engaging, well-structured, and include:
     - A clear beginning, middle, and end
@@ -283,7 +283,7 @@ def assistant_generate_short_story(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_analyze_text_attributes(input, model="openai/gpt-4.1"):
+def analyze_text_attributes(input, model="openai/gpt-4.1"):
     """Analyzes text and provides general characteristics like style, theme, tone, length, and expertise level."""
     instructions = """Analyzuj text a napiš jeho obecnou charakteristiku (styl, téma, délka, tón, míra odbornosti) v odrážkách.
 
@@ -304,7 +304,7 @@ def assistant_analyze_text_attributes(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_generate_questions(input, model="openai/gpt-4.1"):
+def generate_questions(input, model="openai/gpt-4.1"):
     """Generates questions based on important information from the source text."""
     instructions = """Na základě zdrojového textu napiš otázky, které se ptají na podstatné informace uvedené ve zdroji. Přidej ke každé otázce také stručnou odpověď. Pravidla: 
     Na každou otázku bude vždy pouze jedna jednoznačná správná odpověď. 
@@ -336,7 +336,7 @@ def assistant_generate_questions(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_universal_no_instructions(input, model="openai/gpt-4.1", structured_output=None, response_format=None):
+def universal_no_instructions(input, model="openai/gpt-4.1", structured_output=None, response_format=None):
     """A universal AI assistant that processes input without any additional instruction (no system prompt)"""    
     if input is None or input.strip() == "":
         return "No input provided."
@@ -348,7 +348,7 @@ def assistant_universal_no_instructions(input, model="openai/gpt-4.1", structure
 
 
 @assistant()
-def assistant_writer(input, model="openai/gpt-4.1", structured_output=True, response_format=None):
+def writer(input, model="openai/gpt-4.1", structured_output=True, response_format=None):
     """Generates short feel-good stories based on simple prompts."""
     instructions = """
     Jseš spisovatel krátkých povídek. Uživatel poskytne námět pro krátký příběh ve formě krátké věty, fráze nebo stručného popisu situace. Vytvoř krátký příběh, který bude splňovat tato kritéria:
@@ -374,7 +374,7 @@ def assistant_writer(input, model="openai/gpt-4.1", structured_output=True, resp
 
 
 @assistant()
-def assistant_sarcastic_tech_editor(input, model="openai/gpt-4.1"):
+def sarcastic_tech_editor(input, model="openai/gpt-4.1"):
     """A sarcastic tech editor assistant that generates blog posts with ironic commentary."""
     instructions = f"""
     Jseš redaktor a komentátor technických řešení. Tvým úkolem je napsat blog post na zadané téma. Tvůj styl se vyznačuje schopnosti vidět jednoduchá a funkční řešení a vtipně s dávkou ironie a sarkasmu komentovat postupy a řešení.
@@ -388,7 +388,7 @@ def assistant_sarcastic_tech_editor(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def assistant_universal_no_instructions(input, model="openai/gpt-4.1", structured_output=None, response_format=None):
+def universal_no_instructions(input, model="openai/gpt-4.1", structured_output=None, response_format=None):
     """A universal AI assistant that processes input without any additional instruction (no system prompt)"""    
     try:
         if input is None or input.strip() == "":
@@ -405,7 +405,7 @@ def assistant_universal_no_instructions(input, model="openai/gpt-4.1", structure
 
 
 @assistant()
-def assistant_writer(input, model="openai/gpt-4.1", structured_output=True, response_format=None):
+def writer(input, model="openai/gpt-4.1", structured_output=True, response_format=None):
     """Generates short feel-good stories based on simple prompts."""
     try:
         instructions = """
@@ -436,7 +436,7 @@ def assistant_writer(input, model="openai/gpt-4.1", structured_output=True, resp
 
 
 @assistant()
-def assistant_sarcastic_tech_editor(input, model="openai/gpt-4.1"):
+def sarcastic_tech_editor(input, model="openai/gpt-4.1"):
     """A sarcastic tech editor assistant that generates blog posts with ironic commentary."""
     try:
         instructions = f"""

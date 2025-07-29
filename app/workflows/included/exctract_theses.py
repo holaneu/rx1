@@ -1,5 +1,5 @@
 from app.workflows.core import workflow, Workflow
-from app.assistants.included import assistant_universal_no_instructions
+from app.assistants.included import universal_no_instructions
 from app.tools.included import save_to_file, user_data_files_path
 
 @workflow()
@@ -19,12 +19,12 @@ def exctract_theses(input, model=None):
         - [teze 2]
         - [teze 3]
         """
-        theses = wf.get_assistant_output_or_raise(assistant_universal_no_instructions(input=instructions_theses, model="gpt-4o"))
-        wf.add_msg_to_log(msgTitle="Theses extracted by LLM", msgBody=theses)
+        theses = wf.get_assistant_output_or_raise(universal_no_instructions(input=instructions_theses, model="gpt-4o"))
+        wf.log_msg(msgTitle="Theses extracted by LLM", msgBody=theses)
 
         file_path = user_data_files_path("theses.txt")
         save_file_result = save_to_file(file_path, theses + "\n\n-----\n", prepend=True)
-        wf.add_msg_to_log(msg=save_file_result["message"])
+        wf.log_msg(msg=save_file_result["message"])
 
         return wf.success_response(
             data=theses,

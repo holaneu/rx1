@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 import os
 from app.utils.response_types import ResponseKey, ResponseAction, ResponseStatus
-from app.tools.included import save_to_file, user_data_files_path
+from app.tools.included import save_to_file, user_data_files_path, formatted_datetime
 
 # Define a registry to hold all workflows
 # This allows for dynamic discovery and management of workflows
@@ -59,7 +59,7 @@ class Workflow:
         """Set the task_id for this workflow instance."""
         self.task_id = task_id
 
-    def add_msg_to_log(self, msg=None, msgTitle=None, msgBody=None):
+    def log_msg(self, msg=None, msgTitle=None, msgBody=None):
         """Add a dict message to the func_log list."""
         msg = msg or {}
         title = msg.get("title") or msgTitle
@@ -98,7 +98,7 @@ class Workflow:
     def _save_log_file(self):
         try:
             timestamp = datetime.now()
-            formatted_time = timestamp.strftime('%Y%m%d_%H%M%S')
+            formatted_time = formatted_datetime("%Y%m%d_%H%M%S")  #timestamp.strftime('%Y%m%d_%H%M%S')
             task_id_part = self.task_id or 'unknown'
             log_filepath = user_data_files_path(f"logs/workflow_{formatted_time}_{task_id_part}.log")
 

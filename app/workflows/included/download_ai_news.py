@@ -20,7 +20,7 @@ def download_ai_news():
             json_db_add_entry(db_filepath=db_file_path, collection="entries", entry=article, add_createdat=False)
             
             save_file_result = save_to_file(file_path, article_readable + "\n\n-----\n", prepend=True)
-            wf.add_msg_to_log(msg=save_file_result["message"])
+            wf.log_msg(msg=save_file_result["message"])
 
         return wf.success_response(
             data=articles,

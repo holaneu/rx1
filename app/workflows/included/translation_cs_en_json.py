@@ -10,11 +10,11 @@ def translation_cs_en_json(input, task_id, model="openai/gpt-4.1"):
 
         wf = Workflow(task_id=task_id)
 
-        wf.add_msg_to_log(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Model: {model}")
+        wf.log_msg(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Model: {model}")
         
         ai_data = wf.get_assistant_output_or_raise(translator_cs_en_json(input=input.strip(), model=model, structured_output=True))
 
-        wf.add_msg_to_log(msgTitle="LLM: Translation generated", msgBody=ai_data)
+        wf.log_msg(msgTitle="LLM: Translation generated", msgBody=ai_data)
 
         ai_data_parsed = json.loads(ai_data)        
         if not isinstance(ai_data_parsed, dict):
@@ -42,7 +42,7 @@ def translation_cs_en_json(input, task_id, model="openai/gpt-4.1"):
         file_name = "vocabulary"
 
         save_file_result = save_to_file(user_data_files_path(f"{file_name}.md"), ai_data_readable, delimiter="-----", prepend=True)
-        wf.add_msg_to_log(msg=save_file_result["message"])
+        wf.log_msg(msg=save_file_result["message"])
 
         user_input2 = yield wf.interaction_request(
             msgTitle="Confirmation required",
@@ -57,7 +57,7 @@ def translation_cs_en_json(input, task_id, model="openai/gpt-4.1"):
             )
 
         save_db_result = json_db_add_entry(db_filepath=user_data_files_path(f"databases/{file_name}.json"), collection="entries", entry=ai_data_parsed, add_createdat=True)
-        wf.add_msg_to_log(msg=save_db_result["message"])
+        wf.log_msg(msg=save_db_result["message"])
 
         return wf.success_response(
             data=ai_data_parsed,

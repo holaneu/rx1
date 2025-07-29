@@ -9,15 +9,15 @@ def translation_cs_en_basic(task_id, input, model="openai/gpt-4.1"):
         
         wf = Workflow(task_id=task_id)
 
-        wf.add_msg_to_log(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Input: {input}, Model: {model}")
+        wf.log_msg(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Input: {input}, Model: {model}")
 
         translated_text = wf.get_assistant_output_or_raise(translator_cs_en(input=input, model=model))
         
-        wf.add_msg_to_log(msgTitle="LLM: Translated text", msgBody=translated_text)
+        wf.log_msg(msgTitle="LLM: Translated text", msgBody=translated_text)
         
         file_path = user_data_files_path("translations.txt")
         save_file_result = save_to_file(file_path, translated_text, delimiter="-----", prepend=True)
-        wf.add_msg_to_log(msg=save_file_result["message"])
+        wf.log_msg(msg=save_file_result["message"])
         
         return wf.success_response(
             data=translated_text,
