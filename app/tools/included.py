@@ -37,10 +37,13 @@ def get_llm_model_info(model_name):
         dict or None: The model configuration dictionary if found, None otherwise. 
         The model dictionary contains model parameters and settings.
     """
+    model_info = None
     for model in llm_models:
         if model['name'] == model_name:
-            return model
-    return None
+            model_info = model
+    if not model_info:
+        raise Exception(f"Model '{model_name}' not found in llm models in ai config")
+    return model_info
 
 
 @tool(category='llm')
@@ -52,11 +55,13 @@ def get_llm_provider_info(provider_name):
     Returns:
         dict or None: The provider's information as a dictionary if found, otherwise None.
     """
-
+    provider_info = None
     for provider in llm_providers:
         if provider['name'] == provider_name:
-            return provider
-    return None
+            provider_info = provider
+    if not provider_info:
+        raise Exception(f"Provider '{provider_name}' not found in llm providers in ai config")
+    return provider_info
 
 
 @tool(category='llm')
@@ -67,137 +72,129 @@ def format_str_as_llm_message_obj(input):
 
 
 @tool()
-def fetch_llm(model_name, input, structured_output=None, response_format=None, temperature=0.7):
+def fetch_llm(model_name, input, structured_output=None, response_format=None, temperature=0.6):
     """
-    Fetches AI response using specified model and input.
-    This function processes the input through different AI models based on their API type.
-    Currently supports OpenAI and Anthropic API types.
+    Calls an LLM model by name with the given input and options.
+
     Args:
-        model (str or dict): The AI model identifier or configuration dictionary
-        input (str): The input text/prompt to be processed by the AI model
+        model_name (str): The name of the LLM model to use.
+        input (str or list): The prompt or messages to send to the model.
+        structured_output (bool, optional): If True, requests a structured (JSON) response. Default is None.
+        response_format (dict, optional): Custom response format configuration. Default is None.
+        temperature (float, optional): Sampling temperature for randomness. Default is 0.6.
+
     Returns:
-        str or None: The AI model's response if successful, None if the model is not found
-        or if the API type is not supported
+        dict: The response from the LLM provider, including status, data, and metadata.
+
+    Raises:
+        Exception: If the model or provider is not found, or if the API call fails.
+
     Example:
-        >>> response = fetch_ai("gpt-4", "What is the capital of France?")
-        >>> print(response)
-        "The capital of France is Paris."
+        >>> fetch_llm("gpt-4", "What is the capital of France?")
+        {'status': 'success', 'data': {'content': 'The capital of France is Paris.', 'role': 'assistant'}, ...}
     """
-    model_info = get_llm_model_info(model_name)
-    if model_info is None:
-        raise Exception(f"Model not found in configuration")
-    
+    model_info = get_llm_model_info(model_name)    
     provider_info = get_llm_provider_info(provider_name=model_info['provider'])
-    if provider_info is None:
-        raise Exception(f"Provider not found in configuration")
     
     provider_api_key = provider_info.get('api_key')
     provider_base_url = provider_info.get('base_url')
     provider_api_type = provider_info.get('api_type')
-
-    if not provider_api_key:
-        raise Exception("provider_api_key environment variable is not set")
     
     if provider_api_type == 'openai':
-        return call_api_of_type_openai_v3(
+        return call_api_of_type_openai_choices_direct(
             model_name=model_info['name'],
             api_key=provider_api_key,
             base_url=provider_base_url,
             input=input,
             structured_output=structured_output,
             response_format=response_format,
-            temperature=temperature #temperature if temperature is not None else 0.7
+            temperature=temperature
             )
     return None
 
-
 @tool()
-def call_api_of_type_openai_v3(model_name, api_key, base_url, input, structured_output=None, response_format=None, temperature=None):
-  """
-  Calls OpenAI API with the given model and input.
-  This function sends a request to OpenAI's API, handles the response, logs the interaction,
-  and returns the processed result.
-  Args:
-    model (dict): Dictionary containing model configuration including 'name' key
-    input (str or list): Input text or list of message objects to send to the API
-    structured_output (bool, optional): If True, forces JSON output format. Defaults to None
-    response_format (dict, optional): Custom response format configuration. If None and structured_output is True, defaults to JSON object format. Defaults to None
-    temperature (float, optional): Controls randomness in the model's output. Values range from 0 to 2,
-    where 0 is more focused/deterministic and higher values produce more random outputs. Defaults to 0.7 if not specified.
-  Returns:
-    dict or None: If successful, returns a dictionary containing:
-      - success (bool): True if API call succeeded
-      - origin (str): Name of the calling function
-      - message (dict): Response message containing:
-        - content (str): The generated text response
-        - role (str): Role of the message (e.g. "assistant")
-      - info (dict): Additional information including:
-        - model (str): Name of the model used
-        - prompt_tokens (int): Number of tokens in the prompt
-        - completion_tokens (int): Number of tokens in the completion
-        - total_tokens (int): Total tokens used
-    Returns None if API call fails or encounters an error
-  Raises:
-    Exception: Catches and logs any exceptions during API call
-  Note:
-    - Requires valid model configuration with API key and base URL
-    - Automatically logs all interactions to a timestamped file
-    - Supports JSON mode for structured outputs
-    - Uses a default temperature of 0.7 for generation
-  """
-  import datetime
-  #model_info = get_llm_model_info(model_name['name'])
-  
-  headers = {
-    "Authorization": f"Bearer {api_key}",
-    "Content-Type": "application/json"
-  }
+def call_api_of_type_openai_choices_direct(model_name, api_key, base_url, input, structured_output=None,  response_format=None, temperature=None):
+    """
+    Calls the OpenAI API with the specified model and input.
 
-  payload = {
-    "model": model_name,
-    "messages": format_str_as_llm_message_obj(input),
-    "temperature": temperature
-  }
-  # turn on JSON mode
-  if structured_output == True:
-    if response_format == None:
-      payload["response_format"] = { "type": "json_object" }
+    Args:
+        model_name (str): Name of the OpenAI model to use.
+        api_key (str): API key for OpenAI authentication.
+        base_url (str): The endpoint URL for the OpenAI API.
+        input (str or list): User input as a string or list of message objects.
+        structured_output (bool, optional): If True, requests a JSON object response format.
+        response_format (dict, optional): Custom response format configuration. If None and structured_output is True, defaults to JSON object format.
+        temperature (float, optional): Sampling temperature for randomness (default: 0.7).
 
-  try:
-    response = requests.post(base_url, headers=headers, data=json.dumps(payload))
-    if response.status_code == 200:
-      result = response.json()
-      log_timestamp = formatted_datetime("%Y%m%d_%H%M%S") #datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-      log_filepath = user_data_files_path(f"logs/ai_response_{log_timestamp}.log")
-      log_content = {
-        "input": format_str_as_llm_message_obj(input),
-        "output": result
-      }
-      log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
-      save_to_file(content=log_content, filepath=log_filepath)
-      output = {
-        ResponseKey.STATUS: ResponseStatus.SUCCESS,
-        ResponseKey.DATA: {
-          "content": result["choices"][0]["message"]["content"],
-          "role": result["choices"][0]["message"]["role"]
-        },        
-        ResponseKey.METADATA: {
-          "model": result["model"],
-          "prompt_tokens": result["usage"]["prompt_tokens"],
-          "completion_tokens": result["usage"]["completion_tokens"],
-          "total_tokens": result["usage"]["total_tokens"]  
-        }
-      }
-      return output
-    else:
-      raise Exception(f"Error returned by LLM provider: {response.status_code} - {response.text}")
-      #print(f"Error: {response.status_code}")
-      #print(response.text)
-      #return None
-  except Exception as e:
-    raise Exception(f"Error calling LLM model: {e}")
-    #print(f"Error calling model: {e}")
-    #return None
+    Returns:
+        dict: On success, returns a dictionary with:
+            - status: ResponseStatus.SUCCESS
+            - data: dict with 'content' (str) and 'role' (str) from the model's reply
+            - metadata: dict with model name and token usage info
+        Raises Exception on error.
+
+    Notes:
+        - Logs each API call and response to a timestamped file in the user data logs directory.
+        - Supports both plain text and structured (JSON) outputs.
+        - Requires valid API key and endpoint.
+    """
+    if not model_name:
+        raise Exception("Model name for OpenAI API call was not provided")
+    
+    if not api_key:
+        raise Exception("API key for OpenAI API call was not provided")
+    
+    if not base_url:
+        raise Exception("Base URL for OpenAI API call was not provided")
+    
+    if not input:
+        raise Exception("Input for OpenAI API call was not provided")
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": model_name,
+        "messages": format_str_as_llm_message_obj(input),
+        "temperature": temperature
+    }
+    # turn on JSON mode
+    if structured_output == True:
+        if response_format == None:
+            payload["response_format"] = { "type": "json_object" }
+
+    try:
+        response = requests.post(base_url, headers=headers, data=json.dumps(payload))
+        if response.status_code == 200:
+            result = response.json()
+            log_timestamp = formatted_datetime("%Y%m%d_%H%M%S")
+            log_filepath = user_data_files_path(f"logs/ai_response_{log_timestamp}.log")
+            log_content = {
+                "input": format_str_as_llm_message_obj(input),
+                "output": result
+            }
+            log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
+            save_to_file(content=log_content, filepath=log_filepath)
+            output = {
+                ResponseKey.STATUS: ResponseStatus.SUCCESS,
+                ResponseKey.DATA: {
+                "content": result["choices"][0]["message"]["content"],
+                "role": result["choices"][0]["message"]["role"]
+                },        
+                ResponseKey.METADATA: {
+                "model": result["model"],
+                "prompt_tokens": result["usage"]["prompt_tokens"],
+                "completion_tokens": result["usage"]["completion_tokens"],
+                "total_tokens": result["usage"]["total_tokens"]  
+                }
+            }
+            return output
+        else:
+            raise Exception(f"Error returned by LLM provider: {response.status_code} - {response.text}")
+    except Exception as e:
+        raise Exception(f"Error calling LLM model: {e}")
 
 
 @tool()
