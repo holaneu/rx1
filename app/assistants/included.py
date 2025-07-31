@@ -56,10 +56,9 @@ def translator_cs_en_json(input, model="openai/gpt-4.1", structured_output=True,
     "type": "phrase"
     }} 
     """    
-    input = input.strip()
     messages = [
         {"role": "system", "content": instructions},
-        {"role": "user", "content": input}
+        {"role": "user", "content": input.strip()}
     ]
     response = fetch_llm(model_name=model, input=messages, structured_output=structured_output, response_format=response_format)
     return response
@@ -336,14 +335,12 @@ def generate_questions(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def universal_no_instructions(input, model="openai/gpt-4.1", structured_output=None, response_format=None):
+def universal_no_instructions(input, model="openai/gpt-4.1"):
     """A universal AI assistant that processes input without any additional instruction (no system prompt)"""    
-    if input is None or input.strip() == "":
-        return "No input provided."
     messages = [
         {"role": "user", "content": input}
     ]
-    response = fetch_llm(model, messages, structured_output=structured_output, response_format=response_format)
+    response = fetch_llm(model, messages)
     return response
 
 
@@ -388,68 +385,42 @@ def sarcastic_tech_editor(input, model="openai/gpt-4.1"):
 
 
 @assistant()
-def universal_no_instructions(input, model="openai/gpt-4.1", structured_output=None, response_format=None):
-    """A universal AI assistant that processes input without any additional instruction (no system prompt)"""    
-    try:
-        if input is None or input.strip() == "":
-            return "No input provided."
-        messages = [
-            {"role": "user", "content": input}
-        ]
-        response = fetch_llm(model, messages, structured_output=structured_output, response_format=response_format)
-        return response
-    except Exception as e:
-        error_msg = f"Error in [{__name__}]: {e}"
-        print(error_msg)
-        raise Exception(error_msg) from e
-
-
-@assistant()
 def writer(input, model="openai/gpt-4.1", structured_output=True, response_format=None):
     """Generates short feel-good stories based on simple prompts."""
-    try:
-        instructions = """
-        Jseš spisovatel krátkých povídek. Uživatel poskytne námět pro krátký příběh ve formě krátké věty, fráze nebo stručného popisu situace. Vytvoř krátký příběh, který bude splňovat tato kritéria:
-        - perspektiva: vypravěč (3. osoba)
-        - čas: minulý čas, např. "Sam se rozhodl vyrazit ven se projít."
-        - postavy: v příběhu se může vyskytovat více postav. Jedna z nich, může to být hlavní nebo vedlejší postava, by měla být muž, věk 39 let, introvert, přemýšlivý, pracuje jako prompt engineer a vývojář python aplikací, otec dvou dětí, ženatý.
-        - žánr: fikce ze současnosti (contenporary fiction)
-        - pod-žánr: feel-good
-        - tón: milý a laskavý, optimistický, s veselou atmosférou, občas humorný
-        - dialogy: použij neformální, uvolněný až hovorový tón
-        - délka: maximálně 400 slov
-        - titulek: název příběhu"
-        Vytvoř výstup ve strukturovaném JSON formátu se těmito klíčovými poli:
-          - "title": titulek.
-          - "content": příběh.
-        """
-        messages = [
-            {"role": "system", "content": instructions},
-            {"role": "user", "content": input}
-        ]
-        response = fetch_llm(model, messages, structured_output=structured_output, response_format=response_format)
-        return response
-    except Exception as e:
-        error_msg = f"Error in [{__name__}]: {e}"
-        print(error_msg)
-        raise Exception(error_msg) from e
+    instructions = """
+    Jseš spisovatel krátkých povídek. Uživatel poskytne námět pro krátký příběh ve formě krátké věty, fráze nebo stručného popisu situace. Vytvoř krátký příběh, který bude splňovat tato kritéria:
+    - perspektiva: vypravěč (3. osoba)
+    - čas: minulý čas, např. "Sam se rozhodl vyrazit ven se projít."
+    - postavy: v příběhu se může vyskytovat více postav. Jedna z nich, může to být hlavní nebo vedlejší postava, by měla být muž, věk 39 let, introvert, přemýšlivý, pracuje jako prompt engineer a vývojář python aplikací, otec dvou dětí, ženatý.
+    - žánr: fikce ze současnosti (contenporary fiction)
+    - pod-žánr: feel-good
+    - tón: milý a laskavý, optimistický, s veselou atmosférou, občas humorný
+    - dialogy: použij neformální, uvolněný až hovorový tón
+    - délka: maximálně 400 slov
+    - titulek: název příběhu"
+    Vytvoř výstup ve strukturovaném JSON formátu se těmito klíčovými poli:
+        - "title": titulek.
+        - "content": příběh.
+    """
+    messages = [
+        {"role": "system", "content": instructions},
+        {"role": "user", "content": input}
+    ]
+    response = fetch_llm(model, messages, structured_output=structured_output, response_format=response_format)
+    return response
+
 
 
 @assistant()
 def sarcastic_tech_editor(input, model="openai/gpt-4.1"):
     """A sarcastic tech editor assistant that generates blog posts with ironic commentary."""
-    try:
-        instructions = f"""
-        Jseš redaktor a komentátor technických řešení. Tvým úkolem je napsat blog post na zadané téma. Tvůj styl se vyznačuje schopnosti vidět jednoduchá a funkční řešení a vtipně s dávkou ironie a sarkasmu komentovat postupy a řešení.
-        Téma: {input}
-        """
-        messages = [
-            {"role": "system", "content": instructions}
-        ]
-        response = fetch_llm(model, messages)
-        return response
-    except Exception as e:
-        error_msg = f"Error in [{__name__}]: {e}"
-        print(error_msg)
-        raise Exception(error_msg) from e
+    instructions = f"""
+    Jseš redaktor a komentátor technických řešení. Tvým úkolem je napsat blog post na zadané téma. Tvůj styl se vyznačuje schopnosti vidět jednoduchá a funkční řešení a vtipně s dávkou ironie a sarkasmu komentovat postupy a řešení.
+    Téma: {input}
+    """
+    messages = [
+        {"role": "system", "content": instructions}
+    ]
+    response = fetch_llm(model, messages)
+    return response
  
