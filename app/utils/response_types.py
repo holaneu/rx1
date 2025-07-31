@@ -31,6 +31,7 @@ class ResponseKey(str, Enum):
     COLLECTED_MESSAGES = "collected_messages" # REMOVE
     FUNC_LOG = "func_log" 
     FORM_ELEMENTS = "form_elements"
+    METADATA = "metadata"
 
 
 

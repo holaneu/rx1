@@ -87,13 +87,13 @@ class Workflow:
         return messages
     
     def get_assistant_output_or_raise(self, assistant_output):
-        """Extracts the message content from an assistant output or raises an error if not found."""
-        if not assistant_output or 'message' not in assistant_output:
-            raise Exception("Assistant output is empty or does not contain a message.")        
-        message = assistant_output['message']
-        if 'content' not in message:
-            raise Exception("Message does not contain content.")        
-        return message['content'].strip()
+        """Extracts the message content from an assistant output or raises an error if not found."""    
+        if not assistant_output or ResponseKey.DATA not in assistant_output:
+            raise Exception("Assistant output is empty or does not contain a data.")        
+        data = assistant_output[ResponseKey.DATA]
+        if 'content' not in data:
+            raise Exception("Data does not contain content.")        
+        return data['content'].strip()
     
     def _save_log_file(self):
         try:
