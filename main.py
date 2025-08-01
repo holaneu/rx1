@@ -18,7 +18,7 @@ from app.configs.ai_config import llm_models
 # ----------------------
 # Flask app setup
 
-app = Flask(__name__, static_folder='app/web/static', template_folder='app/web/templates')
+app = Flask(__name__, static_folder='app/ui/static', template_folder='app/ui/templates')
 
 # Enable CORS for API routes only
 CORS(app, resources={r"/api/*": {"origins": "*"}})

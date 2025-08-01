@@ -27,8 +27,14 @@ def backup_user_data(source_folder, base_destination_folder, ignore_names=None):
 
 # === CONFIGURATION ===
 
-# Get absolute path to the directory containing this script
-app_root = os.path.abspath(os.path.dirname(__file__))
+# Dynamically find the root relative to a known marker file or folder
+current_dir = os.path.abspath(os.path.dirname(__file__))
+app_root = os.path.abspath(os.path.dirname(__file__)) # first it sets the default path
+while current_dir != os.path.dirname(current_dir):  # stop at filesystem root
+    if 'main.py' in os.listdir(current_dir) or 'app' in os.listdir(current_dir):
+        app_root = current_dir
+        break
+    current_dir = os.path.dirname(current_dir)
 
 # Get external storage path from .env
 external_storage = os.getenv('EXTERNAL_STORAGE_1_LOCAL_PATH')
