@@ -38,6 +38,9 @@ while current_dir != os.path.dirname(current_dir):  # stop at filesystem root
 
 # Get external storage path from .env
 external_storage = os.getenv('EXTERNAL_STORAGE_1_LOCAL_PATH')
+if not external_storage:
+    print("❌ Error: EXTERNAL_STORAGE_1_LOCAL_PATH is not set in app/.env or .env could not be loaded.")
+    exit(1)
 
 # Compose destination base path
 destination_base_path = os.path.join(external_storage, '__projects_new', 'rx1', '_backups')
