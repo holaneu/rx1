@@ -3,9 +3,12 @@ import shutil
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Load .env from app/.env
-dotenv_path = os.path.join('app', '.env')
-load_dotenv(dotenv_path)
+from pathlib import Path
+
+# Get the root directory of the app (parent of scripts)
+dotenv_path = Path(__file__).resolve().parents[1] / "app" / ".env"
+
+load_dotenv(dotenv_path=dotenv_path)
 
 def backup_user_data(source_folder, base_destination_folder, ignore_names=None):
     now_str = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -38,6 +41,7 @@ while current_dir != os.path.dirname(current_dir):  # stop at filesystem root
 
 # Get external storage path from .env
 external_storage = os.getenv('EXTERNAL_STORAGE_1_LOCAL_PATH')
+print(f"ℹ️ EXTERNAL_STORAGE_1_LOCAL_PATH value: {external_storage}")
 if not external_storage:
     print("❌ Error: EXTERNAL_STORAGE_1_LOCAL_PATH is not set in app/.env or .env could not be loaded.")
     exit(1)
