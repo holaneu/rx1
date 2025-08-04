@@ -28,8 +28,8 @@ Thumbs.db
 _archive/
 
 # Local testing folders and files
-user_data/admin/*
-!user_data/admin/.gitkeep
+user_data/*
+!user_data/.gitkeep
 test/
 
 # Private files
