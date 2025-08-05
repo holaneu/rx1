@@ -10,7 +10,7 @@ for filename in os.listdir(module_path):
         importlib.import_module(module_name)
 
 # Optionally expose the registry directly
-from .core import ASSISTANTS_REGISTRY
+from .core import PROMPTS_REGISTRY
 
 # --- STATIC IMPORTS (Auto-generated section starts) ---
 # AUTO-GENERATED-IMPORTS-START

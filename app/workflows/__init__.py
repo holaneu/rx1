@@ -23,10 +23,11 @@ for subfolder in subfolders:
 
 # Expose directly
 from .core import WORKFLOWS_REGISTRY
-#from .core import workflow
-#from .core import Workflow
 
-#__all__ = ["WORKFLOWS_REGISTRY", "workflow", "Workflow"]
+# --- STATIC IMPORTS (Auto-generated section starts) ---
+# AUTO-GENERATED-IMPORTS-START
+# AUTO-GENERATED-IMPORTS-END
+# --- END OF AUTO GENERATED ---
 
 
 # --- Import user's custom workflows from user_data ---

@@ -11,3 +11,8 @@ for filename in os.listdir(module_path):
 
 # Optionally expose the registry directly
 from .core import TOOLS_REGISTRY
+
+# --- STATIC IMPORTS (Auto-generated section starts) ---
+# AUTO-GENERATED-IMPORTS-START
+# AUTO-GENERATED-IMPORTS-END
+# --- END OF AUTO GENERATED ---

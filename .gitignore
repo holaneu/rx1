@@ -24,15 +24,14 @@ Thumbs.db
 #*.code-workspace
 #.code-workspace
 
-# Private backups and archive
+# Private and backups
 _archive/
-
-# Local testing folders and files
-user_data/*
-!user_data/.gitkeep
-test/
-
-# Private files
 private/
+test/
+playground.py
 custom/
 custom.py
+
+# Local user data
+user_data/*
+!user_data/.gitkeep
