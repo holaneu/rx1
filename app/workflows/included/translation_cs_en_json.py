@@ -4,13 +4,16 @@ from app.workflows.core import workflow, Workflow
 def translation_cs_en_json(input, task_id, model="openai/gpt-4.1"):
     """Translates text between Czech and English and outputs it in JSON format."""    
     try:
-        from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-        from app.assistants.included import translator_cs_en_json
+        from app.tools import save_to_file, user_data_files_path, json_db_add_entry
+        from app.assistants import translator_cs_en_json
+        from user_data.admin.custom_tools import test_generate_uuid
         import json
 
         wf = Workflow(task_id=task_id)
 
         wf.log_msg(msgTitle="Workflow Started", msgBody=f"Task ID: {task_id}, Model: {model}")
+
+        wf.log_msg(msgTitle="Test data", msgBody=f"Uid: {test_generate_uuid()}")
         
         ai_data = wf.get_assistant_output_or_raise(translator_cs_en_json(input=input.strip(), model=model, structured_output=True))
 

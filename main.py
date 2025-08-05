@@ -9,12 +9,20 @@ import os
 import time
 import threading
 
-from app.workflows.core import WORKFLOWS_REGISTRY
+# REMOVE: from app.workflows.core import WORKFLOWS_REGISTRY
+import app.workflows.core as workflows_core
 from app.utils.shared import all_task_sse_queues
 from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey, ResponseStatus
 from app.storage.manager import FileStorageManager
 from app.configs.app_config import APP_SETTINGS
 from app.configs.ai_config import llm_models
+
+
+# ----------------------
+# Testing logs
+
+for k,v in workflows_core.WORKFLOWS_REGISTRY.items():
+    print(k, v.get("module"))
 
 # ----------------------
 # Flask app setup
@@ -32,8 +40,8 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 # In‐memory stores for this example
 generators: dict[str, any] = {}
 
-# Workflows registry
-wf_registry = WORKFLOWS_REGISTRY
+# REMOVE?? Workflows registry
+# wf_registry = WORKFLOWS_REGISTRY
 
 # File storage manager
 FILES_FOLDER = APP_SETTINGS.USER_DATA_PATH
@@ -53,11 +61,11 @@ def active_page(current_page, page_name):
 # Routes
 @app.route('/')
 def page_index():
-    return render_template('index.html', workflows=wf_registry)
+    return render_template('index.html', workflows=workflows_core.WORKFLOWS_REGISTRY)
 
 @app.route('/workflows')
 def page_workflows():
-    return render_template('workflows.html', workflows=wf_registry, llm_models=llm_models)
+    return render_template('workflows.html', workflows=workflows_core.WORKFLOWS_REGISTRY, llm_models=llm_models)
 
 @app.route('/test')
 def page_test():
@@ -171,7 +179,7 @@ def start_task():
                 ResponseKey.TASK_ID: task_id
                 })), 400
         workflow_id = data.get('workflow_id')
-        workflow = wf_registry.get(workflow_id)
+        workflow = workflows_core.WORKFLOWS_REGISTRY.get(workflow_id)
         if not workflow:
             return jsonify(response_output_error({
                 ResponseKey.ERROR: "[start_task()]: Invalid workflow. Workflow not found in workflows registry.",
@@ -260,6 +268,16 @@ def test():
                 ResponseKey.BODY: f"Error: {str(e)}"
             } 
         }), 500
+
+# RENAME TO get_workflows_registry
+@app.get("/api/workflows")
+def api_workflows():
+    """Return current workflow registry without function objects."""
+    workflows = {
+        wf_id: {k: v for k, v in wf.items() if k != "function"}
+        for wf_id, wf in workflows_core.WORKFLOWS_REGISTRY.items()
+    }
+    return jsonify(workflows)
 
     
 @app.route('/api/reload_modules', methods=['POST'])

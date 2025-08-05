@@ -15,6 +15,16 @@ const domRunningWorkflowMsg = document.getElementById('running-workflow-msg');
 
 // Functions
 
+function populateWorkflowSelect(workflows) {
+    domWorkflowSelect.innerHTML = '<option value="" disabled selected>Select workflow ...</option>';
+    Object.entries(workflows).forEach(([id, wf]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = wf.title;
+        domWorkflowSelect.appendChild(option);
+    });
+}
+
 async function startWorkflow() {
     // Clear previous responses
     domLogs.innerHTML = "";
@@ -270,8 +280,21 @@ domStartWorkflowButton.onclick = () => {
     startWorkflow();
 };
 
+/*
 document.getElementById('reload-custom-workflows').onclick = function() {
     fetch('/api/reload_modules', {method: 'POST'})
         .then(response => response.json())
         .then(data => alert(data.message || data.error));
+};
+*/
+
+document.getElementById('reload-custom-workflows').onclick = async function() {
+    const res = await fetch('/api/reload_modules', {method: 'POST'});
+    const data = await res.json();
+    alert(data.message || data.error);
+    if (data.status === 'success') {
+        const wfRes = await fetch('/api/workflows');
+        const wfData = await wfRes.json();
+        populateWorkflowSelect(wfData);
+    }
 };
