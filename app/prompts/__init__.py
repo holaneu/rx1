@@ -1,18 +1,20 @@
-import os
-import importlib
 
-# Import all Python files in the workflows folder (except __init__.py and core.py)
-module_path = os.path.dirname(__file__)
-
-for filename in os.listdir(module_path):
-    if filename.endswith(".py") and filename not in {"__init__.py", "core.py"}:
-        module_name = f"{__name__}.{filename[:-3]}"
-        importlib.import_module(module_name)
-
-# Optionally expose the registry directly
+# Expose the registry directly
 from .core import PROMPTS_REGISTRY
 
 # --- STATIC IMPORTS (Auto-generated section starts) ---
 # AUTO-GENERATED-IMPORTS-START
+from .included import prompt_example, output_without_comments, do_task, correct_grammar
+from .test.test import test
+from .test.test2 import test2
+
+__all__ = [
+    "prompt_example",
+    "output_without_comments",
+    "do_task",
+    "correct_grammar",
+    "test",
+    "test2",
+]
 # AUTO-GENERATED-IMPORTS-END
 # --- END OF AUTO GENERATED ---

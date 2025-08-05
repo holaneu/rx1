@@ -14,6 +14,13 @@ APP_DIRS = [
     "app/workflows",
 ]
 
+ADMIN_DIRS = [
+    "user_data/admin/custom_assistants",
+    #"user_data/admin/custom_prompts",
+    "user_data/admin/custom_tools",
+    "user_data/admin/custom_workflows",    
+]
+
 EXTENSION_DIRS = [
     "user_data/extensions/assistants",
     "user_data/extensions/prompts",
@@ -84,9 +91,11 @@ def update_init_file(init_path, new_auto_block):
     with open(init_path, "w", encoding="utf-8") as f:
         f.write(content)
 
-def update_all_inits(target):
-    if (target == "user_data_dirs"):
+def update_inits(target):
+    if (target == "user_data_extensions_dirs"):
         target_dirs = EXTENSION_DIRS
+    if (target == "user_data_admin_dirs"):
+        target_dirs = ADMIN_DIRS
     if (target == "app_dirs"):
         target_dirs = APP_DIRS
     else:

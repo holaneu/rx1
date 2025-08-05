@@ -7,6 +7,7 @@ import queue
 from dotenv import load_dotenv
 import os
 import time
+import threading
 
 from app.workflows.core import WORKFLOWS_REGISTRY
 from app.utils.shared import all_task_sse_queues
@@ -38,9 +39,15 @@ wf_registry = WORKFLOWS_REGISTRY
 FILES_FOLDER = APP_SETTINGS.USER_DATA_PATH
 file_manager = FileStorageManager(base_path=FILES_FOLDER, skip_folders=["__pycache__"])
 
+# --- one-per-process global lock ---
+# used for reload_modules() API
+_init_update_lock = threading.Lock()
+
+
 @app.template_filter('active_page')
 def active_page(current_page, page_name):
     return 'active' if current_page == page_name else ''
+
 
 
 # Routes
@@ -255,28 +262,27 @@ def test():
         }), 500
 
     
-@app.route('/api/reload_custom_workflows', methods=['POST'])
-def reload_custom_workflows():
+@app.route('/api/reload_modules', methods=['POST'])
+def reload_modules():
+    """Hot-reload all in-package modules, noticing any new files."""
     try:
-        from app.workflows import import_user_custom_workflows
-        import_user_custom_workflows()
-        return jsonify({
-            ResponseKey.STATUS: ResponseStatus.SUCCESS, 
-            ResponseKey.MESSAGE: {
-                ResponseKey.TITLE: "Custom workflows reloaded",
-                ResponseKey.BODY: "Custom workflows stored in user_data have been successfully reloaded."
-            } 
-        })
+        import importlib    
+        from app.utils.update_init2 import update_inits
+        with _init_update_lock:             # blocks concurrent requests
+            importlib.invalidate_caches()   # make new .py files visible            
+            update_inits("app_dirs")
+            update_inits("user_data_extensions_dirs") 
+            update_inits("user_data_admin_dirs")
+        return {
+            ResponseKey.STATUS: ResponseStatus.SUCCESS,
+            ResponseKey.MESSAGE: "Reloaded",
+        }
     except Exception as e:
-        return jsonify({
-            ResponseKey.STATUS: ResponseStatus.ERROR, 
-            ResponseKey.ERROR: str(e),
-            ResponseKey.MESSAGE: {
-                ResponseKey.TITLE: "Error: custom workflows not reloaded",
-                ResponseKey.BODY: f"Error: {str(e)}"
-            } 
-        }), 500
-
+        return {
+            ResponseKey.STATUS: ResponseStatus.ERROR,
+            ResponseKey.ERROR: f"Error: {str(e)}.",
+            ResponseKey.MESSAGE: "Error",
+        }
 
 # --- Main entry point ---
 if __name__ == '__main__':

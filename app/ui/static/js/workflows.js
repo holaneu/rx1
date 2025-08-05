@@ -271,7 +271,7 @@ domStartWorkflowButton.onclick = () => {
 };
 
 document.getElementById('reload-custom-workflows').onclick = function() {
-    fetch('/api/reload_custom_workflows', {method: 'POST'})
+    fetch('/api/reload_modules', {method: 'POST'})
         .then(response => response.json())
         .then(data => alert(data.message || data.error));
 };
