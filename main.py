@@ -270,14 +270,25 @@ def test():
         }), 500
 
 # RENAME TO get_workflows_registry
-@app.get("/api/workflows")
-def api_workflows():
-    """Return current workflow registry without function objects."""
-    workflows = {
-        wf_id: {k: v for k, v in wf.items() if k != "function"}
-        for wf_id, wf in workflows_core.WORKFLOWS_REGISTRY.items()
-    }
-    return jsonify(workflows)
+@app.get("/api/get_workflows_registry")
+def api_get_workflows_registry():
+    """Return current workflow registry without function objects."""    
+    try:
+        workflows = {
+            wf_id: {k: v for k, v in wf.items() if k != "function"}
+            for wf_id, wf in workflows_core.WORKFLOWS_REGISTRY.items()
+        }
+        return jsonify({
+            ResponseKey.STATUS: ResponseStatus.SUCCESS,
+            ResponseKey.DATA: workflows,
+            ResponseKey.MESSAGE: "Workflows registry retrieved successfully.",
+        })
+    except Exception as e:
+        return {
+            ResponseKey.STATUS: ResponseStatus.ERROR,
+            ResponseKey.ERROR: f"[{__name__}]: {str(e)}.",
+            ResponseKey.MESSAGE: f"[{__name__}]: {str(e)}.",
+        }
 
     
 @app.route('/api/reload_modules', methods=['POST'])
@@ -293,13 +304,13 @@ def reload_modules():
             update_inits("user_data_admin_dirs")
         return {
             ResponseKey.STATUS: ResponseStatus.SUCCESS,
-            ResponseKey.MESSAGE: "Reloaded",
+            ResponseKey.MESSAGE: "Modules reloaded.",
         }
     except Exception as e:
         return {
             ResponseKey.STATUS: ResponseStatus.ERROR,
-            ResponseKey.ERROR: f"Error: {str(e)}.",
-            ResponseKey.MESSAGE: "Error",
+            ResponseKey.ERROR: f"[{__name__}]: {str(e)}.",
+            ResponseKey.MESSAGE: f"[{__name__}]: {str(e)}.",
         }
 
 # --- Main entry point ---
