@@ -50,3 +50,8 @@ __all__ = [
 ]
 # AUTO-GENERATED-IMPORTS-END
 # --- END OF AUTO GENERATED ---
+
+
+# Load user-defined modules for this package
+from app.utils.custom_imports import import_user_custom_modules
+import_user_custom_modules("tools", TOOLS_REGISTRY)

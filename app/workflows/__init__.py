@@ -1,5 +1,5 @@
 
-# Expose directly
+# Expose the registry directly
 from .core import WORKFLOWS_REGISTRY
 
 # --- STATIC IMPORTS (Auto-generated section starts) ---
@@ -39,3 +39,6 @@ __all__ = [
 # --- END OF AUTO GENERATED ---
 
 
+# Load user-defined modules for this package
+from app.utils.custom_imports import import_user_custom_modules
+import_user_custom_modules("workflows", WORKFLOWS_REGISTRY)
