@@ -1,13 +1,13 @@
-from app.workflows.core import workflow, Workflow
+from app.workflows import workflow, Workflow
 
 @workflow()
-def video_transcript_summarization(input, model=None):
+def video_transcript_summarization(input, task_id, model=None):
     """Summarizes the transcript of a video."""
     try:
-        from app.tools.included import save_to_file, user_data_files_path
-        from app.assistants.included import summarize_video_transcript
+        from app.tools import save_to_file, user_data_files_path
+        from app.assistants import summarize_video_transcript
         
-        wf = Workflow()
+        wf = Workflow(task_id=task_id)
 
         ai_data = wf.get_assistant_output_or_raise(summarize_video_transcript(input=input.strip(), model=model))
         

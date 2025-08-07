@@ -3,8 +3,8 @@ import inspect
 from jinja2 import Template
 from typing import Any, Dict, Tuple, Callable
 
-# Registry to keep track of all prompt functions
-PROMPTS_REGISTRY: Dict[str, Dict[str, Any]] = {}
+from app.utils.registries import PROMPTS_REGISTRY
+
 
 def render_prompt_with_context(template: str, _locals: dict, extra: dict = None) -> Tuple[str, Dict[str, Any]]:
     """
@@ -15,6 +15,7 @@ def render_prompt_with_context(template: str, _locals: dict, extra: dict = None)
     if extra:
         context.update(extra)
     return template, context
+
 
 def prompt(**meta_kwargs):
     """

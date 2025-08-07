@@ -293,24 +293,24 @@ def api_get_workflows_registry():
     
 @app.route('/api/reload_modules', methods=['POST'])
 def reload_modules():
-    """Hot-reload all in-package modules, noticing any new files."""
+    """Hot-reload all modules with both static imports and registry updates."""
     try:
-        import importlib    
-        from app.utils.update_init2 import update_inits
-        with _init_update_lock:             # blocks concurrent requests
-            importlib.invalidate_caches()   # make new .py files visible            
-            update_inits("app_dirs")
-            update_inits("user_data_extensions_dirs") 
-            update_inits("user_data_admin_dirs")
+        from app.utils.module_manager import ModuleManager
+        
+        manager = ModuleManager()
+        with _init_update_lock:
+            # Full reload: static imports + registry updates
+            manager.full_reload()
+            
         return {
             ResponseKey.STATUS: ResponseStatus.SUCCESS,
-            ResponseKey.MESSAGE: "Modules reloaded.",
+            ResponseKey.MESSAGE: "All modules reloaded (static imports + registries).",
         }
     except Exception as e:
         return {
             ResponseKey.STATUS: ResponseStatus.ERROR,
-            ResponseKey.ERROR: f"[{__name__}]: {str(e)}.",
-            ResponseKey.MESSAGE: f"[{__name__}]: {str(e)}.",
+            ResponseKey.ERROR: f"Error: {str(e)}",
+            ResponseKey.MESSAGE: f"Error: {str(e)}",
         }
 
 # --- Main entry point ---

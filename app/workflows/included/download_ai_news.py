@@ -1,5 +1,5 @@
-from app.workflows.core import workflow, Workflow
-from app.tools.included import download_news_newsapi, save_to_file, json_db_add_entry, user_data_files_path
+from app.workflows import workflow, Workflow
+from app.tools import download_news_newsapi, save_to_file, json_db_add_entry, user_data_files_path
 import json
 
 @workflow()

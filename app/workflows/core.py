@@ -1,13 +1,13 @@
+"""Core workflow functionality and registry access."""
+
+from app.utils.registries import WORKFLOWS_REGISTRY
+
 import inspect
 from datetime import datetime
 import json
 import os
 from app.utils.response_types import ResponseKey, ResponseAction, ResponseStatus
-from app.tools.included import save_to_file, user_data_files_path, formatted_datetime
-
-# Define a registry to hold all workflows
-# This allows for dynamic discovery and management of workflows
-WORKFLOWS_REGISTRY = {}
+from app.tools import save_to_file, user_data_files_path, formatted_datetime
 
 # Decorator to register a function as a workflow
 # This decorator can be used to annotate functions that should be treated as workflows

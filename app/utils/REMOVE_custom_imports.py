@@ -31,7 +31,7 @@ def import_user_custom_modules(package_name: str, registry: Dict[str, dict]) -> 
 
     for root, _, files in os.walk(directory):
         for filename in files:
-            if filename.endswith(".py") and filename not in {"__init__.py", "core.py"}:
+            if filename.endswith(".py") and filename not in {"__init__.py", "core.py", "_core.py"}:
                 rel_path = os.path.relpath(os.path.join(root, filename), directory)
                 parts = path_parts + rel_path.split(os.sep)
                 mod_name = ".".join(parts).rsplit(".py", 1)[0]

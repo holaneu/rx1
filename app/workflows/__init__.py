@@ -1,6 +1,6 @@
 
-# Expose the registry directly
-from .core import WORKFLOWS_REGISTRY
+# Expose directly
+from .core import workflow, Workflow
 
 # --- STATIC IMPORTS (Auto-generated section starts) ---
 # AUTO-GENERATED-IMPORTS-START
@@ -38,7 +38,11 @@ __all__ = [
 # AUTO-GENERATED-IMPORTS-END
 # --- END OF AUTO GENERATED ---
 
-
-# Load user-defined modules for this package
-from app.utils.custom_imports import import_user_custom_modules
-import_user_custom_modules("workflows", WORKFLOWS_REGISTRY)
+# Load user-defined modules for this package using new system
+from app.configs.module_config import ModuleConfig
+config = ModuleConfig()
+registry = config.get_registry_for_package("workflows")
+if registry is not None:
+    from app.utils.module_manager import ModuleManager
+    manager = ModuleManager()
+    manager._load_dynamic_modules_for_package("workflows", registry)

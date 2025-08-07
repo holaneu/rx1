@@ -1,11 +1,11 @@
-from app.workflows.core import *
+from app.workflows import workflow, Workflow
 
 @workflow()
 def translation_cs_en_basic(task_id, input, model="openai/gpt-4.1"):
     """Translates text between Czech and English v2."""
     try:
-        from app.tools.included import save_to_file, user_data_files_path
-        from app.assistants.included import translator_cs_en
+        from app.tools import save_to_file, user_data_files_path
+        from app.assistants import translator_cs_en
         
         wf = Workflow(task_id=task_id)
 

@@ -1,4 +1,4 @@
-from app.workflows.core import workflow, Workflow
+from app.workflows import workflow, Workflow
 
 @workflow()
 def translation_cs_en_json(input, task_id, model="openai/gpt-4.1"):
@@ -6,8 +6,10 @@ def translation_cs_en_json(input, task_id, model="openai/gpt-4.1"):
     try:
         from app.tools import save_to_file, user_data_files_path, json_db_add_entry
         from app.assistants import translator_cs_en_json
-        from user_data.admin.custom_tools import test_generate_uuid
         import json
+
+        # REMOVE:
+        from user_data.admin.custom_tools import test_generate_uuid
 
         wf = Workflow(task_id=task_id)
 

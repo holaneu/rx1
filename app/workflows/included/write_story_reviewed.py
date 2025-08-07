@@ -1,6 +1,6 @@
-from app.workflows.core import workflow, Workflow
-from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-from app.assistants.included import writer, universal_no_instructions
+from app.workflows import workflow, Workflow
+from app.tools import save_to_file, user_data_files_path, json_db_add_entry
+from app.assistants import writer, universal_no_instructions
 
 @workflow()
 def write_story_reviewed(input, task_id, model="openai/gpt-4.1"):

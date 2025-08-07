@@ -1,5 +1,5 @@
-from app.tools.included import fetch_llm
-from app.assistants.core import assistant
+from app.tools import fetch_llm
+from app.assistants import assistant
 
 # ----------------------
 # Assistant functions

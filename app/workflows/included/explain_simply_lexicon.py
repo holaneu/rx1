@@ -1,6 +1,6 @@
-from app.workflows.core import workflow, Workflow
-from app.assistants.included import explain_simply_lexicon
-from app.tools.included import save_to_file, user_data_files_path
+from app.workflows import workflow, Workflow
+from app.assistants import explain_simply_lexicon
+from app.tools import save_to_file, user_data_files_path
 
 @workflow()
 def explain_simply_lexicon(input, model=None):

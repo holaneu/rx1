@@ -57,7 +57,7 @@ def generate_imports(directory, existing_symbols):
     all_names = []
     for root, _, files in os.walk(directory):
         for fname in sorted(files):
-            if fname.endswith(".py") and fname not in ["__init__.py", "core.py"]:
+            if fname.endswith(".py") and fname not in ["__init__.py", "core.py", "_core.py"]:
                 filepath = os.path.join(root, fname)
                 symbols = extract_symbols(filepath)
                 symbols = [s for s in symbols if not s.startswith("_") and s not in existing_symbols]

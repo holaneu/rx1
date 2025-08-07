@@ -1,4 +1,4 @@
-from app.workflows.core import *
+from app.workflows import workflow, Workflow
 
 @workflow()
 def take_quick_note(input, task_id, model=None):

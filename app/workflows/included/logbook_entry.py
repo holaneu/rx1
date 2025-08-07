@@ -1,13 +1,13 @@
-from app.workflows.core import *
-from app.tools.included import save_to_file, user_data_files_path, json_db_add_entry
-from app.assistants.included import universal_no_instructions
+from app.workflows import workflow, Workflow
+from app.tools import save_to_file, user_data_files_path, json_db_add_entry
+from app.assistants import universal_no_instructions
 import json
 
 @workflow()
-def logbook_entry(input, model=None):
+def logbook_entry(input, task_id, model=None):
     """Writes a logbook entry."""
     try:
-        wf = Workflow()
+        wf = Workflow(task_id=task_id)
         
         source_text = input.strip()
         instructions = f"""Na základě zadaného vstupu (může jít o větu, poznámku nebo kus kódu) vytvoř výstup ve strukturovaném JSON formátu se třemi klíčovými poli:

@@ -1,7 +1,7 @@
 
 
 # Expose the registry directly
-from .core import TOOLS_REGISTRY
+from ._core import tool
 
 # --- STATIC IMPORTS (Auto-generated section starts) ---
 # AUTO-GENERATED-IMPORTS-START
@@ -52,6 +52,11 @@ __all__ = [
 # --- END OF AUTO GENERATED ---
 
 
-# Load user-defined modules for this package
-from app.utils.custom_imports import import_user_custom_modules
-import_user_custom_modules("tools", TOOLS_REGISTRY)
+# Load user-defined modules for this package using new system
+from app.configs.module_config import ModuleConfig
+config = ModuleConfig()
+registry = config.get_registry_for_package("tools")
+if registry is not None:
+    from app.utils.module_manager import ModuleManager
+    manager = ModuleManager()
+    manager._load_dynamic_modules_for_package("tools", registry)

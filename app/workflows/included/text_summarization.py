@@ -1,6 +1,6 @@
-from app.workflows.core import *
-from app.tools.included import save_to_file, user_data_files_path
-from app.assistants.included import summarize_text_key_takeaways
+from app.workflows import workflow, Workflow
+from app.tools import save_to_file, user_data_files_path
+from app.assistants import summarize_text_key_takeaways
 
 
 @workflow()

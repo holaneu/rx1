@@ -1,11 +1,7 @@
-import inspect
 
-TOOLS_REGISTRY = {}
-
-import inspect
 import functools
 
-TOOLS_REGISTRY = {}  # Presumably already defined somewhere
+from app.utils.registries import TOOLS_REGISTRY
 
 def tool(**kwargs):
     def decorator(func):

@@ -1,7 +1,7 @@
 import inspect
 import functools
 
-ASSISTANTS_REGISTRY = {}
+from app.utils.registries import ASSISTANTS_REGISTRY
 
 def assistant(**kwargs):
     def decorator(func):
