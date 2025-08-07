@@ -1,4 +1,4 @@
-from app.prompts.core import prompt, prompt_with_context
+from app.prompts import prompt, render_prompt_with_context
 
 
 @prompt(name="Example prompt", description="Showcase task-oriented prompt rendering")
@@ -19,7 +19,7 @@ def prompt_example(*, name: str, task: str, projects: list=None, **extra):
     {% endif %}
     """
     # Automatically merge locals and extra kwargs into context
-    return prompt_with_context(_prompt.strip(), locals(), extra)
+    return render_prompt_with_context(_prompt.strip(), locals(), extra)
 
 
 @prompt()
@@ -43,7 +43,7 @@ def do_task(*, name: str, task: str, projects: list=None, **extra):
     {% endif %}
     """
     # Automatically merge locals and extra kwargs into context
-    return prompt_with_context(_prompt.strip(), locals(), extra)
+    return render_prompt_with_context(_prompt.strip(), locals(), extra)
 
 
 @prompt()
@@ -58,5 +58,15 @@ def correct_grammar(*, input: str, extra_instructions: str = None):
     Output format: {{output_format1}}.
     Input: {{ input }}
     """
-    return prompt_with_context(_prompt.strip(), locals())
+    return render_prompt_with_context(_prompt.strip(), locals())
 
+
+@prompt()
+def explain_swe_terms(*, input: str):
+    """Explains a software engineering term in simple words."""
+    output_format1 = output_without_comments()
+    _prompt = """You are software engineer with expertise in software development and programming. You are given a text that contains a software engineering term. Your task is to explain this term in simple words.
+    Output format: {{output_format1}}.
+    Input: {{ input }}
+    """
+    return render_prompt_with_context(_prompt.strip(), locals())

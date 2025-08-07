@@ -180,14 +180,14 @@ def call_api_of_type_openai_choices_direct(model_name, api_key, base_url, input,
             output = {
                 ResponseKey.STATUS: ResponseStatus.SUCCESS,
                 ResponseKey.DATA: {
-                "content": result["choices"][0]["message"]["content"],
-                "role": result["choices"][0]["message"]["role"]
+                    "content": result["choices"][0]["message"]["content"],
+                    "role": result["choices"][0]["message"]["role"],
                 },        
                 ResponseKey.METADATA: {
-                "model": result["model"],
-                "prompt_tokens": result["usage"]["prompt_tokens"],
-                "completion_tokens": result["usage"]["completion_tokens"],
-                "total_tokens": result["usage"]["total_tokens"]  
+                    "model": result["model"],
+                    "prompt_tokens": result["usage"]["prompt_tokens"],
+                    "completion_tokens": result["usage"]["completion_tokens"],
+                    "total_tokens": result["usage"]["total_tokens"],  
                 }
             }
             return output

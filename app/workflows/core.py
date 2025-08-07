@@ -62,6 +62,8 @@ class Workflow:
     def log_msg(self, msg=None, msgTitle=None, msgBody=None):
         """Add a dict message to the func_log list."""
         msg = msg or {}
+        if not isinstance(msg, dict):
+            raise ValueError("Message must be a dictionary.")
         title = msg.get("title") or msgTitle
         body = msg.get("body") if msg.get("body") is not None else msgBody
         body = body if body is not None else ""

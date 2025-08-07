@@ -6,7 +6,7 @@ from typing import Any, Dict, Tuple, Callable
 # Registry to keep track of all prompt functions
 PROMPTS_REGISTRY: Dict[str, Dict[str, Any]] = {}
 
-def prompt_with_context(template: str, _locals: dict, extra: dict = None) -> Tuple[str, Dict[str, Any]]:
+def render_prompt_with_context(template: str, _locals: dict, extra: dict = None) -> Tuple[str, Dict[str, Any]]:
     """
     Merge template, locals(), and extra kwargs into context for Jinja rendering.
     Removes private variables and 'prompt' key to avoid conflicts.

@@ -1,10 +1,10 @@
 
 # Expose the registry directly
-from .core import PROMPTS_REGISTRY
+from .core import PROMPTS_REGISTRY, prompt, render_prompt_with_context
 
 # --- STATIC IMPORTS (Auto-generated section starts) ---
 # AUTO-GENERATED-IMPORTS-START
-from .included import prompt_example, output_without_comments, do_task, correct_grammar
+from .included import prompt_example, output_without_comments, do_task, correct_grammar, explain_swe_terms
 from .test.test import test
 from .test.test2 import test2
 
@@ -13,6 +13,7 @@ __all__ = [
     "output_without_comments",
     "do_task",
     "correct_grammar",
+    "explain_swe_terms",
     "test",
     "test2",
 ]
