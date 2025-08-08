@@ -7,6 +7,16 @@ from app.utils.registries import (
     TOOLS_REGISTRY,
 )
 from app.configs.app_config import USER_SETTINGS
+from enum import Enum
+
+class ModuleCategory(str, Enum):
+    """Enumeration for module categories."""    
+    APP = "app"
+    USER = "user"
+    USER_ADMIN = "admin"  
+    USER_EXTENSIONS = "extensions"  
+    USER_CUSTOM = "user_custom"  
+
 
 class ModuleConfig:
     """Centralized configuration for all module paths and package definitions."""
@@ -46,8 +56,7 @@ class ModuleConfig:
                 pkg_type: f"user_data/admin/custom_{pkg_type}"
                 for pkg_type in cls.PACKAGE_TYPES
             },
-            # rename to "user_extensions"
-            "extensions": {
+            ModuleCategory.USER_EXTENSIONS: {
                 pkg_type: f"user_data/extensions/{pkg_type}"
                 for pkg_type in cls.PACKAGE_TYPES
             },

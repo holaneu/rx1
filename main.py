@@ -10,7 +10,7 @@ import time
 import threading
 
 # REMOVE: from app.workflows.core import WORKFLOWS_REGISTRY
-import app.workflows.core as workflows_core
+import app.workflows._core as workflows_core
 from app.utils.shared import all_task_sse_queues
 from app.utils.response_types import response_output_error, response_output_success, ResponseAction, ResponseKey, ResponseStatus
 from app.storage.manager import FileStorageManager

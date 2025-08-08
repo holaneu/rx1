@@ -4,11 +4,9 @@ from ._core import assistant
 
 # --- STATIC IMPORTS (Auto-generated section starts) ---
 # AUTO-GENERATED-IMPORTS-START
-from ._core import assistant
 from .included import translator_cs_en_json, translator_cs_en_yaml, translator_cs_en, summarize_text_key_takeaways, analyze_situation, summarize_video_transcript, explain_simply_lexicon, assistant_instructions_creator, generate_random_poem, generate_short_story, analyze_text_attributes, generate_questions, universal_no_instructions, writer, sarcastic_tech_editor, writer, sarcastic_tech_editor
 
 __all__ = [
-    "assistant",
     "translator_cs_en_json",
     "translator_cs_en_yaml",
     "translator_cs_en",
