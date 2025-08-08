@@ -35,3 +35,5 @@ custom.py
 # Local user data
 user_data/*
 !user_data/.gitkeep
+user/*
+!user/.gitkeep
