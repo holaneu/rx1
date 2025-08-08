@@ -170,7 +170,7 @@ def call_api_of_type_openai_choices_direct(model_name, api_key, base_url, input,
         if response.status_code == 200:
             result = response.json()
             log_timestamp = formatted_datetime("%Y%m%d_%H%M%S")
-            log_filepath = user_data_files_path(f"logs/ai_response_{log_timestamp}.log")
+            log_filepath = user_data_files_path(f"logs/llm_{log_timestamp}.json")
             log_content = {
                 "input": format_str_as_llm_message_obj(input),
                 "output": result

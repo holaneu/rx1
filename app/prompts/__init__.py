@@ -22,10 +22,10 @@ __all__ = [
 
 
 # Load user-defined modules for this package using new system
-from app.configs.module_config import ModuleConfig
+from app.configs.module_config import ModuleConfig, PackageTypes
 config = ModuleConfig()
-registry = config.get_registry_for_package("prompts")
+registry = config.get_registry_for_package(PackageTypes.PROMPTS.value)
 if registry is not None:
     from app.utils.module_manager import ModuleManager
     manager = ModuleManager()
-    manager._load_dynamic_modules_for_package("prompts", registry)
+    manager._load_dynamic_modules_for_package(PackageTypes.PROMPTS.value, registry)

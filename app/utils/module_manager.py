@@ -5,8 +5,8 @@ import re
 import importlib
 import importlib.util
 from typing import Dict, List, Optional
-from app.configs.module_config import ModuleConfig
-from app.configs.app_config import APP_SETTINGS, USER_SETTINGS
+from app.configs.module_config import ModuleConfig, ModuleCategories, PackageTypes
+from app.configs.app_config import APP_SETTINGS
 
 class ModuleManager:
     """Unified module management for both static imports and dynamic registry loading."""
@@ -15,6 +15,7 @@ class ModuleManager:
         self.AUTO_START = "# AUTO-GENERATED-IMPORTS-START"
         self.AUTO_END = "# AUTO-GENERATED-IMPORTS-END"
         self.config = ModuleConfig()
+        self.ignore_modules = {"__init__.py", "core.py", "_core.py"}
     
     def full_reload(self, categories: Optional[List[str]] = None, package_types: Optional[List[str]] = None):
         """
@@ -25,9 +26,9 @@ class ModuleManager:
             package_types: ["workflows", "assistants", "tools", "prompts"] or None for all
         """
         if not categories:
-            categories = ["app", "admin", "extensions", "user_custom"]
+            categories = [category.value for category in ModuleCategories]
         if not package_types:
-            package_types = self.config.PACKAGE_TYPES
+            package_types = [package.value for package in PackageTypes]
         
         print(f"Starting full reload for categories: {categories}, packages: {package_types}")
         
@@ -70,7 +71,7 @@ class ModuleManager:
     def _load_dynamic_modules_for_package(self, package_type: str, registry: Dict[str, dict]):
         """Load user custom modules into registry for a specific package type."""
         # Only load from user_custom directory for dynamic loading
-        user_custom_paths = self.config.get_all_module_paths().get("user_custom", {})
+        user_custom_paths = self.config.get_all_module_paths().get(ModuleCategories.USER.value, {})
         directory = user_custom_paths.get(package_type)
         
         if not directory or not os.path.isdir(directory):
@@ -102,7 +103,7 @@ class ModuleManager:
             for filename in files:
                 if filename.endswith(".py") and filename not in {"__init__.py", "core.py", "_core.py"}:
                     rel_path = os.path.relpath(os.path.join(root, filename), directory)
-                    parts = ["user_data", USER_SETTINGS.USER_ID, f"custom_{package_type}"] + rel_path.split(os.sep)
+                    parts = [APP_SETTINGS.USER_DATA_PATH, package_type] + rel_path.split(os.sep)
                     mod_name = ".".join(parts).rsplit(".py", 1)[0]
                     file_path = os.path.join(root, filename)
                     

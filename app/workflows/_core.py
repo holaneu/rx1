@@ -102,7 +102,7 @@ class Workflow:
             timestamp = datetime.now()
             formatted_time = formatted_datetime("%Y%m%d_%H%M%S")  #timestamp.strftime('%Y%m%d_%H%M%S')
             task_id_part = self.task_id or 'unknown'
-            log_filepath = user_data_files_path(f"logs/workflow_{formatted_time}_{task_id_part}.log")
+            log_filepath = user_data_files_path(f"logs/workflow_{formatted_time}.json")
 
             log_data = {
                 "name": self.called_from,

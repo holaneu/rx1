@@ -9,7 +9,7 @@ def translation_cs_en_json(input, task_id, model="openai/gpt-4.1"):
         import json
 
         # REMOVE:
-        from user_data.admin.custom_tools import test_generate_uuid
+        from user.tools import test_generate_uuid
 
         wf = Workflow(task_id=task_id)
 
